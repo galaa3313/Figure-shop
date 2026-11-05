@@ -428,6 +428,8 @@ footer{border-top:1px solid var(--line);background:var(--bg2);margin-top:20px}
 .bank{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 4px;font-size:11px;text-align:center;min-width:0}
 /* Банкны лого */
 .bank img{width:36px;height:36px;border-radius:8px;object-fit:contain}
+/* Лого байхгүй банкны эхний үсэг */
+.bank .bl{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;background:var(--violet);color:#fff;font-style:normal;font-weight:800;font-size:16px}
 /* Банкны нэр */
 .bank span{overflow-wrap:anywhere;line-height:1.2}
 /* ----- САГС ба ЗАХИАЛГЫН МАЯГТ ----- */
@@ -1033,14 +1035,17 @@ async function showDone(items, total){
 function showQpay(items, total, code, q){
   const text = buildText(code, q.total || total);
   const banks = (q.urls || []).filter(u => u && u.link && !/^\s*javascript:/i.test(u.link));
+  // Утас эсэхийг шалгана: хуруугаар удирддаг дэлгэц эсвэл утасны хөтөч бол true
+  const mobile = matchMedia("(pointer:coarse)").matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   $("sheetTitle").textContent = "QPay-ээр төлөх";
   $("sheetBody").innerHTML = `<div class="done">
     <div class="code"><span>Захиалгын дугаар</span><strong>${code}</strong></div>
     <div class="pay qpay">
       <div class="payhead">Төлөх дүн: <span class="mono">${fmt(q.total || total)}</span></div>
       ${q.qr_image ? `<img class="qr" src="data:image/png;base64,${q.qr_image}" alt="QPay QR код">` : ""}
-      <p class="desc">Банкны апп-аараа QR-ыг уншуулна эсвэл банкаа сонгоно.</p>
-      <div class="banks">${banks.map(u => `<a class="bank" href="${esc(u.link)}">${u.logo ? `<img src="${esc(u.logo)}" alt="">` : ""}<span>${esc(u.description || u.name || "Банк")}</span></a>`).join("")}</div>
+      <p class="desc">${mobile ? "Банкаа сонгоод апп руугаа орно, эсвэл QR-ыг уншуулна." : "Утасныхаа банкны апп-аар (Хаан, Голомт, SocialPay…) энэ QR-ыг уншуулна уу."}</p>
+      <!-- Банкны товч зөвхөн утсан дээр ажиллана (апп нээдэг тул), компьютер дээр нуух -->
+      <div class="banks" ${mobile ? "" : "hidden"}>${banks.map(u => `<a class="bank" href="${esc(u.link)}">${u.logo ? `<img src="${esc(u.logo)}" alt="">` : ""}<span>${esc(u.description || u.name || "Банк")}</span></a>`).join("")}</div>
       <div class="wait" id="qwait"><span class="spin"></span> Төлбөр хүлээж байна…</div>
     </div>
     <button class="primary" id="qcheck" type="button">Төлбөрөө шалгах</button>
@@ -1067,11 +1072,44 @@ function showQpay(items, total, code, q){
   setTimeout(loop, 5000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) check(false); });
   $("qcheck").onclick = () => check(true);
-  $("tobank").onclick = () => { done = true; showBank(items, total, code); };
+  $("tobank").onclick = () => { done = true; showBank(items, total, code, q); };
 }
+// Банкууд: нэр, QPay жагсаалтаас таних хэв, интернэт банкны албан ёсны сайт
+const BANKS = [
+  { name: "Хаан банк", re: /^хаан банк|^khan/i, web: "https://e.khanbank.com/" },
+  { name: "Голомт банк", re: /голомт|golomt/i, web: "https://egolomt.mn/" },
+  { name: "Хас банк", re: /хас|xac/i, web: "https://www.xacbank.mn/product/74" },
+  { name: "ТДБ", re: /tdb|худалдаа/i, web: "https://www.tdbm.mn/" },
+  { name: "Төрийн банк", re: /төрийн|state/i, web: "https://www.statebank.mn/" },
+  { name: "Капитрон банк", re: /капитрон|capitron/i, web: "https://www.capitronbank.mn/" },
+  { name: "Богд банк", re: /богд|bogd/i, web: "https://www.ebogdbank.com/" },
+  { name: "Чингис Хаан банк", re: /чингис|chinggis|ck/i, web: "https://www.ckbank.mn/" },
+  { name: "Ариг банк", re: /ариг|arig/i, web: "https://www.arigbank.mn/" },
+  { name: "Үндэсний хөрөнгө оруулалтын банк", re: /үндэсний|nib/i, web: "https://www.nibank.mn/" },
+  { name: "Тээвэр хөгжлийн банк", re: /тээвэр|trans/i, web: "https://www.transbank.mn/" }
+];
 // Дансаар шилжүүлэх дэлгэц: IBAN, дүн, гүйлгээний утга
-function showBank(items, total, code){
+function showBank(items, total, code, q){
   const text = buildText(code, total);
+  // Утас эсэх: хуруугаар удирддаг дэлгэц эсвэл утасны хөтөч
+  const mobile = matchMedia("(pointer:coarse)").matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  // QPay-ийн өгсөн банкны апп холбоосууд (байвал)
+  const qurls = (q && q.urls || []).filter(u => u && u.link && !/^\s*javascript:/i.test(u.link));
+  // Утсан дээр QPay-ийн бүх банк, хэтэвчийг (лого, нэртэй) яг QPay дэлгэц шиг харуулна
+  const bankBtns = mobile && qurls.length
+    ? qurls.map(u => `<a class="bank" href="${esc(u.link)}">${u.logo ? `<img src="${esc(u.logo)}" alt="">` : ""}<span>${esc(u.description || u.name || "Банк")}</span></a>`).join("")
+    // Компьютер дээр: интернэт банктай банкууд, QPay-ийн логотой, сайт руу нь үсэрнэ
+    : BANKS.map(b => {
+    // QPay жагсаалтаас энэ банкыг нэрээр нь хайна (лого, апп холбоос авахын тулд)
+    const m = qurls.find(u => b.re.test(u.description || u.name || ""));
+    // Утсан дээр апп холбоос байвал түүнийг, үгүй бол сайтыг нь нээнэ
+    const href = mobile && m ? m.link : b.web;
+    // Сайт бол шинэ таб дээр нээнэ, апп бол шууд
+    const tgt = href === b.web ? ' target="_blank" rel="noopener"' : "";
+    // Лого: QPay-ээс ирсэн бол зураг, үгүй бол эхний үсэг
+    const logo = m && m.logo ? `<img src="${esc(m.logo)}" alt="">` : `<i class="bl">${b.name[0]}</i>`;
+    return `<a class="bank" href="${esc(href)}"${tgt}>${logo}<span>${b.name}</span></a>`;
+  }).join("");
   $("sheetTitle").textContent = "Төлбөр төлөх";
   $("sheetBody").innerHTML = `<div class="done">
     <div class="code"><span>Захиалгын дугаар</span><strong>${code}</strong></div>
@@ -1085,13 +1123,34 @@ function showBank(items, total, code){
         <li>Гүйлгээний утга дээр <b>${code}</b> гэж бичнэ.</li>
         <li>Шилжүүлсний дараа доорх товчийг дарна.</li>
       </ol>
+      <!-- Банкны холбоосууд: утсан дээр апп, компьютер дээр интернэт банк -->
+      <p class="desc">${mobile ? "Банкаа сонгоод апп руугаа орно:" : "Интернэт банкаа нээх:"}</p>
+      <div class="banks">${bankBtns}</div>
     </div>
     <button class="primary" id="paid" type="button">Төлбөр төлсөн</button>
     <button class="ghost" id="back" type="button">Буцах</button>
   </div>`;
   $("sheetBody").querySelectorAll(".cp").forEach(copyBtn);
-  $("back").onclick = renderCart;
+  // QPay нэхэмжлэх байгаа бол апп-аар төлөгдөх эсэхийг 5 секунд тутам шалгана (Sheets-ээс)
+  let stop = false;
+  if (q && q.invoice_id) {
+    const iv = setInterval(async () => {
+      // Дэлгэцээс гарсан бол зогсоно
+      if (stop || !$("paid")) return clearInterval(iv);
+      try {
+        const r = await fetch(`${SHOP.qpayApi}/qpay-check?inv=${encodeURIComponent(q.invoice_id)}&code=${code}&sig=${encodeURIComponent(q.sig)}`);
+        const j = await r.json();
+        // Төлөгдсөн бол амжилттай дэлгэц рүү
+        if (j.paid) { stop = true; clearInterval(iv); showConfirmed(code, text, true, true); }
+      } catch (e) {}
+    }, 5000);
+    // 10 минутын дараа шалгахаа зогсооно
+    setTimeout(() => clearInterval(iv), 10 * 60 * 1000);
+  }
+  $("back").onclick = () => { stop = true; renderCart(); };
   $("paid").addEventListener("click", async () => {
+    // Шалгалтыг зогсооно
+    stop = true;
     const btn = $("paid"); btn.disabled = true; btn.textContent = "Илгээж байна…";
     const data = { code, name: draft.name.trim(), phone: draft.phone.trim(), delivery: draft.delivery,
       address: draft.delivery === "Хүргэлтээр" ? draft.address.trim() : "",
@@ -1137,6 +1196,3 @@ function showConfirmed(code, text, sent, paid){
 // ===== ЭХЛҮҮЛЭХ: шүүлт ба барааг анх удаа зурна =====
 renderFilters(); renderGrid(); renderZones(); renderDrops();
 </script>
-
-</body>
-</html>

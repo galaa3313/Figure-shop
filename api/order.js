@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
   if (!o) return res.status(400).json({ ok: false, error: "invalid" });
   // Telegram болон Sheets руу зэрэг илгээнэ
   const [t, s] = await Promise.allSettled([
-    L.telegram(L.orderText(o, "🛒 Шинэ захиалга (дансаар)") + `\n\nХаан банкнаас "${o.code}" утгаар шалгаарай.`),
+    L.telegram(L.orderText(o, "🛒 Шинэ захиалга (дансаар)") + `\n\nХудалдаа хөгжлийн банкны дансаас "${o.code}" утгаар шалгаарай.`),
     L.sheets({ ...o, status: "Төлбөр шалгах" })
   ]);
   // Аль нэг нь амжилттай бол OK

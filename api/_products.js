@@ -1,5 +1,8 @@
 // Сайтын бараа, үнэ. Үнэ өөрчлөгдөхөд энэ файлыг index.html-тэй хамт шинэчилнэ.
 module.exports = {
+ // ⚠️ QPay туршилтын 100₮ бараа: зөвхөн сайтын хаягийн араас #qpaytest бичихэд харагдана.
+ // Туршилт дууссаны дараа энэ мөрийг устгана.
+ "qpaytest": {"name": "QPay туршилт", "series": "Туршилт", "price": 100, "pre": false, "options": []},
  "hoodie": {
   "name": "Asaky Prezaky Flame Zip Hoodie",
   "series": "Хувцас",

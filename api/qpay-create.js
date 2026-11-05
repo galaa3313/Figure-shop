@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
       invoice_code: process.env.QPAY_INVOICE_CODE,
       sender_invoice_no: o.code,
       invoice_receiver_code: o.phone.replace(/\D/g, ""),
-      invoice_description: `FigureBox ${o.code}`,
+      invoice_description: `GANZONE ${o.code}`,
       amount: o.total,
       callback_url: `https://${host}/api/qpay-callback?code=${o.code}`
     });

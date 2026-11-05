@@ -1,4 +1,4 @@
-// FigureBox серверийн туслах функцууд (Vercel энэ файлыг хаяг болгож нээхгүй, учир нь "_"-ээр эхэлдэг).
+// GANZONE серверийн туслах функцууд (Vercel энэ файлыг хаяг болгож нээхгүй, учир нь "_"-ээр эхэлдэг).
 // Нууц гарын үсэг (HMAC) үүсгэх Node-ийн сан
 const crypto = require("crypto");
 // Бараа, үнийн жагсаалт (_products.js)
@@ -15,11 +15,12 @@ const body = req => { let b = req.body || {}; if (typeof b === "string") { try {
 // Ирсэн захиалгыг шалгаж, нийт дүнг бодно. Буруу бол null буцаана
 function order(b) {
   const o = {
-    code: clip(b.code, 10), name: clip(b.name, 80), phone: clip(b.phone, 20),
+    code: clip(b.code, 20), name: clip(b.name, 80), phone: clip(b.phone, 20),
     delivery: clip(b.delivery, 20), address: clip(b.address, 300), note: clip(b.note, 300)
   };
   // AG + 5 оронтой дугаар, 8 оронтой утас, нэр заавал байх ёстой
-  if (!/^AG\d{5}$/.test(o.code) || o.phone.replace(/\D/g, "").length !== 8 || !o.name) return null;
+  // Захиалгын дугаар: AG + огноо + 4 оронтой тоо (жишээ AG261104-4827). Хуучин AG12345 хэлбэр ч хүчинтэй
+  if (!/^AG(\d{5}|\d{6}-\d{4})$/.test(o.code) || o.phone.replace(/\D/g, "").length !== 8 || !o.name) return null;
   // Хамгийн ихдээ 30 төрлийн бараа
   const items = Array.isArray(b.items) ? b.items.slice(0, 30) : [];
   const lines = []; let total = 0;
@@ -91,7 +92,11 @@ async function qpayToken() {
   const r = await fetch(QBASE() + "/v2/auth/token", { method: "POST", headers: { Authorization: "Basic " + auth } });
   if (!r.ok) throw new Error("qpay_auth_" + r.status);
   const j = await r.json();
-  tokenCache = { token: j.access_token, exp: Date.now() + 50 * 60 * 1000 };
+  // QPay-ийн зааврын дагуу токеныг хугацаа нь дуустал дахин ашиглана.
+  // expires_in нь unix timestamp (секунд) эсвэл үргэлжлэх секунд байж болно; 1 минутын нөөц үлдээнэ
+  const e = Number(j.expires_in) || 0;
+  const expMs = e > 1e9 ? e * 1000 : e > 0 ? Date.now() + e * 1000 : Date.now() + 50 * 60 * 1000;
+  tokenCache = { token: j.access_token, exp: expMs - 60 * 1000 };
   return j.access_token;
 }
 // QPay API руу хүсэлт илгээх ерөнхий функц

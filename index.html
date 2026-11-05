@@ -1174,7 +1174,7 @@ function showConfirmed(code, text, sent, paid){
   $("sheetTitle").textContent = "Баярлалаа!";
   $("sheetBody").innerHTML = `<div class="done">
     <div class="ok"><div class="tick">✓</div><div><strong>${paid ? "Төлбөр амжилттай" : "Захиалга баталгаажсан"}</strong><span>Дугаар: <b class="mono">${code}</b></span></div></div>
-    <p style="margin:0">${paid ? `Таны захиалга хадгалагдлаа. Бид тантай <b>${esc(draft.phone.trim())}</b> дугаараар холбогдож хүргэлтээ тохирно.` : `${sent ? "Захиалга бидэнд ирлээ. " : ""}Төлбөр орсныг шалгаад тантай <b>${draft.phone.trim()}</b> дугаараар холбогдоно.${sent ? "" : " Захиалгаа доорх товчоор хуулж пэйж рүү илгээгээрэй."}`}</p>
+    <p style="margin:0">${paid ? `Таны захиалга хадгалагдлаа. Бид тантай <b>${esc(draft.phone.trim())}</b> дугаараар холбогдож хүргэлтээ тохирно.` : `${sent ? "Захиалга бидэнд ирлээ. " : ""}Төлбөр орсныг шалгаад тантай <b>${esc(draft.phone.trim())}</b> дугаараар холбогдоно.${sent ? "" : " Захиалгаа доорх товчоор хуулж пэйж рүү илгээгээрэй."}`}</p>
     <pre id="orderText"></pre>
     <button class="primary" type="button" id="cpOrder" data-v="">Захиалгыг хуулах</button>
     <div class="contact">

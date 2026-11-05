@@ -20,10 +20,11 @@ module.exports = async (req, res) => {
       const p = await L.isPaid(inv);
       // 3) Төлөгдсөн бол хүснэгтэд тэмдэглэж, Telegram-аар мэдэгдэнэ
       if (p.paid) await L.markPaid(code, p.amount, inv);
-    } else if (pid) {
-      // Хүснэгт ажиллахгүй үед: төлбөрийн дугаараар QPay-ээс шалгана
-      const p = await L.qpay("/v2/payment/" + encodeURIComponent(pid), null, "GET");
-      if (String(p.payment_status).toUpperCase() === "PAID") await L.markPaid(code, Number(p.payment_amount) || 0, p.object_id || pid);
+    } else if (!st) {
+      // Хүснэгт ажиллахгүй байна (захиалга олдохгүй биш).
+      // Гаднаас ирсэн дугаарт итгэж "төлөгдсөн" гэж тэмдэглэхгүй,
+      // харин танд Telegram-аар гараар шалгахыг мэдэгдэнэ (хуурамч callback-аас хамгаална)
+      await L.telegram(`⚠️ QPay callback ирлээ ${code}, гэхдээ хүснэгтээс нэхэмжлэх олдсонгүй. QPay дээрээс гараар шалгана уу.${pid ? "\nТөлбөрийн дугаар: " + pid : ""}`);
     }
   } catch (e) {}
   // QPay-д "хүлээж авлаа" гэж хариулна

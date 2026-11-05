@@ -6,6 +6,8 @@ const L = require("./_lib.js");
 module.exports = async (req, res) => {
   // Зөвхөн POST хүсэлт хүлээж авна
   if (req.method !== "POST") return res.status(405).json({ ok: false });
+  // Нэг хүнээс богино хугацаанд хэт олон захиалга ирвэл (спам) татгалзана
+  if (L.limited(req)) return res.status(429).json({ ok: false, error: "too_many" });
   // Захиалгыг шалгаж, үнийг сервер дээр бодно
   const o = L.order(L.body(req));
   // Буруу захиалга бол татгалзана

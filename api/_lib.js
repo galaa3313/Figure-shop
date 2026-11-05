@@ -119,6 +119,28 @@ async function isPaid(invoiceId) {
   return { paid: (j.count || 0) > 0 && paid.length > 0, amount: Number(j.paid_amount) || paid.reduce((s, r) => s + Number(r.payment_amount || 0), 0) };
 }
 
+// Гарын үсгийг тогтмол хугацаанд харьцуулна (таах халдлагаас хамгаална)
+function sigOk(sig, inv, code) {
+  const a = Buffer.from(String(sig || "")), b = Buffer.from(sign(inv, code));
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+// Нэг IP хаягаас хэт олон захиалга илгээхээс сэргийлнэ (спам).
+// Серверийн нэг хувилбар дотор санана: 10 минутад хамгийн ихдээ 6 захиалга.
+const hits = new Map();
+function limited(req, max = 6, winMs = 10 * 60 * 1000) {
+  // Хэрэглэгчийн IP (Vercel x-forwarded-for-д бичдэг)
+  const ip = String((req.headers || {})["x-forwarded-for"] || "").split(",")[0].trim() || "?";
+  const now = Date.now();
+  // Сүүлийн 10 минутын хүсэлтүүдийг үлдээнэ
+  const arr = (hits.get(ip) || []).filter(t => now - t < winMs);
+  arr.push(now); hits.set(ip, arr);
+  // Санах ой дүүрэхээс сэргийлж хэт олон бол цэвэрлэнэ
+  if (hits.size > 5000) hits.clear();
+  // Хязгаар хэтэрсэн бол true
+  return arr.length > max;
+}
+
 // Төлөгдсөн гэж тэмдэглэнэ. Sheets байгаа бол давхардлыг тэр шийднэ.
 async function markPaid(code, amount, inv) {
   const s = await sheets({ action: "paid", code, invoice: inv, amount });
@@ -128,4 +150,4 @@ async function markPaid(code, amount, inv) {
 }
 
 // Бусад файлд ашиглах функцууд
-module.exports = { clip, fmt, body, order, orderText, telegram, sheets, qpayReady, qpay, sign, isPaid, markPaid };
+module.exports = { clip, fmt, body, order, orderText, telegram, sheets, qpayReady, qpay, sign, sigOk, limited, isPaid, markPaid };

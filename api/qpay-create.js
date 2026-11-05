@@ -7,6 +7,8 @@ module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ ok: false });
   // QPay тохируулаагүй бол сайт дансаар шилжүүлэх хувилбар руу шилжинэ
   if (!L.qpayReady()) return res.status(503).json({ ok: false, error: "qpay_not_configured" });
+  // Нэг хүнээс богино хугацаанд хэт олон захиалга ирвэл (спам) татгалзана
+  if (L.limited(req)) return res.status(429).json({ ok: false, error: "too_many" });
   // Захиалгыг шалгаж, үнийг сервер дээр бодно
   const o = L.order(L.body(req));
   if (!o) return res.status(400).json({ ok: false, error: "invalid" });

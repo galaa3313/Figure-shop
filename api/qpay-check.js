@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
   const inv = L.clip(req.query.inv, 80), code = L.clip(req.query.code, 20), sig = L.clip(req.query.sig, 64);
   const manual = req.query.manual === "1";
   // Гарын үсэг таарахгүй бол хуурамч хүсэлт тул татгалзана
-  if (!L.qpayReady() || !inv || !/^AG(\d{5}|\d{6}-\d{4})$/.test(code) || sig !== L.sign(inv, code)) return res.status(400).json({ paid: false });
+  if (!L.qpayReady() || !inv || !/^AG(\d{5}|\d{6}-\d{4})$/.test(code) || !L.sigOk(sig, inv, code)) return res.status(400).json({ paid: false });
   try {
     // 1) Хүснэгтээс төлөвийг уншина (callback ирсэн бол "Төлөгдсөн ✅" болсон байна)
     const st = await L.sheets({ action: "get", code });

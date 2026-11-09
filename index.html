@@ -1240,7 +1240,7 @@ footer{padding:40px 0 22px!important}
 
 /* ----- ХӨЛ: эцсийн тохиргоо — үсгийн хэмжээ, зай нэг жигд ----- */
 /* Дээд/доод зай: үйлчилгээний мөрөөс тусгаарлана */
-footer{padding:44px 0 26px!important;border-top:0!important}
+footer{padding:44px 0 26px!important;border-top:1px solid var(--line)!important;margin-top:24px}
 .foot2{gap:20px!important}
 /* Уриа: жижиг, саарал, 2 мөрт багтана */
 .foot2 p#fText{font-size:12.5px;line-height:1.7;letter-spacing:.01em;max-width:32ch;margin:0 auto!important}
@@ -1259,6 +1259,12 @@ footer{padding:44px 0 26px!important;border-top:0!important}
 /* Толгойн 🔍 дарахад л хайлтын мөр гарна */
 #shop.srch .tools{display:flex}
 #shop{padding-top:24px!important;scroll-margin-top:70px}
+
+/* ----- ☰ ЦЭСНИЙ ДООД ЖИЖИГ МЭДЭЭЛЭЛ (нүүрний үйлчилгээний мөрийг энд шилжүүлсэн) ----- */
+.dperks{list-style:none;margin:22px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.dperks li{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);line-height:1.4}
+.dperks svg{width:16px;height:16px;flex:none;color:var(--muted)}
+.dperks b{font-weight:600;color:var(--ink)}
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -1283,7 +1289,13 @@ footer{padding:44px 0 26px!important;border-top:0!important}
 <nav class="drawer" id="drawer" hidden aria-label="Цэс">
   <div class="dhead"><span class="logo" style="font-size:20px"><span class="lgbox"><svg class="lg" viewBox="0 -4 503 108" fill="currentColor" aria-hidden="true"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/><text x="480" y="22" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="20">®</text></svg></span></span><button class="x" id="closeMenu" type="button" aria-label="Хаах">×</button></div>
   <a href="#shop">Бүх бараа</a><a href="#saved" id="drawerFav">♡ Хадгалсан бараа <b id="favCount" hidden></b></a><a href="#how">Хэрхэн захиалах</a><a href="#faq" id="drawerFaq">Түгээмэл асуулт</a><a href="#contact">Холбоо барих</a>
-  <small>QPay-ээр шууд төлнө · УБ хотод хүргэлттэй</small>
+  <!-- Үйлчилгээний мэдээлэл: хүргэлт, хугацаа, төлбөр, тусламж -->
+  <ul class="dperks">
+    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="7" width="13" height="10"/><path d="M15 10h4l3 3v4h-7"/><circle cx="6" cy="18.5" r="1.5"/><circle cx="18" cy="18.5" r="1.5"/></svg><span><b>Хүргэлттэй</b> · <span>УБ хотод хүргэнэ</span></span></li>
+    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5M12 7v5l3 2"/></svg><span><b>Солонгосоос</b> · <span id="perkDays">7–14 хоногт авчирна</span></span></li>
+    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg><span><b>Шууд төлбөр</b> · <span>QPay, банкны апп</span></span></li>
+    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg><span><b>Тусламж</b> · <span>Утсаар холбогдоно</span></span></li>
+  </ul>
 </nav>
 
 <!-- ===== ҮНДСЭН АГУУЛГА ===== -->
@@ -1390,12 +1402,7 @@ footer{padding:44px 0 26px!important;border-top:0!important}
 
 <!-- ===== ХӨЛ: холбоо барих, данс (JavaScript бөглөнө) ===== -->
 <!-- ===== ҮЙЛЧИЛГЭЭНИЙ МӨР: хүргэлт, хугацаа, төлбөр, холбоо ===== -->
-<section class="perks wrap" aria-label="Үйлчилгээ">
-  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="7" width="13" height="10"/><path d="M15 10h4l3 3v4h-7"/><circle cx="6" cy="18.5" r="1.5"/><circle cx="18" cy="18.5" r="1.5"/></svg><b>Хүргэлттэй</b><span>УБ хотод хүргэнэ</span></div>
-  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5M12 7v5l3 2"/></svg><b>Солонгосоос</b><span id="perkDays">7–14 хоногт авчирна</span></div>
-  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg><b>Шууд төлбөр</b><span>QPay, банкны апп</span></div>
-  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg><b>Тусламж</b><span>Утсаар холбогдоно</span></div>
-</section>
+
 <footer id="contact"><div class="wrap">
   <div class="foot2">
     <!-- Лого, уриа, сошиал -->

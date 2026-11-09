@@ -1669,7 +1669,11 @@ function acctView(v, email){
       <div class="who"><b>${esc(me.username)}</b><span>${esc(me.email)}</span></div>
       ${me.role === "admin" ? `<a class="primary" href="/admin.html" style="text-align:center;text-decoration:none">Админ хэсэг</a>` : ""}
       <h3 class="ah">Миний захиалгууд</h3><div id="myOrders" class="myo"><p class="desc">Уншиж байна…</p></div>
+      <!-- Нууц үгээ солих (нэвтэрсэн үед имэйлгүйгээр шууд солино) -->
+      <button class="ghost" type="button" id="chpw">Нууц үг солих</button>
       <button class="ghost" type="button" id="logout">Гарах</button></div>`;
+    // Нууц үг солих цонх руу
+    $("chpw").onclick = () => acctView("newpw");
     // Гарах
     $("logout").onclick = async () => { await sb.auth.signOut(); me = null; $("openAcct").classList.remove("on"); closeAll(); toast("Гарлаа"); };
     // Өөрийн захиалгуудыг уншина (RLS: зөвхөн өөрийнхөө)

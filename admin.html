@@ -91,6 +91,8 @@ const toast = m => { const t = document.createElement("div"); t.className = "toa
 // Ангиллууд (сайттай ижил)
 const CATS = { tops: "Цамц", outer: "Гадуур хувцас", bottoms: "Өмд", set: "Иж бүрдэл", shoes: "Гутал", hats: "Малгай", bags: "Цүнх", access: "Гоёл чимэглэл", figures: "Фигур" };
 let sb, STATUSES = [];
+// Одоо нээлттэй байгаа табын дугаар: хэрэглэгч хурдан таб солиход хуучин табын хоцорсон хариу шинэ табыг эвдэхээс сэргийлнэ
+let VIEW = 0;
 
 // Админ API руу нэвтрэх токентой хүсэлт илгээнэ
 async function api(body){
@@ -103,8 +105,11 @@ async function api(body){
 
 // ===== ЗАХИАЛГА =====
 async function showOrders(status){
+  const my = ++VIEW;
   $("main").innerHTML = `<div class="bar"><h2>Захиалга</h2><select id="fst" style="width:auto"><option value="">Бүх төлөв</option><option value="unpaid" ${status === "unpaid" ? "selected" : ""}>⏳ Төлөөгүй (эргэж залгах)</option></select><button class="btn" id="rel">Шинэчлэх</button></div><div class="tbl"><table><thead><tr><th>Дугаар / огноо</th><th>Харилцагч</th><th>Бараа</th><th>Дүн</th><th>Төлөв</th></tr></thead><tbody id="ob"><tr><td colspan="5">Уншиж байна…</td></tr></tbody></table></div>`;
   const j = await api({ action: "orders", status });
+  // Хариу ирэх хооронд өөр таб руу шилжсэн бол юу ч хийхгүй
+  if (my !== VIEW) return;
   STATUSES = j.statuses;
   // Төлвөөр шүүх сонголт
   $("fst").innerHTML += STATUSES.map(s => `<option ${s === status ? "selected" : ""}>${esc(s)}</option>`).join("");
@@ -125,8 +130,11 @@ async function showOrders(status){
 
 // ===== ХЭРЭГЛЭГЧ =====
 async function showUsers(){
+  const my = ++VIEW;
   $("main").innerHTML = `<div class="bar"><h2>Хэрэглэгч</h2><input id="uq" placeholder="Нэр, имэйлээр хайх" style="max-width:260px"></div><div class="tbl"><table><thead><tr><th>Нэр</th><th>Имэйл / утас</th><th>Бүртгүүлсэн</th><th>Эрх</th><th>Төлөв</th></tr></thead><tbody id="ub"></tbody></table></div>`;
   const j = await api({ action: "users" });
+  // Өөр таб руу шилжсэн бол зогсоно
+  if (my !== VIEW) return;
   const draw = q => {
     const rows = j.rows.filter(u => !q || (u.username + " " + u.email).includes(q.toLowerCase()));
     $("ub").innerHTML = rows.map(u => `<tr><td><b>${esc(u.username)}</b></td><td>${esc(u.email)}<small>${esc(u.phone || "")}</small></td><td>${dt(u.created_at)}</td>
@@ -154,7 +162,10 @@ const parseOpts = t => t.split("\n").map(l => l.split(":")).filter(x => x.length
 const optsText = o => (o || []).map(x => `${x.label}: ${x.values.join(", ")}`).join("\n");
 
 async function showProducts(edit){
+  const my = ++VIEW;
   const { data: list, error } = await sb.from("products").select("*").order("sort", { ascending: false }).order("created_at", { ascending: false });
+  // Өөр таб руу шилжсэн бол зогсоно
+  if (my !== VIEW) return;
   if (error) { $("main").innerHTML = `<p class="msg">Алдаа: ${esc(error.message)}</p>`; return; }
   const p = edit || { id: "", cat: "tops", name: "", series: "", line: "", price: "", was: "", badge: "", descr: "", pre: true, options: [], images: [], active: true, sort: 0 };
   let images = [...(p.images || [])];
@@ -220,7 +231,7 @@ async function showProducts(edit){
 
 // Таб солих
 const TABS = { orders: () => showOrders(""), users: showUsers, products: () => showProducts() };
-$("tabs").addEventListener("click", e => { const b = e.target.closest("[data-t]"); if (!b) return; $("tabs").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); TABS[b.dataset.t]().catch(err => $("main").innerHTML = `<p class="msg">Алдаа: ${esc(err.message)}</p>`); });
+$("tabs").addEventListener("click", e => { const b = e.target.closest("[data-t]"); if (!b) return; $("tabs").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); const my = VIEW + 1; TABS[b.dataset.t]().catch(err => { if (VIEW === my) $("main").innerHTML = `<p class="msg">Алдаа: ${esc(err.message)}</p>`; }); });
 
 // Эхлүүлэх: нэвтэрсэн, админ эсэхийг шалгана
 (async () => {
@@ -233,7 +244,8 @@ $("tabs").addEventListener("click", e => { const b = e.target.closest("[data-t]"
     const { data: p } = await sb.from("profiles").select("username,role").eq("id", data.user.id).maybeSingle();
     if (!p || p.role !== "admin") { $("main").innerHTML = `<p class="msg">Танд админ эрх байхгүй байна.</p>`; return; }
     $("whoami").textContent = p.username; $("tabs").hidden = false;
-    await showOrders("");
+    const first = VIEW + 1;
+    await showOrders("").catch(e => { if (VIEW === first) $("main").innerHTML = `<p class="msg">Алдаа: ${esc(e.message)}</p>`; });
   } catch (e) { $("main").innerHTML = `<p class="msg">${esc(e.message)}</p>`; }
 })();
 </script>

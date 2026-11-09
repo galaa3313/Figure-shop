@@ -1026,6 +1026,48 @@ footer{padding:48px 0 28px}
 .themebtn .sun{display:none}
 :root[data-theme="dark"] .themebtn .sun{display:block}
 :root[data-theme="dark"] .themebtn .moon{display:none}
+
+/* ----- ҮЙЛЧИЛГЭЭНИЙ МӨР ба ХӨЛИЙН ЖИЖИГ ЗАСВАР ----- */
+.perks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding-block:40px 36px;border-top:1px solid var(--line)}
+.perks div{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:8px}
+.perks svg{width:28px;height:28px;margin-bottom:4px}
+.perks b{font-size:14px;font-weight:600}
+.perks span{font-size:12.5px;color:var(--muted);line-height:1.4}
+footer{padding:40px 0 24px}
+.foot2{gap:24px 32px}
+.foot2 p#fText{max-width:34ch;line-height:1.6}
+/* Дүрстэй холбоо барих мөр */
+.foot2 .cline{display:flex!important;align-items:center;gap:10px;color:var(--ink)!important;font-size:14px;margin:0 0 12px}
+.foot2 .cline[hidden]{display:none!important}
+.foot2 .cline svg{width:18px;height:18px;flex:none;color:var(--muted)}
+.foot2 a.cline:hover svg{color:var(--ink)}
+#fPhone{font-family:var(--body);letter-spacing:.02em}
+.foot-bot{font-size:12px;letter-spacing:.04em}
+@media (max-width:860px){
+  .perks{grid-template-columns:repeat(2,minmax(0,1fr));padding-block:28px;gap:16px 8px}
+  footer{padding:32px 0 calc(24px + env(safe-area-inset-bottom,0px))}
+  .foot2{gap:28px 20px}
+  .foot2>div:last-child{grid-column:1/-1}
+}
+
+/* ----- ХӨЛИЙН ӨНГӨ / ЗУРАГ (админаас) ----- */
+footer.ft-custom{background:var(--ft-bg) var(--ft-img) center/cover no-repeat;position:relative}
+/* Зурагтай үед бичиг уншигдахаар бараан давхарга */
+footer.ft-custom::before{content:"";position:absolute;inset:0;background:var(--ft-bg);opacity:.72;pointer-events:none}
+footer.ft-custom>.wrap{position:relative}
+footer.ft-dark{--ink:#f4f4f4;--muted:rgba(244,244,244,.7);--line:rgba(244,244,244,.18);color:var(--ink)}
+footer.ft-dark .logo{color:#f4f4f4}
+
+/* ----- ХЯМДРАЛ: улаан үнэ, зургийн буланд хувь ----- */
+/* Шинэ үнэ улаан, хуучин үнэ дээр нь жижиг саарал зурсан */
+.price.sale{color:#e5172f}
+.price.sale s{display:block;font-size:12px;color:var(--muted);margin:0 0 1px}
+/* Зургийн зүүн дээд буланд "-19%" */
+.salepct{position:absolute;top:0;left:0;z-index:2;background:#e5172f;color:#fff;font-size:11px;font-weight:600;padding:6px 9px;letter-spacing:.02em}
+/* Барааны хуудасны үнэ */
+.pd-price.sale{color:#e5172f}
+.pd-price s{font-size:15px}
+.pd-price .pct{display:inline-block;background:#e5172f;color:#fff;font-size:12px;font-weight:600;padding:3px 7px;margin-left:8px;vertical-align:3px}
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -1150,6 +1192,13 @@ footer{padding:48px 0 28px}
 </main>
 
 <!-- ===== ХӨЛ: холбоо барих, данс (JavaScript бөглөнө) ===== -->
+<!-- ===== ҮЙЛЧИЛГЭЭНИЙ МӨР: хүргэлт, хугацаа, төлбөр, холбоо ===== -->
+<section class="perks wrap" aria-label="Үйлчилгээ">
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="7" width="13" height="10"/><path d="M15 10h4l3 3v4h-7"/><circle cx="6" cy="18.5" r="1.5"/><circle cx="18" cy="18.5" r="1.5"/></svg><b>Хүргэлттэй</b><span>Улаанбаатар хотод хүргэнэ</span></div>
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5M12 7v5l3 2"/></svg><b>Солонгосоос</b><span id="perkDays">7–14 хоногт авчирна</span></div>
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg><b>Шууд төлбөр</b><span>QPay, банкны апп</span></div>
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg><b>Тусламж</b><span>Асуулт байвал холбогдоорой</span></div>
+</section>
 <footer id="contact"><div class="wrap">
   <div class="foot2">
     <!-- Лого, уриа, сошиал -->
@@ -1163,9 +1212,15 @@ footer{padding:48px 0 28px}
     <!-- Тусламж -->
     <div><h4>Тусламж</h4><a href="#how">Хэрхэн захиалах</a><a href="#faq">Түгээмэл асуулт</a><a href="/privacy.html">Хувийн мэдээллийн бодлого</a></div>
     <!-- Холбоо барих -->
-    <div><h4>Холбоо барих</h4><p class="mono" id="fPhone"></p><p id="fAddr"></p></div>
+    <div><h4>Холбоо барих</h4>
+      <!-- Утас: дарахад шууд залгана -->
+      <a class="cline" id="fTel" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 3h3l2 5-2.5 1.5a11 11 0 0 0 7 7L16 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z"/></svg><span id="fPhone"></span></a>
+      <!-- Instagram хаяг -->
+      <a class="cline" id="fIg2" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg><span id="fIgTxt"></span></a>
+      <!-- Хаяг (тохиргоонд бичсэн бол) -->
+      <p class="cline" id="fAddrRow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg><span id="fAddr"></span></p></div>
   </div>
-  <div class="foot-bot"><span>© 2026 FINN · Beyond the ordinary</span><div class="pays"><span>QPay</span><span>SocialPay</span><span>Банк</span></div></div>
+  <div class="foot-bot"><span>© 2026 FINN</span><span>Beyond the ordinary</span></div>
 </div></footer>
 
 <!-- Утасны доод "Сагс харах" мөр (сагс хоосон бол нуугдана) -->
@@ -1243,11 +1298,20 @@ const mq = SECTIONS.slice(1).map(x => `<span>${esc(x.label)}</span>`).join("");
 $("track").innerHTML = mq + mq + mq + mq;
 // Хөлд утас, Instagram, Facebook, хаяг бичнэ (хоосон бол нууна)
 function renderContact(){
+  // Утас: харагдах бичиг ба залгах холбоос (зөвхөн тоо, + тэмдэг)
   $("fPhone").textContent = SHOP.phone;
+  $("fTel").href = "tel:" + String(SHOP.phone || "").replace(/[^\d+]/g, "");
+  $("fTel").hidden = !SHOP.phone;
   // Сошиал дүрс: холбоос хоосон бол нууна
-  const link = (el, v) => { el.hidden = !v; if (v) el.href = /^https?:/.test(v) ? v : "https://" + v; };
-  link($("fIg"), SHOP.instagram); link($("fFb"), SHOP.facebook);
-  $("fAddr").textContent = SHOP.address || ""; $("fAddr").hidden = !SHOP.address;
+  const url = v => /^https?:/.test(v) ? v : "https://" + v;
+  const link = (el, v) => { el.hidden = !v; if (v) el.href = url(v); };
+  link($("fIg"), SHOP.instagram); link($("fFb"), SHOP.facebook); link($("fIg2"), SHOP.instagram);
+  // Instagram хаягийг "@finn.mn1" хэлбэрээр
+  $("fIgTxt").textContent = SHOP.instagram ? "@" + SHOP.instagram.replace(/^(https?:\/\/)?(www\.)?instagram\.com\//, "").replace(/\/.*$/, "") : "";
+  // Хаяг хоосон бол мөрийг нууна
+  $("fAddr").textContent = SHOP.address || ""; $("fAddrRow").hidden = !SHOP.address;
+  // Захиалгаар ирэх хугацаа
+  if ($("perkDays")) $("perkDays").textContent = (SHOP.preDays || "7–14 хоног") + "т авчирна";
 }
 renderContact();
 // Хөлд банк, дансны дугаар бичнэ
@@ -1272,6 +1336,8 @@ function addLabel(id){ const p = byId(id), n = qtyOf(id); if (p.options) return 
 // Сагсан дахь ижил барааг бүлэглэж тоог нь гаргана
 function groupCart(list){ return [...new Set(list)].map(k => ({ k, p: byId(k), opt: String(k).split("::")[1] || "", n: list.filter(x => x === k).length })); }
 // Барааны картуудыг зурна (шүүлт, хайлт, эрэмбийн дагуу)
+// Хямдралын хувь: хуучин үнэ шинэ үнээс их бол "-19%" гэх мэт, үгүй бол хоосон
+const salePct = p => p.was && p.was > p.price ? Math.round((1 - p.price / p.was) * 100) : 0;
 function renderGrid(){
   const q = query.trim().toLowerCase();
   let list = PRODUCTS.filter(p => inSection(p, filter) && (!q || (p.name + " " + p.series + " " + p.line).toLowerCase().includes(q)));
@@ -1284,13 +1350,13 @@ function renderGrid(){
   // Карт бүрийн HTML: тэмдэг, зураг, цуврал, нэр, үлдэгдэл, үнэ, товч
   $("grid").innerHTML = list.length ? list.map(p => `<article class="card">
       ${p.badge ? `<span class="badge ${p.badge === "Онцлох" ? "v" : p.badge === "360°" ? "r" : ""}">${esc(p.badge)}</span>` : ""}
-      <button type="button" class="ph" data-open="${p.id}" aria-label="${esc(p.name)} дэлгэрэнгүй"><img src="${p.img}" alt="${esc(p.name)}" loading="lazy"></button>
+      <button type="button" class="ph" data-open="${p.id}" aria-label="${esc(p.name)} дэлгэрэнгүй"><img src="${p.img}" alt="${esc(p.name)}" loading="lazy">${salePct(p) ? `<span class="salepct">-${salePct(p)}%</span>` : ""}</button>
       <div class="info">
         <div class="series">${esc(p.series)}</div>
         <div class="name">${esc(p.name)}</div>
         <div class="line">${esc(p.line)}</div>
         ${p.pre ? `<div class="stock pre">Солонгосоос захиалгаар · ${SHOP.preDays}</div>` : `<div class="stock">1 ширхэг үлдсэн</div>`}
-        <div class="row"><span class="price">${p.was ? `<s>${fmt(p.was)}</s> ` : ""}${fmt(p.price)}</span>
+        <div class="row"><span class="price ${salePct(p) ? "sale" : ""}">${salePct(p) ? `<s>${fmt(p.was)}</s>` : ""}${fmt(p.price)}</span>
           <button type="button" class="add ${cart.includes(p.id) && !p.pre ? "in" : ""}" data-id="${p.id}">${addLabel(p.id)}</button></div>
       </div></article>`).join("") : `<div class="none">“${esc(query)}” олдсонгүй. Өөр нэрээр хайж үзээрэй.</div>`;
   // Сагсны тоог шинэчилнэ
@@ -1392,7 +1458,7 @@ function openModal(id){
       <div class="mbody">
         <div class="series">${esc(p.series)}</div><h3>${esc(p.name)}</h3>
         <button type="button" class="pd-rate" id="rateLink" hidden><span class="stars" id="rateStars"></span><span id="rateTxt"></span></button>
-        <div class="pd-price">${p.was ? `<s>${fmt(p.was)}</s>` : ""}${fmt(p.price)}</div>
+        <div class="pd-price ${salePct(p) ? "sale" : ""}">${salePct(p) ? `<s>${fmt(p.was)}</s>` : ""}${fmt(p.price)}${salePct(p) ? `<span class="pct">-${salePct(p)}%</span>` : ""}</div>
         ${p.options ? p.options.map((o, oi) => `<div class="opt"><span>${esc(o.label)}</span><div class="chips">${o.values.map(v => `<button type="button" data-o="${oi}" aria-pressed="false">${esc(v)}</button>`).join("")}</div></div>`).join("") : ""}
         <button type="button" class="add ${cart.includes(id) && !p.pre ? "in" : ""}" id="mAdd">${p.pre ? (qtyOf(id) ? `Сагсанд ${qtyOf(id)} ш · нэгийг нэмэх` : "Захиалах") : cart.includes(id) ? "Сагсанд байна ✓ (хасах)" : "Сагсанд хийх"}</button>
         <!-- Сагсанд бараа байвал шууд захиалга өгөх -->
@@ -1860,6 +1926,19 @@ function applySettings(st){
   if (hex(c.bg)) css += `--bg:${c.bg};`; if (hex(c.ink)) css += `--ink:${c.ink};`;
   let tag = document.getElementById("userColors"); if (!tag) { tag = document.createElement("style"); tag.id = "userColors"; document.head.appendChild(tag); }
   tag.textContent = css + "}:root:not([data-theme=dark]) body{background:var(--bg)}";
+  // Хөлийн өнгө ба арын зураг (админаас). Бараан өнгөтэй бол текстийг цагаан болгоно
+  const ft = document.querySelector("footer");
+  // Цагаан (анхны) өнгө бол тохируулаагүйтэй адил: харанхуй горимд ч зөв харагдана
+  const fcol = hex(c.footer) && !/^#f{3}(f{3})?$/i.test(c.footer) ? c.footer : "";
+  if (fcol || st.footerImage) {
+    const col = fcol || "#111111";
+    // Өнгөний гэрэлтэлтийг бодно (0 = хар, 1 = цагаан)
+    const n = parseInt(col.slice(1).length === 3 ? col.slice(1).replace(/./g, "$&$&") : col.slice(1, 7), 16);
+    const lum = (0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) / 255;
+    ft.classList.add("ft-custom"); ft.classList.toggle("ft-dark", !!st.footerImage || lum < 0.55);
+    ft.style.setProperty("--ft-bg", col);
+    ft.style.setProperty("--ft-img", st.footerImage ? `url("${String(st.footerImage).replace(/"/g, "")}")` : "none");
+  } else { ft.classList.remove("ft-custom", "ft-dark"); }
   // Лого: зураг оруулсан бол SVG логоны оронд тавина
   if (st.logoUrl) document.querySelectorAll(".logo .lgbox").forEach(b => b.innerHTML = `<img class="lgimg" src="${esc(st.logoUrl)}" alt="FINN">`);
 }

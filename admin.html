@@ -337,7 +337,7 @@ const DEF = {
         { t: "Төлөх", d: "QPay-ээр эсвэл дансаар шилжүүлж, гүйлгээний утгад захиалгын дугаараа бичнэ." }, { t: "Хүлээн авах", d: "Төлбөр шалгагдмагц холбогдож, хүргэж өгнө эсвэл очиж авна." }],
   faq: [{ q: "Бараанууд жинхэнэ үү?", a: "Тийм. Албан ёсны үйлдвэрлэгч, дэлгүүрээс авдаг жинхэнэ бараа." }, { q: "Хэдэн хоногт хүргэх вэ?", a: "Төлбөр шалгагдсаны дараа Улаанбаатар хотод ихэвчлэн 1–2 хоногт хүргэнэ." },
         { q: "“Захиалгаар” гэсэн бараа хэзээ ирэх вэ?", a: "Солонгосоос захиалж авчирдаг тул төлбөр орсноос хойш 7–14 хоногт ирнэ." }],
-  colors: { accent: "#2f7bff", bg: "#ffffff", ink: "#111111" }, logoUrl: ""
+  colors: { accent: "#2f7bff", bg: "#ffffff", ink: "#111111", footer: "#ffffff" }, logoUrl: "", footerImage: ""
 };
 async function showSettings(){
   const my = ++VIEW;
@@ -373,8 +373,13 @@ async function showSettings(){
         <label>Өргөлт өнгө<input type="color" data-c="accent" value="${esc(S.colors.accent)}"></label>
         <label>Дэвсгэр<input type="color" data-c="bg" value="${esc(S.colors.bg)}"></label>
         <label>Текст<input type="color" data-c="ink" value="${esc(S.colors.ink)}"></label>
+        <label>Хөлийн өнгө<input type="color" data-c="footer" value="${esc(S.colors.footer || "#ffffff")}"></label>
         <button type="button" class="btn" id="colReset">Анхны өнгө</button>
       </div>
+      <div class="full"><label>Хөлийн арын зураг (заавал биш. Дээр нь хөлийн өнгө бүдгээр давхарлагдана)</label>
+        <div class="row"><img id="footPrev" class="prev" src="${esc(S.footerImage || "")}" alt="" ${S.footerImage ? "" : "hidden"}>
+        <label class="btn" style="flex-direction:row;color:var(--ink)">Зураг оруулах<input type="file" id="footFile" accept="image/*" hidden></label>
+        <button type="button" class="btn" id="footClr" ${S.footerImage ? "" : "hidden"}>Зураг хасах</button></div></div>
       <div class="full"><label>Лого (хоосон бол FINN үндсэн лого. PNG/SVG, ил тод дэвсгэртэй)</label>
         <div class="row"><img id="logoPrev" class="prev logo-p" src="${esc(S.logoUrl || "")}" alt="" ${S.logoUrl ? "" : "hidden"}>
         <label class="btn" style="flex-direction:row;color:var(--ink)">Лого солих<input type="file" id="logoFile" accept="image/*" hidden></label>
@@ -410,7 +415,7 @@ async function showSettings(){
     };
     $(clrId).onclick = () => { S[key] = ""; $(prevId).hidden = true; $(clrId).hidden = true; };
   };
-  imgField("heroFile", "heroPrev", "heroClr", "heroImage"); imgField("logoFile", "logoPrev", "logoClr", "logoUrl");
+  imgField("heroFile", "heroPrev", "heroClr", "heroImage"); imgField("logoFile", "logoPrev", "logoClr", "logoUrl"); imgField("footFile", "footPrev", "footClr", "footerImage");
   // Хадгалах
   $("ssave").onclick = async () => {
     readLists();

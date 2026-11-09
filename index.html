@@ -1583,6 +1583,8 @@ renderFilters(); renderGrid(); renderZones(); renderDrops();
 // =====================================================================
 // Supabase клиент (тохиргоо ирсний дараа үүснэ), одоогийн хэрэглэгчийн профайл
 let sb = null, me = null;
+// Имэйлийн холбоос дарсны дараа буцах үндсэн сайтын хаяг (домэйн солигдоход энд засна)
+const SITE_URL = "https://figure-shop-gamma.vercel.app/";
 // Нэвтэрсэн бол серверт явуулах "Authorization" толгой
 async function authHeader(){
   if (!sb) return {};
@@ -1683,7 +1685,7 @@ function acctView(v, email){
   const busy = on => { const s = B.querySelector("button[type=submit]"); s.disabled = on; s.style.opacity = on ? .6 : 1; };
   // Код дахин илгээх
   if ($("resend")) $("resend").onclick = async () => {
-    const r = v === "reset" ? await sb.auth.resetPasswordForEmail(email) : await sb.auth.resend({ type: "signup", email });
+    const r = v === "reset" ? await sb.auth.resetPasswordForEmail(email, { redirectTo: SITE_URL }) : await sb.auth.resend({ type: "signup", email, options: { emailRedirectTo: SITE_URL } });
     err(r.error ? (r.error.message || "server") : ""); if (!r.error) toast("Код дахин илгээлээ");
   };
   // Маягт илгээх
@@ -1695,7 +1697,7 @@ function acctView(v, email){
         const r = await fetch("/api/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: $("a-id").value.trim(), password: $("a-pw").value }) });
         const j = await r.json().catch(() => ({}));
         // Имэйл баталгаажаагүй бол код оруулах цонх руу
-        if (j.error === "unconfirmed") { await sb.auth.resend({ type: "signup", email: j.email }); return acctView("verify", j.email); }
+        if (j.error === "unconfirmed") { await sb.auth.resend({ type: "signup", email: j.email, options: { emailRedirectTo: SITE_URL } }); return acctView("verify", j.email); }
         if (!j.ok) return err(j.error || "server");
         // Токеноор нэвтэрсэн төлөвт орно
         await sb.auth.setSession({ access_token: j.access_token, refresh_token: j.refresh_token });
@@ -1719,7 +1721,7 @@ function acctView(v, email){
       if (v === "forgot") {
         const em = $("a-email").value.trim().toLowerCase();
         // Нууц үг сэргээх код илгээнэ
-        const { error } = await sb.auth.resetPasswordForEmail(em, { redirectTo: location.origin + "/" });
+        const { error } = await sb.auth.resetPasswordForEmail(em, { redirectTo: SITE_URL });
         if (error) return err(error.message);
         return acctView("reset", em);
       }

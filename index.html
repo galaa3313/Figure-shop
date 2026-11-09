@@ -1611,6 +1611,19 @@ function openAcct(view){
 }
 // Цонхны агуулгыг зурна: login / signup / verify / forgot / reset / profile
 function acctView(v, email){
+  // Нууц үг сэргээх холбоосоор орж ирсэн бол шинэ нууц үг л асууна
+  if (v === "newpw") {
+    $("sheetTitle").textContent = "Шинэ нууц үг";
+    $("sheetBody").innerHTML = `<form class="acct" id="af"><label>Шинэ нууц үг<input id="a-pw" type="password" autocomplete="new-password" placeholder="8+ тэмдэгт, үсэг ба тоо" required></label><p class="aerr" id="aerr"></p><button class="primary" type="submit">Хадгалах</button></form>`;
+    $("af").onsubmit = async e => {
+      e.preventDefault(); const pw = $("a-pw").value;
+      if (pw.length < 8 || !/[a-zA-Z]/.test(pw) || !/\d/.test(pw)) { $("aerr").textContent = AERR.password; return; }
+      const u = await sb.auth.updateUser({ password: pw });
+      if (u.error) { $("aerr").textContent = u.error.message; return; }
+      await loadMe(); toast("Нууц үг солигдлоо"); acctView("profile");
+    };
+    return;
+  }
   const T = { login: "Нэвтрэх", signup: "Бүртгүүлэх", verify: "Имэйлээ баталгаажуулах", forgot: "Нууц үг сэргээх", reset: "Шинэ нууц үг", profile: "Миний бүртгэл" };
   $("sheetTitle").textContent = T[v];
   const B = $("sheetBody");
@@ -1636,7 +1649,7 @@ function acctView(v, email){
       <button class="link" type="button" data-v="login">Бүртгэлтэй юу? Нэвтрэх</button></form>`;
   // ----- 6 оронтой код оруулах -----
   if (v === "verify" || v === "reset") B.innerHTML = `<form class="acct" id="af">
-      <p class="desc"><b>${esc(email)}</b> хаяг руу 6 оронтой код илгээлээ. Spam хавтсаа ч шалгаарай.</p>
+      <p class="desc"><b>${esc(email)}</b> хаяг руу имэйл илгээлээ. Spam хавтсаа ч шалгаарай. Имэйлд <b>6 оронтой код</b> ирсэн бол доор оруулна, <b>холбоос</b> ирсэн бол түүн дээр дарахад шууд нэвтэрнэ.</p>
       <label>6 оронтой код<input id="a-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="\\d{6}" class="codein" required></label>
       ${v === "reset" ? `<label>Шинэ нууц үг<input id="a-pw" type="password" autocomplete="new-password" placeholder="8+ тэмдэгт, үсэг ба тоо" required></label>` : ""}
       <p class="aerr" id="aerr"></p>
@@ -1706,7 +1719,7 @@ function acctView(v, email){
       if (v === "forgot") {
         const em = $("a-email").value.trim().toLowerCase();
         // Нууц үг сэргээх код илгээнэ
-        const { error } = await sb.auth.resetPasswordForEmail(em);
+        const { error } = await sb.auth.resetPasswordForEmail(em, { redirectTo: location.origin + "/" });
         if (error) return err(error.message);
         return acctView("reset", em);
       }
@@ -1751,7 +1764,15 @@ async function loadDbProducts(){
     if (!c.supabaseUrl || !c.supabaseAnon) throw 0;
     sb = window.supabase.createClient(c.supabaseUrl, c.supabaseAnon, { auth: { persistSession: true, autoRefreshToken: true } });
     $("openAcct").hidden = false;
+    // Имэйлийн холбоосоор орж ирэхэд: нууц үг сэргээх бол шинэ нууц үгийн цонх, бүртгэл баталгаажсан бол мэдэгдэл
+    const fromLink = /type=(signup|recovery|email)/.test(location.hash);
+    sb.auth.onAuthStateChange(async ev => {
+      if (ev === "PASSWORD_RECOVERY") { await loadMe(); openAcct("newpw"); }
+    });
     await Promise.all([loadMe(), loadDbProducts()]);
+    if (fromLink && me && !/type=recovery/.test(location.hash)) { toast("Бүртгэл баталгаажлаа 🎉"); openAcct("profile"); }
+    // Хаягийн мөрөөс токенуудыг цэвэрлэнэ
+    if (fromLink) history.replaceState(null, "", location.pathname);
   } catch (e) { /* Бүртгэл ажиллахгүй үед дэлгүүр хэвийн ажиллана */ }
 })();
 </script>

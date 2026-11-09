@@ -3,6 +3,8 @@
 const crypto = require("crypto");
 // Бараа, үнийн жагсаалт (_products.js)
 const PRODUCTS = require("./_products.js");
+// Supabase туслах (админы нэмсэн бараа, захиалгын хүснэгт)
+const SB = require("./_sb.js");
 
 // Текстийг заасан урттай болгож тайрна (хэт урт өгөгдлөөс хамгаална)
 const clip = (v, n) => String(v ?? "").slice(0, n).trim();
@@ -13,7 +15,7 @@ const body = req => { let b = req.body || {}; if (typeof b === "string") { try {
 
 // Үнийг сервер дээр бараан жагсаалтаас тооцно (хэрэглэгч үнийг өөрчилж чадахгүй)
 // Ирсэн захиалгыг шалгаж, нийт дүнг бодно. Буруу бол null буцаана
-function order(b) {
+async function order(b) {
   const o = {
     code: clip(b.code, 20), name: clip(b.name, 80), phone: clip(b.phone, 20),
     delivery: clip(b.delivery, 20), address: clip(b.address, 300), note: clip(b.note, 300)
@@ -27,7 +29,9 @@ function order(b) {
   // Бараа бүрийг шалгаж үнийг нэмнэ
   for (const it of items) {
     // Жагсаалтад байхгүй бараа бол захиалгыг хүлээж авахгүй
-    const p = PRODUCTS[clip(it && it.id, 40)]; if (!p) return null;
+    // Эхлээд кодонд байгаа жагсаалтаас, олдохгүй бол админы нэмсэн (Supabase) бараанаас хайна
+    const pid = clip(it && it.id, 40);
+    const p = PRODUCTS[pid] || await SB.productById(pid); if (!p) return null;
     // Тоо ширхэг 1–20 хооронд
     const n = Math.min(20, Math.max(1, Math.round(Number(it.n) || 1)));
     // Бэлэн фигур 1 ширхэг л байдаг
@@ -143,6 +147,8 @@ function limited(req, max = 6, winMs = 10 * 60 * 1000) {
 
 // Төлөгдсөн гэж тэмдэглэнэ. Sheets байгаа бол давхардлыг тэр шийднэ.
 async function markPaid(code, amount, inv) {
+  // Supabase-ийн захиалгын хүснэгтэд ч тэмдэглэнэ
+  await SB.markOrderPaid(code, inv);
   const s = await sheets({ action: "paid", code, invoice: inv, amount });
   const first = !s || s.changed !== false;
   if (first) await telegram(`✅ Төлөгдлөө ${code}\n💰 ${fmt(amount)} · QPay\nНэхэмжлэх: ${inv}`);

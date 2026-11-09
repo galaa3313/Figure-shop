@@ -61,6 +61,8 @@ td small{color:var(--muted);display:block}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;z-index:9}
 @media (max-width:640px){.form{grid-template-columns:1fr}}
 /* Нэмэлт: бараа, тохиргооны хуудас */
+.rvi{border:1px solid var(--line);padding:14px;margin-bottom:12px}.rvi.off{opacity:.55}
+nav{flex-wrap:wrap}
 .mut{color:var(--muted);font-size:12px}
 .empty{border:1px dashed var(--line);padding:18px;margin-bottom:16px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .empty p{margin:0;max-width:640px}
@@ -91,6 +93,7 @@ td small{color:var(--muted);display:block}
     <button type="button" data-t="orders" aria-pressed="true">Захиалга</button>
     <button type="button" data-t="users" aria-pressed="false">Хэрэглэгч</button>
     <button type="button" data-t="products" aria-pressed="false">Бараа</button>
+    <button type="button" data-t="reviews" aria-pressed="false">Сэтгэгдэл</button>
     <button type="button" data-t="settings" aria-pressed="false">Сайтын тохиргоо</button>
   </nav>
   <span id="whoami" style="color:var(--muted);font-size:13px"></span>
@@ -424,8 +427,47 @@ async function showSettings(){
   };
 }
 
+// ===== СЭТГЭГДЭЛ: бүх сэтгэгдэл, хариулах, нуух, устгах =====
+async function showReviews(){
+  const my = ++VIEW;
+  const [{ data: list, error }, { data: prods }] = await Promise.all([
+    sb.from("reviews").select("*").order("created_at", { ascending: false }).limit(300),
+    sb.from("products").select("id,name")
+  ]);
+  if (my !== VIEW) return;
+  if (error) { $("main").innerHTML = `<p class="msg">Алдаа: ${esc(error.message)}<br>Supabase-д finn-reviews.sql-ийг ажиллуулсан эсэхээ шалгана уу.</p>`; return; }
+  const pname = id => ((prods || []).find(x => x.id === id) || {}).name || id;
+  const st = r => "★★★★★".slice(0, r) + "☆☆☆☆☆".slice(0, 5 - r);
+  $("main").innerHTML = `<div class="bar"><h2>Сэтгэгдэл <small class="mut">(${list.length})</small></h2></div>
+    <div class="rvl">${list.map(r => `<div class="rvi ${r.hidden ? "off" : ""}">
+      <div class="row" style="justify-content:space-between;flex-wrap:wrap"><div><b>${esc(pname(r.product_id))}</b> · <span style="color:#f5b301">${st(r.rating)}</span> · ${esc(r.username)} ${r.verified ? '<span class="tag ok">Худалдан авсан</span>' : ""} ${r.hidden ? '<span class="tag no">нуусан</span>' : ""}</div><span class="mut">${dt(r.created_at)}</span></div>
+      <p style="white-space:pre-line;margin:8px 0">${esc(r.body)}</p>
+      ${(r.photos || []).length ? `<div class="thumbs">${r.photos.map(u => `<figure><a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt=""></a></figure>`).join("")}</div>` : ""}
+      <div class="row" style="margin-top:8px;align-items:flex-start"><textarea data-rp="${r.id}" rows="2" placeholder="FINN-ий хариулт (заавал биш)" style="flex:1">${esc(r.reply || "")}</textarea>
+        <button class="btn" data-save="${r.id}">Хариулт хадгалах</button><button class="btn" data-hide="${r.id}">${r.hidden ? "Харуулах" : "Нуух"}</button><button class="btn red" data-del="${r.id}">Устгах</button></div>
+    </div>`).join("") || '<p class="msg">Одоохондоо сэтгэгдэл алга.</p>'}</div>`;
+  // Хариулт хадгалах
+  $("main").querySelectorAll("[data-save]").forEach(b => b.onclick = async () => {
+    const v = $("main").querySelector(`[data-rp="${b.dataset.save}"]`).value.trim();
+    const { error } = await sb.from("reviews").update({ reply: v || null }).eq("id", +b.dataset.save);
+    toast(error ? "Алдаа: " + error.message : "Хариулт хадгаллаа");
+  });
+  // Нуух / харуулах
+  $("main").querySelectorAll("[data-hide]").forEach(b => b.onclick = async () => {
+    const r = list.find(x => x.id === +b.dataset.hide);
+    const { error } = await sb.from("reviews").update({ hidden: !r.hidden }).eq("id", r.id);
+    if (error) return toast("Алдаа: " + error.message); showReviews();
+  });
+  // Устгах (2 удаа дарна)
+  $("main").querySelectorAll("[data-del]").forEach(b => b.onclick = async () => {
+    if (b.dataset.sure !== "1") { b.dataset.sure = "1"; b.textContent = "Дахин дар"; return setTimeout(() => { if (b.isConnected) { b.dataset.sure = ""; b.textContent = "Устгах"; } }, 3000); }
+    const { error } = await sb.from("reviews").delete().eq("id", +b.dataset.del);
+    if (error) return toast("Алдаа: " + error.message); toast("Устгалаа"); showReviews();
+  });
+}
+
 // Таб солих
-const TABS = { orders: () => showOrders(""), users: showUsers, products: () => showProducts(), settings: showSettings };
+const TABS = { orders: () => showOrders(""), users: showUsers, products: () => showProducts(), settings: showSettings, reviews: showReviews };
 $("tabs").addEventListener("click", e => { const b = e.target.closest("[data-t]"); if (!b) return; $("tabs").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); const my = VIEW + 1; TABS[b.dataset.t]().catch(err => { if (VIEW === my) $("main").innerHTML = `<p class="msg">Алдаа: ${esc(err.message)}</p>`; }); });
 
 // Эхлүүлэх: нэвтэрсэн, админ эсэхийг шалгана

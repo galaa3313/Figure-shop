@@ -10,6 +10,8 @@
 <!-- ===== ХУУДАСНЫ ТОЛГОЙ: нэр, фонт, загвар ===== -->
 <!-- Хөтчийн таб дээр харагдах сайтын нэр -->
 <title>FINN — Beyond the ordinary</title>
+<!-- Өмнө сонгосон өдөр/шөнийн горимыг шууд тавина (хадгалаагүй бол утасны тохиргоог дагана) -->
+<script>try{var t=localStorage.getItem("finn-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <!-- Хайлт, сошиалд хуваалцах үеийн мэдээлэл -->
 <meta name="description" content="FINN — A curated world of modern culture, fashion and lifestyle. Солонгос хувцас, аниме фигур, lifestyle бараа.">
 <meta property="og:title" content="FINN — Beyond the ordinary">
@@ -855,7 +857,7 @@ summary::after{content:"";width:40px;height:40px;flex:none;border:1px solid var(
 details[open] summary::after{transform:rotate(180deg)}
 
 /* Хөл: цагаан, дээр нь зураас */
-footer{background:#fff;border-top:1px solid var(--line)}
+footer{background:var(--bg);border-top:1px solid var(--line)}
 
 @media (max-width:860px){
   .bar{grid-template-columns:1fr auto 1fr}
@@ -901,6 +903,129 @@ footer{background:#fff;border-top:1px solid var(--line)}
 footer .logo svg.lg{height:26px}
 footer .logo{justify-content:flex-start!important;justify-self:start!important}
 :root{--violet:#2f7bff}
+
+/* =====================================================================
+   БАРААНЫ ХУУДАС (Nanostudio маяг): гүйдэг зургууд, сэтгэгдэл, төстэй бараа
+   ===================================================================== */
+/* Цонхыг том, гүйлгэдэг барааны хуудас болгоно */
+.modal{display:block;width:min(1120px,calc(100% - 24px));height:min(92vh,980px);max-height:none;border-radius:0;background:var(--bg);border:0;overflow-y:auto;overscroll-behavior:contain}
+.pd-top{display:grid;grid-template-columns:1.15fr 1fr;gap:0}
+.modal .mbody{padding:28px 28px 24px;gap:12px}
+.modal .x{position:sticky;top:10px;margin-left:auto;z-index:3;background:var(--bg);border:1px solid var(--line);border-radius:50%}
+.pd-close{position:sticky;top:0;z-index:5;height:0;display:flex;justify-content:flex-end;padding-right:10px}
+.pd-close .x{position:relative;top:10px;width:40px;height:40px}
+/* Зургийн цомог: хуруугаар хажуу тийш гүйлгэнэ, дараагийн зураг бага зэрэг харагдана */
+.car{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:8px;scrollbar-width:none;background:var(--bg);padding:0}
+.car::-webkit-scrollbar{display:none}
+.car img{flex:0 0 100%;width:100%;aspect-ratio:3/4;object-fit:cover;scroll-snap-align:center;background:var(--bg2);display:block}
+.car.multi img{flex-basis:88%}
+.dots{display:flex;justify-content:center;gap:8px;padding:12px 0 4px}
+.dots button{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:var(--line);cursor:pointer}
+.dots button[aria-current="true"]{background:var(--ink);transform:scale(1.25)}
+.pd-gal{min-width:0}
+/* Мэдээллийн хэсэг */
+.modal h3{font-family:var(--body);font-weight:400;font-size:24px;letter-spacing:.01em;line-height:1.3;padding-right:0}
+.pd-price{font-size:22px;letter-spacing:.02em}
+.pd-price s{color:var(--muted);font-size:16px;margin-right:8px}
+.pd-rate{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer;background:none;border:0;padding:0;text-align:left}
+.stars{color:#f5b301;letter-spacing:2px;font-size:15px}
+.pd-meta{list-style:none;margin:6px 0 0;padding:14px 0 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted)}
+.pd-meta li{display:flex;gap:10px;align-items:center}
+.pd-meta svg{width:18px;height:18px;flex:none}
+.modal .opt span{font-size:13px;color:var(--muted)}
+.modal .chips button{border-radius:0;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:9px 16px;min-width:52px}
+.modal .chips button[aria-pressed="true"]{border:2px solid var(--ink);background:var(--bg);color:var(--ink);font-weight:600}
+.modal .add{border-radius:0}
+.modal .go{border-radius:0}
+/* Тайлбар, сэтгэгдэл, төстэй бараа: доод бүтэн өргөн хэсэг */
+.pd-more{padding:8px 28px 40px}
+.pd-sec{border-top:1px solid var(--line);padding:26px 0 8px}
+.pd-sec>h4{margin:0 0 14px;font-size:17px;font-weight:600}
+.pd-desc{white-space:pre-line;font-size:14px;line-height:1.75;color:var(--ink);margin:0}
+/* Сэтгэгдэл */
+.rv-sum{display:grid;grid-template-columns:auto 1fr;gap:10px 28px;align-items:center;max-width:560px;margin-bottom:16px}
+.rv-avg{font-size:40px;font-weight:300;line-height:1}
+.rv-bars{display:grid;gap:4px;font-size:12px;color:var(--muted)}
+.rv-bars div{display:grid;grid-template-columns:36px 1fr 28px;gap:8px;align-items:center}
+.rv-bars i{display:block;height:8px;background:var(--bg2);border:1px solid var(--line);position:relative}
+.rv-bars i b{position:absolute;inset:0 auto 0 0;background:#f5c518}
+.rv-btn{border:1px solid var(--ink);background:var(--bg);color:var(--ink);padding:12px 18px;font:inherit;font-size:14px;cursor:pointer;width:100%;max-width:560px}
+.rv-form{display:grid;gap:10px;max-width:560px;margin:12px 0}
+.rv-form textarea{font:inherit;font-size:15px;padding:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-height:110px}
+.rv-pick{display:flex;gap:4px;font-size:30px;line-height:1}
+.rv-pick button{border:0;background:none;color:var(--line);padding:0 2px;cursor:pointer;font-size:30px}
+.rv-pick button.on{color:#f5b301}
+.rv-list{display:flex;flex-direction:column}
+.rv{padding:18px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:44px 1fr;gap:12px}
+.rv .av{width:44px;height:44px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;font-weight:600;color:var(--muted)}
+.rv .rv-who{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px}
+.rv .ok{background:var(--ink);color:var(--bg);font-size:11px;padding:2px 7px}
+.rv .when{color:var(--muted);font-size:12px}
+.rv p{margin:6px 0 0;font-size:14px;line-height:1.65;white-space:pre-line}
+.rv .rv-ph{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.rv .rv-ph img{width:92px;height:92px;object-fit:cover;cursor:zoom-in}
+.rv .reply{margin-top:10px;background:var(--bg2);padding:12px 14px;font-size:13px;border-left:3px solid var(--line)}
+.rv-empty{color:var(--muted);font-size:14px}
+/* Төстэй бараа: хажуу тийш гүйдэг */
+.sim{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,24%);gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:6px}
+.sim::-webkit-scrollbar{display:none}
+.sim button{border:0;background:none;padding:0;text-align:left;cursor:pointer;color:var(--ink);font:inherit}
+.sim img{width:100%;aspect-ratio:3/4;object-fit:cover;background:var(--bg2);display:block}
+.sim b{display:block;font-weight:400;font-size:13px;margin-top:8px;line-height:1.35}
+.sim span{font-size:13px}
+/* Зураг томоор харах */
+.zoom{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.92);display:grid;place-items:center;cursor:zoom-out}
+.zoom img{max-width:94vw;max-height:90vh;object-fit:contain}
+@media (max-width:860px){
+  .modal{width:100%;height:100%;left:0;top:0;transform:none;animation:none}
+  .pd-top{grid-template-columns:1fr}
+  .modal .mbody{padding:20px 16px}
+  .pd-more{padding:4px 16px 90px}
+  .sim{grid-auto-columns:42%}
+  .car.multi img{flex-basis:86%}
+}
+@media (min-width:861px){ .car.multi img{flex-basis:100%} }
+
+/* =====================================================================
+   ХӨЛ (Nanostudio маяг): холбоос, сошиал дүрс, төлбөрийн арга
+   ===================================================================== */
+footer{padding:48px 0 28px}
+.foot2{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:28px}
+.foot2 h4{margin:0 0 12px;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.foot2 a,.foot2 p{display:block;color:var(--muted);text-decoration:none;font-size:14px;margin:0 0 9px}
+.foot2 a:hover{color:var(--ink)}
+.social{display:flex;gap:10px;margin-top:16px}
+.social a[hidden]{display:none!important}
+.social a{width:40px;height:40px;border:1px solid var(--line);border-radius:50%;display:grid!important;place-items:center;color:var(--ink)!important;margin:0!important}
+.social svg{width:19px;height:19px}
+.foot-bot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:28px;padding-top:18px;font-size:12px;color:var(--muted)}
+.pays{display:flex;gap:6px}
+.pays span{border:1px solid var(--line);padding:4px 9px;font-size:11px;font-weight:600;color:var(--ink);letter-spacing:.04em}
+@media (max-width:860px){ .foot2{grid-template-columns:1fr 1fr} .foot2>div:first-child{grid-column:1/-1} }
+
+/* =====================================================================
+   ХАРАНХУЙ ГОРИМ (🌙 товчоор эсвэл утасны тохиргоогоор)
+   ===================================================================== */
+:root[data-theme="dark"]{--bg:#0f0f10;--bg2:#1a1a1c;--surface:#151517;--surface2:#1d1d20;--ink:#f1f1f1;--muted:#9b9b9f;--line:#2b2b2f;color-scheme:dark}
+:root[data-theme="dark"] body{background:var(--bg)}
+:root[data-theme="dark"] header.top{background:rgba(15,15,16,.92)}
+:root[data-theme="dark"] .notice{background:#f1f1f1;color:#111}
+:root[data-theme="dark"] .add,:root[data-theme="dark"] .modal .add,:root[data-theme="dark"] .primary{background:#f1f1f1;color:#111}
+:root[data-theme="dark"] .filters button{background:var(--bg)}
+:root[data-theme="dark"] .filters button[aria-pressed="true"]{background:#f1f1f1;color:#111}
+:root[data-theme="dark"] .badge{background:#f1f1f1;color:#111}
+:root[data-theme="dark"] .more{background:var(--bg);color:var(--ink);border-color:var(--ink)}
+:root[data-theme="dark"] .acct input,:root[data-theme="dark"] .search,:root[data-theme="dark"] select,:root[data-theme="dark"] input,:root[data-theme="dark"] textarea{background:var(--bg);color:var(--ink)}
+:root[data-theme="dark"] .drawer{background:var(--bg)}
+:root[data-theme="dark"] .mbar{background:rgba(15,15,16,.94)}
+:root[data-theme="dark"] .mbar button{background:#f1f1f1;color:#111}
+:root[data-theme="dark"] .bank,:root[data-theme="dark"] .lookbook .btn.main{background:transparent}
+:root[data-theme="dark"] .toast{background:#f1f1f1;color:#111}
+:root[data-theme="dark"] .code{background:#f1f1f1;color:#111}
+:root[data-theme="dark"] footer{background:var(--bg)}
+.themebtn .sun{display:none}
+:root[data-theme="dark"] .themebtn .sun{display:block}
+:root[data-theme="dark"] .themebtn .moon{display:none}
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -913,6 +1038,8 @@ footer .logo{justify-content:flex-start!important;justify-self:start!important}
   <a class="logo" href="#top" aria-label="FINN"><span class="lgbox"><svg class="lg" viewBox="0 -4 503 108" fill="currentColor" aria-hidden="true"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/><text x="480" y="22" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="20">®</text></svg></span></a>
   <!-- Баруун талд: хайлт ба сагс -->
   <div class="hicons">
+    <!-- Өдөр / шөнийн горим солих -->
+    <button class="iconbtn themebtn" id="themeBtn" type="button" aria-label="Өнгөний горим"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
     <button class="iconbtn" id="openSearch" type="button" aria-label="Хайх"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></button>
     <button class="iconbtn acctbtn" id="openAcct" type="button" aria-label="Миний бүртгэл" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>
     <button class="cartbtn" id="openCart" type="button" aria-label="Сагс нээх"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 4h3l2.4 10.2h11L21 7H6.2"/><circle cx="9.5" cy="19" r="1.2"/><circle cx="17" cy="19" r="1.2"/></svg><b id="count">0</b></button>
@@ -1023,10 +1150,22 @@ footer .logo{justify-content:flex-start!important;justify-self:start!important}
 </main>
 
 <!-- ===== ХӨЛ: холбоо барих, данс (JavaScript бөглөнө) ===== -->
-<footer id="contact"><div class="wrap foot">
-  <div><div class="logo" style="margin-bottom:10px"><span class="lgbox"><svg class="lg" viewBox="0 -4 503 108" fill="currentColor" aria-hidden="true"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/><text x="480" y="22" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="20">®</text></svg></span></div><p style="color:var(--muted)" id="fText">Beyond the ordinary. A curated world of modern culture, fashion and lifestyle.</p></div>
-  <div><h4>Холбоо барих</h4><p class="mono" id="fPhone"></p><p><a id="fIg" target="_blank" rel="noopener"></a></p><p><a id="fFb" target="_blank" rel="noopener"></a></p><p id="fAddr"></p><p><a href="/privacy.html">Хувийн мэдээллийн бодлого</a></p></div>
-  <div><h4>Төлбөрийн данс</h4><p id="fBank"></p><p class="mono" id="fIban" style="overflow-wrap:anywhere"></p></div>
+<footer id="contact"><div class="wrap">
+  <div class="foot2">
+    <!-- Лого, уриа, сошиал -->
+    <div><div class="logo" style="margin-bottom:10px"><span class="lgbox"><svg class="lg" viewBox="0 -4 503 108" fill="currentColor" aria-hidden="true"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/><text x="480" y="22" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="20">®</text></svg></span></div><p id="fText">Beyond the ordinary. A curated world of modern culture, fashion and lifestyle.</p>
+      <div class="social">
+        <a id="fIg" href="#" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+        <a id="fFb" href="#" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5H16l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.4H8v3h2.6V21h2.9Z"/></svg></a>
+      </div></div>
+    <!-- Дэлгүүр -->
+    <div><h4>Дэлгүүр</h4><a href="#shop">Бүх бараа</a><a href="#drops">Шинэ бараа</a><a href="#zones">Ангилал</a></div>
+    <!-- Тусламж -->
+    <div><h4>Тусламж</h4><a href="#how">Хэрхэн захиалах</a><a href="#faq">Түгээмэл асуулт</a><a href="/privacy.html">Хувийн мэдээллийн бодлого</a></div>
+    <!-- Холбоо барих -->
+    <div><h4>Холбоо барих</h4><p class="mono" id="fPhone"></p><p id="fAddr"></p></div>
+  </div>
+  <div class="foot-bot"><span>© 2026 FINN · Beyond the ordinary</span><div class="pays"><span>QPay</span><span>SocialPay</span><span>Банк</span></div></div>
 </div></footer>
 
 <!-- Утасны доод "Сагс харах" мөр (сагс хоосон бол нуугдана) -->
@@ -1105,13 +1244,14 @@ $("track").innerHTML = mq + mq + mq + mq;
 // Хөлд утас, Instagram, Facebook, хаяг бичнэ (хоосон бол нууна)
 function renderContact(){
   $("fPhone").textContent = SHOP.phone;
-  const link = (el, v, label) => { el.hidden = !v; el.parentNode.hidden = !v; if (v) { el.textContent = label + v.replace(/^https?:\/\/(www\.)?/, ""); el.href = /^https?:/.test(v) ? v : "https://" + v; } };
-  link($("fIg"), SHOP.instagram, "Instagram · "); link($("fFb"), SHOP.facebook, "Facebook · ");
+  // Сошиал дүрс: холбоос хоосон бол нууна
+  const link = (el, v) => { el.hidden = !v; if (v) el.href = /^https?:/.test(v) ? v : "https://" + v; };
+  link($("fIg"), SHOP.instagram); link($("fFb"), SHOP.facebook);
   $("fAddr").textContent = SHOP.address || ""; $("fAddr").hidden = !SHOP.address;
 }
 renderContact();
 // Хөлд банк, дансны дугаар бичнэ
-$("fBank").textContent = SHOP.bank; $("fIban").textContent = SHOP.iban;
+
 
 // ===== БАРААНЫ ЖАГСААЛТЫГ ХАРУУЛАХ =====
 // Одоогийн шүүлт, хайлт, эрэмбэ
@@ -1234,33 +1374,57 @@ $("grid").addEventListener("click", e => {
 /* detail modal */
 // Барааны дэлгэрэнгүй цонх нээх: зураг/360°, тайлбар, хэмжээ, сонголт, үнэ
 function openModal(id){
-  const p = byId(id);
-  const views = p.spin ? [
-    ...p.spin.map((src, i) => ({ src, label: ["Урд", "Хагас эргэсэн", "Хажуу", "Ар"][i], spin: true })),
-    { src: p.close, label: "Ойроос" }, { src: p.img, label: "Хайрцаг" }
-  ] : p.gallery ? p.gallery.map(([src, label]) => ({ src, label })) : [{ src: p.img, label: "Хайрцаг" }];
-  const rich = p.spin || p.gallery;
-  // Цонхны HTML: зургийн хэсэг + мэдээллийн хэсэг
-  $("modal").innerHTML = `<div class="${rich ? "viewer" : "mimg"}">
-      ${rich ? `<div class="stage${p.spin ? "" : " still"}" id="stage">${views.map((v, i) => `<img src="${v.src}" alt="${esc(p.name)} – ${v.label}" class="${i === 0 ? "on" : ""}">`).join("")}${p.spin ? `<span class="hint">↔ Чирж эргүүлнэ · 360°</span>` : ""}</div>
-        <div class="views">${views.map((v, i) => `<button type="button" data-v="${i}" aria-pressed="${i === 0}">${v.label}</button>`).join("")}</div>`
-      : `<img src="${p.img}" alt="${esc(p.name)}">`}
+  const p = byId(id); if (!p) return;
+  // Зургууд: галерей, эсвэл гол зураг (+ ойрын зураг)
+  const pics = p.gallery ? p.gallery.map(g => g[0]) : [p.img, p.close].filter(Boolean);
+  const multi = pics.length > 1;
+  // Ижил ангиллын бараа эхэнд, дараа нь бусад (өөрийгөө оруулахгүй), 8 хүртэл
+  const sims = [...PRODUCTS.filter(x => x.id !== id && x.cat === p.cat), ...PRODUCTS.filter(x => x.id !== id && x.cat !== p.cat && x.id !== "qpaytest")].slice(0, 8);
+  const ic = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${d}</svg>`;
+  $("modal").innerHTML = `
+    <div class="pd-close"><button class="x" id="mClose" aria-label="Хаах">×</button></div>
+    <div class="pd-top">
+      <!-- Зургийн цомог: 360° бол эргэдэг харагдац, бусад нь хуруугаар гүйлгэдэг -->
+      <div class="pd-gal">${p.spin ? `<div class="viewer"><div class="stage" id="stage">${p.spin.map((src, i) => `<img src="${src}" alt="${esc(p.name)}" class="${i === 0 ? "on" : ""}">`).join("")}<span class="hint">↔ Чирж эргүүлнэ · 360°</span></div></div>` : ""}
+        <div class="car ${multi ? "multi" : ""}" id="car">${pics.map((src, i) => `<img src="${src}" alt="${esc(p.name)} ${i + 1}" ${i ? 'loading="lazy"' : ""}>`).join("")}</div>
+        ${multi ? `<div class="dots" id="dots">${pics.map((_, i) => `<button type="button" aria-label="${i + 1}-р зураг" aria-current="${i === 0}"></button>`).join("")}</div>` : ""}
+      </div>
+      <div class="mbody">
+        <div class="series">${esc(p.series)}</div><h3>${esc(p.name)}</h3>
+        <button type="button" class="pd-rate" id="rateLink" hidden><span class="stars" id="rateStars"></span><span id="rateTxt"></span></button>
+        <div class="pd-price">${p.was ? `<s>${fmt(p.was)}</s>` : ""}${fmt(p.price)}</div>
+        ${p.options ? p.options.map((o, oi) => `<div class="opt"><span>${esc(o.label)}</span><div class="chips">${o.values.map(v => `<button type="button" data-o="${oi}" aria-pressed="false">${esc(v)}</button>`).join("")}</div></div>`).join("") : ""}
+        <button type="button" class="add ${cart.includes(id) && !p.pre ? "in" : ""}" id="mAdd">${p.pre ? (qtyOf(id) ? `Сагсанд ${qtyOf(id)} ш · нэгийг нэмэх` : "Захиалах") : cart.includes(id) ? "Сагсанд байна ✓ (хасах)" : "Сагсанд хийх"}</button>
+        <!-- Сагсанд бараа байвал шууд захиалга өгөх -->
+        <button type="button" class="go" id="mGo" ${cart.length ? "" : "hidden"}>Захиалга өгөх → <span>(${cart.length})</span></button>
+        <ul class="pd-meta">
+          <li>${ic('<rect x="2" y="7" width="13" height="10"/><path d="M15 10h4l3 3v4h-7M5.5 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM17.5 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/>')}УБ хотод хүргэлттэй, орон нутагт унаанд тавьж өгнө</li>
+          <li>${ic('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>')}${p.pre ? `Захиалгаар · Солонгосоос ${esc(SHOP.preDays)}-т ирнэ` : "Бэлэн бараа · 1–2 хоногт хүргэнэ"}</li>
+          <li>${ic('<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/>')}QPay, банкны апп, дансаар төлнө</li>
+        </ul>
+      </div>
     </div>
-    <div class="mbody"><button class="x" id="mClose" aria-label="Хаах">×</button>
-      <div class="series">${esc(p.series)}</div><h3>${esc(p.name)}</h3>
-      <p class="desc">${esc(p.desc || "")}</p>
-      <dl class="spec"><dt>Үйлдвэрлэгч</dt><dd>${esc(p.line)}</dd>${p.size ? `<dt>Өндөр</dt><dd>${esc(p.size)}</dd>` : ""}<dt>Материал</dt><dd>${esc(p.mat || "PVC")}</dd>${p.pre ? `<dt>Ирэх хугацаа</dt><dd>Солонгосоос ${SHOP.preDays}</dd><dt>Төлбөр</dt><dd>100% урьдчилгаа</dd>` : `<dt>Үлдэгдэл</dt><dd>1 ширхэг</dd>`}<dt>Хүргэлт</dt><dd>УБ хот дотор, орон нутагт унаагаар</dd></dl>
-      ${p.options ? p.options.map((o, oi) => `<div class="opt"><span>${esc(o.label)}</span><div class="chips">${o.values.map(v => `<button type="button" data-o="${oi}" aria-pressed="false">${esc(v)}</button>`).join("")}</div></div>`).join("") : ""}
-      <div class="price" style="margin-top:auto">${fmt(p.price)}</div>
-      <button type="button" class="add ${cart.includes(id) && !p.pre ? "in" : ""}" id="mAdd">${p.pre ? (qtyOf(id) ? `Сагсанд ${qtyOf(id)} ш · нэгийг нэмэх` : "Захиалах") : cart.includes(id) ? "Сагсанд байна ✓ (хасах)" : "Сагсанд хийх"}</button>
-      <!-- Сагсанд бараа байвал шууд захиалга өгөх цонх руу шилжих товч -->
-      <button type="button" class="go" id="mGo" ${cart.length ? "" : "hidden"}>Захиалга өгөх → <span>(${cart.length})</span></button>
+    <div class="pd-more">
+      ${p.desc || p.line || p.mat || p.size ? `<section class="pd-sec"><h4>Дэлгэрэнгүй</h4>
+        ${p.desc ? `<p class="pd-desc">${esc(p.desc)}</p>` : ""}
+        <dl class="spec">${p.line ? `<dt>Үйлдвэрлэгч</dt><dd>${esc(p.line)}</dd>` : ""}${p.size ? `<dt>Хэмжээ</dt><dd>${esc(p.size)}</dd>` : ""}${p.mat ? `<dt>Материал</dt><dd>${esc(p.mat)}</dd>` : ""}</dl></section>` : ""}
+      <section class="pd-sec" id="reviews"><h4>Хэрэглэгчийн сэтгэгдэл</h4><div id="rvBox"><p class="rv-empty">Уншиж байна…</p></div></section>
+      ${sims.length ? `<section class="pd-sec"><h4>Танд таалагдаж магадгүй</h4><div class="sim">${sims.map(x => `<button type="button" data-sim="${esc(x.id)}"><img src="${x.img}" alt="" loading="lazy"><b>${esc(x.name)}</b><span>${fmt(x.price)}</span></button>`).join("")}</div></section>` : ""}
     </div>`;
-  // Цонх болон бүрхүүлийг харуулна
-  $("scrim").hidden = false; $("modal").hidden = false;
-  $("mClose").onclick = closeAll; $("mClose").focus();
-  // "Захиалга өгөх" дарахад барааны цонхыг хааж сагс (захиалгын маягт) нээнэ
+  // Цонх болон бүрхүүлийг харуулна, дээрээс нь эхлүүлнэ
+  $("scrim").hidden = false; $("modal").hidden = false; $("modal").scrollTop = 0;
+  $("mClose").onclick = closeAll;
   $("mGo").onclick = openCart;
+  // Төстэй бараа дарахад тэр барааг нээнэ
+  $("modal").querySelectorAll("[data-sim]").forEach(b => b.onclick = () => openModal(b.dataset.sim));
+  // Зураг дээр дарахад томоор харуулна
+  $("modal").querySelectorAll("#car img").forEach(im => im.onclick = () => zoomImg(im.src));
+  // Цомгийн цэгүүд: гүйлгэхэд идэвхтэй цэг солигдоно, цэг дарахад тэр зураг руу
+  if (multi) {
+    const car = $("car"), dots = [...$("dots").children];
+    car.addEventListener("scroll", () => { const i = Math.round(car.scrollLeft / (car.children[0].offsetWidth + 8)); dots.forEach((d, j) => d.setAttribute("aria-current", j === Math.min(i, dots.length - 1))); }, { passive: true });
+    dots.forEach((d, i) => d.onclick = () => car.children[i].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" }));
+  }
   // Өнгө/хэмжээтэй бараа: бүх сонголт хийгдэх хүртэл товч идэвхгүй
   if (p.options){
     const sel = p.options.map(() => null);
@@ -1272,30 +1436,95 @@ function openModal(id){
       ab.textContent = ok ? `Сагсанд нэмэх · ${sel.join(" / ")}` : "Сонголтоо хийнэ үү";
     });
     ab.onclick = () => { if (!sel.every(Boolean)) return; toggle(id + "::" + sel.join(" / ")); ab.textContent = "Нэмэгдлээ ✓ · дахин нэмэх";
-      // Сагсанд нэмэгдсэн тул "Захиалга өгөх" товчийг харуулж, тоог шинэчилнэ
       $("mGo").hidden = false; $("mGo").querySelector("span").textContent = `(${cart.length})`; };
-  } else $("mAdd").onclick = () => { toggle(id); openModal(id); };
-  // Зураг ганцаараа бол энд дуусна
-  if (!rich) return;
-  // Өнцөг солих товчнууд
-  const imgs = [...$("stage").querySelectorAll("img")], btns = [...$("modal").querySelectorAll(".views button")];
-  let cur = 0;
-  const show = i => { cur = i; imgs.forEach((im, j) => im.classList.toggle("on", j === i)); btns.forEach((b, j) => b.setAttribute("aria-pressed", j === i)); };
-  btns.forEach(b => b.onclick = () => show(+b.dataset.v));
-  // 360° биш бол чирэх хэрэггүй
-  if (!p.spin) return;
+  } else $("mAdd").onclick = () => { toggle(id); const y = $("modal").scrollTop; openModal(id); $("modal").scrollTop = y; };
+  // Сэтгэгдлүүдийг ачаална
+  loadReviews(p);
   // 360°: хуруугаар 55px чирэх бүрт дараагийн өнцөг рүү шилжинэ
-  const n = p.spin.length; let sx = null, base = 0;
+  if (!p.spin) return;
+  const imgs = [...$("stage").querySelectorAll("img")], n = imgs.length; let sx = null, base = 0, cur = 0;
+  const show = i => { cur = i; imgs.forEach((im, j) => im.classList.toggle("on", j === i)); };
   const st = $("stage");
-  st.addEventListener("pointerdown", e => { sx = e.clientX; base = cur < n ? cur : 0; st.classList.add("drag"); st.setPointerCapture(e.pointerId); });
-  st.addEventListener("pointermove", e => {
-    if (sx === null) return;
-    const step = Math.round((sx - e.clientX) / 55);
-    show((((base + step) % n) + n) % n);
-  });
+  st.addEventListener("pointerdown", e => { sx = e.clientX; base = cur; st.classList.add("drag"); st.setPointerCapture(e.pointerId); });
+  st.addEventListener("pointermove", e => { if (sx === null) return; const step = Math.round((sx - e.clientX) / 55); show((((base + step) % n) + n) % n); });
   const end = () => { sx = null; st.classList.remove("drag"); };
   st.addEventListener("pointerup", end); st.addEventListener("pointercancel", end);
 }
+// Зургийг бүтэн дэлгэцээр харуулна (дарахад хаагдана)
+function zoomImg(src){ const z = document.createElement("div"); z.className = "zoom"; z.innerHTML = `<img src="${esc(src)}" alt="">`; z.onclick = () => z.remove(); document.body.appendChild(z); }
+// Одоор харуулах: ★★★★☆
+const starTxt = r => "★★★★★".slice(0, Math.round(r)) + "☆☆☆☆☆".slice(0, 5 - Math.round(r));
+
+// ===== СЭТГЭГДЭЛ: унших, бичих (нэвтэрсэн хэрэглэгч, зурагтай) =====
+async function loadReviews(p){
+  const box = $("rvBox"); if (!box) return;
+  // Supabase холбогдоогүй үед (жишээ нь туршилтын харагдац)
+  if (!sb) { box.innerHTML = `<p class="rv-empty">Сэтгэгдэл одоохондоо алга.</p>`; return; }
+  const { data } = await sb.from("reviews").select("id,username,rating,body,photos,reply,verified,created_at").eq("product_id", p.id).order("created_at", { ascending: false }).limit(100);
+  if (!$("rvBox") || box !== $("rvBox")) return;
+  const list = data || [], n = list.length, avg = n ? list.reduce((s, r) => s + r.rating, 0) / n : 0;
+  // Дээрх үнэлгээний товч холбоос
+  if (n) { $("rateLink").hidden = false; $("rateStars").textContent = starTxt(avg); $("rateTxt").textContent = `${n} сэтгэгдэл`; $("rateLink").onclick = () => $("reviews").scrollIntoView({ behavior: "smooth" }); }
+  const bars = [5, 4, 3, 2, 1].map(k => { const c = list.filter(r => r.rating === k).length; return `<div><span>${k} ★</span><i><b style="width:${n ? c / n * 100 : 0}%"></b></i><span>${c}</span></div>`; }).join("");
+  box.innerHTML = `
+    ${n ? `<div class="rv-sum"><div><div class="rv-avg">${avg.toFixed(1)}</div><div class="stars">${starTxt(avg)}</div><div class="rv-empty">${n} сэтгэгдэл</div></div><div class="rv-bars">${bars}</div></div>` : `<p class="rv-empty">Одоохондоо сэтгэгдэл алга. Анхны сэтгэгдлийг та үлдээгээрэй.</p>`}
+    <button type="button" class="rv-btn" id="rvWrite">Сэтгэгдэл бичих</button>
+    <div id="rvForm"></div>
+    <div class="rv-list">${list.map(r => `<div class="rv"><div class="av">${esc((r.username || "?")[0].toUpperCase())}</div><div>
+      <div class="rv-who"><span class="stars">${starTxt(r.rating)}</span>${r.verified ? '<span class="ok">✓ Худалдан авсан</span>' : ""}<b>${esc(r.username)}</b><span class="when">${new Date(r.created_at).toLocaleDateString("mn-MN")}</span></div>
+      <p>${esc(r.body)}</p>
+      ${(r.photos || []).length ? `<div class="rv-ph">${r.photos.map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join("")}</div>` : ""}
+      ${r.reply ? `<div class="reply"><b>FINN хариулт:</b><br>${esc(r.reply)}</div>` : ""}
+    </div></div>`).join("")}</div>`;
+  box.querySelectorAll(".rv-ph img").forEach(im => im.onclick = () => zoomImg(im.src));
+  $("rvWrite").onclick = () => reviewForm(p);
+}
+// Сэтгэгдэл бичих маягт
+function reviewForm(p){
+  // Нэвтрээгүй бол нэвтрэх цонх руу
+  if (!me) { toast("Сэтгэгдэл бичихийн тулд нэвтэрнэ үү"); openAcct("login"); return; }
+  let rating = 5; const files = [];
+  $("rvWrite").hidden = true;
+  $("rvForm").innerHTML = `<form class="rv-form" id="rvF">
+    <div class="rv-pick" id="rvPick">${[1, 2, 3, 4, 5].map(k => `<button type="button" data-k="${k}" class="on" aria-label="${k} од">★</button>`).join("")}</div>
+    <textarea id="rvText" maxlength="1500" placeholder="Бараа таалагдсан уу? Хэмжээ, чанар, хүргэлтийн талаар бичээрэй" required></textarea>
+    <label class="rv-btn" style="text-align:center">📷 Зураг нэмэх (3 хүртэл)<input type="file" id="rvFiles" accept="image/*" multiple hidden></label>
+    <div id="rvPrev" style="display:flex;gap:8px"></div>
+    <button type="submit" class="primary" id="rvSend">Илгээх</button>
+  </form>`;
+  // Од сонгох
+  const paint = () => $("rvPick").querySelectorAll("button").forEach(b => b.classList.toggle("on", +b.dataset.k <= rating));
+  $("rvPick").querySelectorAll("button").forEach(b => b.onclick = () => { rating = +b.dataset.k; paint(); });
+  // Зураг сонгох (3 хүртэл), урьдчилан харуулна
+  $("rvFiles").onchange = e => { for (const f of e.target.files) if (files.length < 3) files.push(f); $("rvPrev").innerHTML = files.map(f => `<img src="${URL.createObjectURL(f)}" style="width:72px;height:72px;object-fit:cover">`).join(""); e.target.value = ""; };
+  // Илгээх
+  $("rvF").onsubmit = async e => {
+    e.preventDefault(); const btn = $("rvSend"); btn.disabled = true; btn.textContent = "Илгээж байна…";
+    try {
+      const { data: u } = await sb.auth.getUser(); const uid = u.user.id, photos = [];
+      // Зургийг багасгаж "reviews/<хэрэглэгч>/" хавтсанд хадгална
+      for (const f of files) {
+        const blob = await new Promise((ok, no) => { const im = new Image(); im.onload = () => { const s = Math.min(1, 1200 / Math.max(im.width, im.height)); const c = document.createElement("canvas"); c.width = im.width * s; c.height = im.height * s; c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); c.toBlob(b => b ? ok(b) : no(), "image/webp", .85); }; im.onerror = no; im.src = URL.createObjectURL(f); });
+        const path = `${uid}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.webp`;
+        const { error } = await sb.storage.from("reviews").upload(path, blob, { contentType: "image/webp" });
+        if (error) throw error;
+        photos.push(sb.storage.from("reviews").getPublicUrl(path).data.publicUrl);
+      }
+      const { error } = await sb.from("reviews").insert({ product_id: p.id, rating, body: $("rvText").value.trim(), photos });
+      if (error) throw error;
+      toast("Сэтгэгдэл нэмэгдлээ, баярлалаа!"); loadReviews(p);
+    } catch (err) {
+      btn.disabled = false; btn.textContent = "Илгээх";
+      toast(/duplicate|unique/i.test(err.message || "") ? "Та энэ бараанд аль хэдийн сэтгэгдэл үлдээсэн байна" : "Алдаа: " + (err.message || ""));
+    }
+  };
+}
+// Өдөр / шөнийн горим солих (сонголтыг хадгална)
+$("themeBtn").onclick = () => {
+  const t = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", t);
+  try { localStorage.setItem("finn-theme", t); } catch (e) {}
+};
 // ===== САГСНЫ ЦОНХ =====
 // Сагс нээх
 /* cart sheet */
@@ -1627,8 +1856,10 @@ function applySettings(st){
   // Өнгө: өргөлт, дэвсгэр, текст
   const c = st.colors || {}, R = document.documentElement.style, hex = v => /^#[0-9a-f]{3,8}$/i.test(v || "");
   if (hex(c.accent)) R.setProperty("--violet", c.accent);
-  if (hex(c.bg)) { R.setProperty("--bg", c.bg); document.body.style.background = c.bg; }
-  if (hex(c.ink)) R.setProperty("--ink", c.ink);
+  let css = ":root:not([data-theme=dark]){";
+  if (hex(c.bg)) css += `--bg:${c.bg};`; if (hex(c.ink)) css += `--ink:${c.ink};`;
+  let tag = document.getElementById("userColors"); if (!tag) { tag = document.createElement("style"); tag.id = "userColors"; document.head.appendChild(tag); }
+  tag.textContent = css + "}:root:not([data-theme=dark]) body{background:var(--bg)}";
   // Лого: зураг оруулсан бол SVG логоны оронд тавина
   if (st.logoUrl) document.querySelectorAll(".logo .lgbox").forEach(b => b.innerHTML = `<img class="lgimg" src="${esc(st.logoUrl)}" alt="FINN">`);
 }

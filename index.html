@@ -1187,6 +1187,33 @@ footer{padding:36px 0 20px;border-top:0}
   .social{margin-top:12px}
   .social a{width:36px;height:36px}
 }
+
+/* ----- НҮҮРНИЙ ДАРААЛАЛ: Ангилал → Бүх бараа (давхардлыг арилгана) ----- */
+/* "Шинэ бараа" мөр нь доорх жагсаалттай ижил бараа давтаж байсан тул нууна */
+#drops{display:none!important}
+/* Ангиллын хавтангууд: утсан дээр 3 багана, нэг мөрөнд багтана */
+@media (max-width:860px){
+  #zones{padding-block:32px 0}
+  .zones{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}
+  .zone .zt b{font-size:11px;letter-spacing:.04em}
+}
+/* Ангиллын зураг дээр бичиг тод харагдахаар бараан бүрхүүл */
+.zone::after{background:rgba(0,0,0,.3)!important}
+.zone .zt b{font-weight:600}
+
+
+/* Instagram "Холбоо барих" хэсэгт байгаа тул дугуй дүрсийг давхардуулахгүй (Facebook бол үлдэнэ) */
+#fIg{display:none!important}
+.social:not(:has(a:not([hidden]):not(#fIg))){display:none}
+/* ----- ХӨЛ: зөвхөн лого + холбоо барих (2 багана) ----- */
+.foot2{grid-template-columns:1.4fr 1fr!important}
+@media (max-width:860px){ .foot2{grid-template-columns:1fr!important;gap:22px!important} }
+
+/* ----- АСУУЛТ: нүүрэнд биш, ☰ цэснээс тусдаа цонхонд нээгдэнэ ----- */
+#faq{display:none!important}
+.faq-page{max-width:760px;margin:0 auto;padding:8px 28px 40px}
+.faq-page h2{margin:0 0 16px;padding-right:56px;font-size:22px;font-weight:600}
+@media (max-width:860px){ .faq-page{padding:4px 16px 90px} }
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -1210,7 +1237,7 @@ footer{padding:36px 0 20px;border-top:0}
 <div class="dscrim" id="dscrim" hidden></div>
 <nav class="drawer" id="drawer" hidden aria-label="Цэс">
   <div class="dhead"><span class="logo" style="font-size:20px"><span class="lgbox"><svg class="lg" viewBox="0 -4 503 108" fill="currentColor" aria-hidden="true"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/><text x="480" y="22" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="20">®</text></svg></span></span><button class="x" id="closeMenu" type="button" aria-label="Хаах">×</button></div>
-  <a href="#shop">Бүх бараа</a><a href="#drops">Шинэ бараа</a><a href="#saved" id="drawerFav">♡ Хадгалсан бараа <b id="favCount" hidden></b></a><a href="#zones">Ангилал</a><a href="#how">Хэрхэн захиалах</a><a href="#faq">Түгээмэл асуулт</a><a href="#contact">Холбоо барих</a>
+  <a href="#shop">Бүх бараа</a><a href="#saved" id="drawerFav">♡ Хадгалсан бараа <b id="favCount" hidden></b></a><a href="#zones">Ангилал</a><a href="#how">Хэрхэн захиалах</a><a href="#faq" id="drawerFaq">Түгээмэл асуулт</a><a href="#contact">Холбоо барих</a>
   <small>QPay-ээр шууд төлнө · УБ хотод хүргэлттэй</small>
 </nav>
 
@@ -1260,9 +1287,21 @@ footer{padding:36px 0 20px;border-top:0}
     <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg><p style="margin:0"><b>Найдвартай төлбөр</b><span>Данс · QPay</span></p></div>
   </section>
 
+  <!-- ===== GAN ХЭСГҮҮД: ангилал бүрийн том хавтан (JavaScript бөглөнө) ===== -->
+  <section class="wrap block" id="zones" style="padding-bottom:12px">
+    <div class="sechead"><div><h2>Ангилал</h2><p>Хувцаснаас эхлээд цахилгаан бараа хүртэл.</p></div></div>
+    <div class="zones" id="zonesGrid"></div>
+  </section>
+
+  <!-- ===== GAN DROPS: шинээр ирсэн бараа (JavaScript бөглөнө) ===== -->
+  <section class="wrap block" id="drops" style="padding-bottom:12px">
+    <div class="sechead"><div><h2>Шинэ бараа</h2><p>Шинээр ирсэн, тоо ширхэг хязгаартай бараа.</p></div><a class="more" href="#shop">Бүгдийг үзэх</a></div>
+    <div class="drops" id="dropsRow"></div>
+  </section>
+
   <!-- ===== БАРААНЫ ХЭСЭГ ===== -->
   <section class="wrap block" id="shop">
-    <div class="sechead"><div><h2>Эрэлттэй бараа</h2><p>“Бэлэн” бараа шууд хүргэгдэнэ. “Захиалгаар” гэсэн барааг Солонгосоос авчирна.</p></div></div>
+    <div class="sechead"><div><h2>Бүх бараа</h2><p>“Бэлэн” бараа шууд хүргэгдэнэ. “Захиалгаар” гэсэн барааг Солонгосоос авчирна.</p></div></div>
     <!-- Хайлт ба эрэмбэлэх -->
     <div class="tools">
       <label class="search" for="q"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -1277,17 +1316,7 @@ footer{padding:36px 0 20px;border-top:0}
     <div class="grid" id="grid" aria-live="polite"></div>
   </section>
 
-  <!-- ===== GAN DROPS: шинээр ирсэн бараа (JavaScript бөглөнө) ===== -->
-  <section class="wrap block" id="drops" style="padding-bottom:12px">
-    <div class="sechead"><div><h2>Шинэ бараа</h2><p>Шинээр ирсэн, тоо ширхэг хязгаартай бараа.</p></div><a class="more" href="#shop">Бүгдийг үзэх</a></div>
-    <div class="drops" id="dropsRow"></div>
-  </section>
 
-  <!-- ===== GAN ХЭСГҮҮД: ангилал бүрийн том хавтан (JavaScript бөглөнө) ===== -->
-  <section class="wrap block" id="zones" style="padding-bottom:12px">
-    <div class="sechead"><div><h2>Ангилал</h2><p>Хувцаснаас эхлээд цахилгаан бараа хүртэл.</p></div></div>
-    <div class="zones" id="zonesGrid"></div>
-  </section>
 
   <!-- ===== ХЭРХЭН ЗАХИАЛАХ ===== -->
   <section class="wrap block" id="how">
@@ -1330,10 +1359,6 @@ footer{padding:36px 0 20px;border-top:0}
         <a id="fIg" href="#" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
         <a id="fFb" href="#" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5H16l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.4H8v3h2.6V21h2.9Z"/></svg></a>
       </div></div>
-    <!-- Дэлгүүр -->
-    <div><h4>Дэлгүүр</h4><a href="#shop">Бүх бараа</a><a href="#drops">Шинэ бараа</a><a href="#zones">Ангилал</a></div>
-    <!-- Тусламж -->
-    <div><h4>Тусламж</h4><a href="#how">Хэрхэн захиалах</a><a href="#faq">Түгээмэл асуулт</a><a href="/privacy.html">Хувийн мэдээллийн бодлого</a></div>
     <!-- Холбоо барих -->
     <div><h4>Холбоо барих</h4>
       <!-- Утас: дарахад шууд залгана -->
@@ -1343,7 +1368,7 @@ footer{padding:36px 0 20px;border-top:0}
       <!-- Хаяг (тохиргоонд бичсэн бол) -->
       <p class="cline" id="fAddrRow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg><span id="fAddr"></span></p></div>
   </div>
-  <div class="foot-bot"><span>© 2026 FINN</span><span>Beyond the ordinary</span></div>
+  <div class="foot-bot"><span>© 2026 FINN</span></div>
 </div></footer>
 
 <!-- Утасны доод "Сагс харах" мөр (сагс хоосон бол нуугдана) -->
@@ -1767,6 +1792,16 @@ const menu = open => { $("drawer").hidden = !open; $("dscrim").hidden = !open; }
 $("openMenu").onclick = () => menu(true); $("closeMenu").onclick = () => menu(false); $("dscrim").onclick = () => menu(false);
 // "Хадгалсан бараа" дарахад жагсаалт нээнэ
 $("drawerFav").addEventListener("click", e => { e.preventDefault(); menu(false); openFavs(); });
+// "Түгээмэл асуулт" дарахад асуултуудыг тусдаа цонхонд нээнэ (нүүр хуудсанд харагдахгүй)
+function openFaq(){
+  // Админаас оруулсан асуултуудыг нуугдмал #faqList-ээс хуулж авна
+  $("modal").innerHTML = `
+    <div class="pd-close"><button class="x" id="mClose" aria-label="Хаах">×</button></div>
+    <article class="faq-page"><h2>Түгээмэл асуулт</h2><div class="faq">${$("faqList").innerHTML}</div></article>`;
+  $("scrim").hidden = false; $("modal").hidden = false; $("modal").scrollTop = 0;
+  $("mClose").onclick = closeAll;
+}
+$("drawerFaq").addEventListener("click", e => { e.preventDefault(); menu(false); openFaq(); });
 // Цэсний холбоос дарахад цэс хаагдана
 $("drawer").querySelectorAll("a").forEach(a => a.addEventListener("click", () => menu(false)));
 // Хайлтын дүрс: бараан хэсэг рүү гүйлгэж хайлтын талбарт курсор тавина

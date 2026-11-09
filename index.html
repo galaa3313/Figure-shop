@@ -1059,15 +1059,69 @@ footer.ft-dark{--ink:#f4f4f4;--muted:rgba(244,244,244,.7);--line:rgba(244,244,24
 footer.ft-dark .logo{color:#f4f4f4}
 
 /* ----- ХЯМДРАЛ: улаан үнэ, зургийн буланд хувь ----- */
-/* Шинэ үнэ улаан, хуучин үнэ дээр нь жижиг саарал зурсан */
-.price.sale{color:#e5172f}
-.price.sale s{display:block;font-size:12px;color:var(--muted);margin:0 0 1px}
+/* Хуучин үнэ улаанаар зурсан, шинэ үнэ энгийн (хар) */
+.price.sale s{display:block;font-size:12px;color:#e5172f;margin:0 0 1px}
 /* Зургийн зүүн дээд буланд "-19%" */
 .salepct{position:absolute;top:0;left:0;z-index:2;background:#e5172f;color:#fff;font-size:11px;font-weight:600;padding:6px 9px;letter-spacing:.02em}
 /* Барааны хуудасны үнэ */
-.pd-price.sale{color:#e5172f}
+.pd-price.sale s{color:#e5172f}
 .pd-price s{font-size:15px}
 .pd-price .pct{display:inline-block;background:#e5172f;color:#fff;font-size:12px;font-weight:600;padding:3px 7px;margin-left:8px;vertical-align:3px}
+
+/* ----- НҮҮРНИЙ СЛАЙД (next.mn маяг) ----- */
+.slider{position:relative;background:var(--bg2)}
+.sl-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.sl-track::-webkit-scrollbar{display:none}
+.sl{flex:0 0 100%;scroll-snap-align:start;border:0;padding:0;background:none;cursor:pointer;display:block}
+/* Постерыг таслахгүй бүтнээр нь харуулна */
+.sl-track{aspect-ratio:var(--sl-ar,1);max-height:80vh}
+.sl{height:100%}
+.sl img{width:100%;height:100%;object-fit:cover;display:block}
+.sl-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.85);color:#111;font-size:28px;line-height:1;display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.sl-nav.prev{left:14px}.sl-nav.next{right:14px}
+.sl-nav[hidden]{display:none}
+.sl-dots{display:flex;justify-content:center;gap:8px;padding:12px 0;background:var(--bg)}
+.sl-dots button{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:var(--line);cursor:pointer}
+.sl-dots button[aria-current="true"]{background:var(--violet);width:22px;border-radius:4px}
+/* ----- ОНЦЛОХ ПОСТЕРУУД ----- */
+.promos{padding-block:8px 4px}
+.pr-row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,calc((100% - 24px) / 3.3));gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.pr-row::-webkit-scrollbar{display:none}
+.pr{border:0;padding:0;background:var(--bg2);border-radius:10px;overflow:hidden;scroll-snap-align:start;cursor:pointer}
+.pr img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;transition:transform .4s}
+.pr:hover img{transform:scale(1.03)}
+@media (max-width:860px){ .sl-nav{display:none} .pr-row{grid-auto-columns:40%} }
+
+/* ----- ХАДГАЛСАН (зүрх) ----- */
+.phw{position:relative}
+.fav{position:absolute;right:8px;bottom:8px;z-index:2;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.9);display:grid;place-items:center;cursor:pointer;box-shadow:0 1px 6px rgba(0,0,0,.12);transition:transform .15s}
+.fav:active{transform:scale(.88)}
+.fav svg,.pd-fav svg{width:19px;height:19px;fill:none;stroke:#111;stroke-width:1.6}
+.fav[aria-pressed="true"] svg,.pd-fav[aria-pressed="true"] svg{fill:#e5172f;stroke:#e5172f}
+:root[data-theme="dark"] .fav{background:rgba(20,20,22,.85)}
+:root[data-theme="dark"] .fav svg,:root[data-theme="dark"] .pd-fav svg{stroke:#f1f1f1}
+.pd-fav{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+#favCount{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#e5172f;color:#fff;font-size:11px;margin-left:6px}
+#favCount[hidden]{display:none}
+.favlist{display:flex;flex-direction:column;gap:12px}
+.favi{display:grid;grid-template-columns:84px 1fr;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.favi>button{border:0;padding:0;background:var(--bg2);cursor:pointer}
+.favi img{width:84px;height:112px;object-fit:cover;display:block}
+.favi b{display:block;font-weight:500;font-size:14px}.favi span{font-size:14px;color:var(--muted)}
+.favi .row{display:flex;gap:8px;margin-top:8px}.favi .ghost{padding:7px 12px;font-size:13px}
+
+/* ----- УРАМШУУЛЛЫН МЭДЭЭЛЛИЙН ХУУДАС ----- */
+.promo-page{max-width:820px;margin:0 auto}
+.pp-img{width:100%;height:auto;display:block;background:var(--bg2)}
+.pp-body{padding:24px 28px 8px;display:flex;flex-direction:column;gap:12px}
+.pp-body h2{margin:0;font-size:24px;font-weight:600;line-height:1.3}
+.pp-when{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.pp-left{background:#fdecee;color:#e5172f;font-weight:600;padding:3px 9px;font-size:12px}
+.pp-left.over{background:var(--bg2);color:var(--muted)}
+.pp-text{margin:0;white-space:pre-line;font-size:15px;line-height:1.75}
+.pp-body .primary{align-self:flex-start;padding:13px 22px}
+.pp-prods{margin:8px 28px 32px}
+@media (max-width:860px){ .pp-body{padding:18px 16px 4px} .pp-prods{margin:8px 16px 90px} .pp-body .primary{align-self:stretch} }
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -1091,14 +1145,21 @@ footer.ft-dark .logo{color:#f4f4f4}
 <div class="dscrim" id="dscrim" hidden></div>
 <nav class="drawer" id="drawer" hidden aria-label="Цэс">
   <div class="dhead"><span class="logo" style="font-size:20px"><span class="lgbox"><svg class="lg" viewBox="0 -4 503 108" fill="currentColor" aria-hidden="true"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/><text x="480" y="22" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="20">®</text></svg></span></span><button class="x" id="closeMenu" type="button" aria-label="Хаах">×</button></div>
-  <a href="#shop">Бүх бараа</a><a href="#drops">Шинэ бараа</a><a href="#zones">Ангилал</a><a href="#how">Хэрхэн захиалах</a><a href="#faq">Түгээмэл асуулт</a><a href="#contact">Холбоо барих</a>
+  <a href="#shop">Бүх бараа</a><a href="#drops">Шинэ бараа</a><a href="#saved" id="drawerFav">♡ Хадгалсан бараа <b id="favCount" hidden></b></a><a href="#zones">Ангилал</a><a href="#how">Хэрхэн захиалах</a><a href="#faq">Түгээмэл асуулт</a><a href="#contact">Холбоо барих</a>
   <small>QPay-ээр шууд төлнө · УБ хотод хүргэлттэй</small>
 </nav>
 
 <!-- ===== ҮНДСЭН АГУУЛГА ===== -->
 <main id="top">
   <!-- Нүүр хэсэг: бүтэн өргөнтэй том зураг, дээр нь гарчиг ба товчнууд -->
-  <section class="lookbook">
+  <!-- ===== НҮҮРНИЙ СЛАЙД: админаас оруулсан постерууд автоматаар солигдоно (байхгүй бол доорх нүүр харагдана) ===== -->
+  <section class="slider" id="slider" hidden aria-label="Урамшуулал">
+    <div class="sl-track" id="slTrack"></div>
+    <button type="button" class="sl-nav prev" id="slPrev" aria-label="Өмнөх">‹</button>
+    <button type="button" class="sl-nav next" id="slNext" aria-label="Дараах">›</button>
+    <div class="sl-dots" id="slDots"></div>
+  </section>
+  <section class="lookbook" id="lookbook">
     <!-- Арын том зураг -->
     <img src="/img/36acb25200.webp" alt="FINN" fetchpriority="high" id="heroImg">
     <!-- Зураг дээрх текст -->
@@ -1115,6 +1176,9 @@ footer.ft-dark .logo{color:#f4f4f4}
       <div class="stats" id="stats"></div>
     </div>
   </section>
+
+  <!-- ===== ОНЦЛОХ ПОСТЕРУУД: хажуу тийш гүйдэг (админаас) ===== -->
+  <section class="wrap promos" id="promos" hidden aria-label="Онцлох"><div class="pr-row" id="prRow"></div></section>
 
   <!-- Гүйдэг тууз: цувралын нэрсийг JavaScript бөглөнө -->
   <div class="marquee" aria-hidden="true"><div class="track" id="track"></div></div>
@@ -1336,6 +1400,42 @@ function addLabel(id){ const p = byId(id), n = qtyOf(id); if (p.options) return 
 // Сагсан дахь ижил барааг бүлэглэж тоог нь гаргана
 function groupCart(list){ return [...new Set(list)].map(k => ({ k, p: byId(k), opt: String(k).split("::")[1] || "", n: list.filter(x => x === k).length })); }
 // Барааны картуудыг зурна (шүүлт, хайлт, эрэмбийн дагуу)
+// ===== ХАДГАЛСАН (зүрх): нэвтэрсэн хэрэглэгчийн хадгалсан бараа =====
+let favs = new Set();
+// Зүрхний бүх товчийг шинэчилнэ (карт, барааны хуудас)
+function paintFavs(){
+  document.querySelectorAll("[data-fav]").forEach(b => { const on = favs.has(b.dataset.fav); b.setAttribute("aria-pressed", on); const t = b.querySelector("span"); if (t) t.textContent = on ? "Хадгалсан" : "Хадгалах"; });
+  const n = $("favCount"); if (n) { n.textContent = favs.size; n.hidden = !favs.size; }
+}
+// Хадгалах / хасах (нэвтрээгүй бол нэвтрэх цонх)
+async function toggleFav(id){
+  if (!sb || !me) { toast("Хадгалахын тулд нэвтэрнэ үү"); return openAcct("login"); }
+  const on = !favs.has(id);
+  // Эхлээд дэлгэц дээр шууд өөрчилнө, дараа нь серверт хадгална
+  on ? favs.add(id) : favs.delete(id); paintFavs();
+  const { data: u } = await sb.auth.getUser();
+  const r = on ? await sb.from("favorites").insert({ user_id: u.user.id, product_id: id })
+               : await sb.from("favorites").delete().eq("user_id", u.user.id).eq("product_id", id);
+  if (r.error && !/duplicate/i.test(r.error.message)) { on ? favs.delete(id) : favs.add(id); paintFavs(); return toast("Алдаа: " + r.error.message); }
+  toast(on ? "Хадгаллаа ♥" : "Хадгалснаас хаслаа");
+}
+// Нэвтэрсний дараа хадгалсан барааг уншина
+async function loadFavs(){
+  favs = new Set();
+  if (sb && me) { const { data } = await sb.from("favorites").select("product_id"); (data || []).forEach(r => favs.add(r.product_id)); }
+  paintFavs();
+}
+// Хадгалсан барааны жагсаалт (хажуугийн цонхонд)
+function openFavs(){
+  if (!me) { toast("Хадгалсан бараагаа харахын тулд нэвтэрнэ үү"); return openAcct("login"); }
+  $("modal").hidden = true; $("scrim").hidden = false; $("sheet").hidden = false;
+  $("sheetTitle").textContent = "Хадгалсан бараа";
+  const list = PRODUCTS.filter(p => favs.has(p.id));
+  $("sheetBody").innerHTML = list.length ? `<div class="favlist">${list.map(p => `<div class="favi"><button type="button" data-o="${esc(p.id)}"><img src="${p.img}" alt=""></button><div><b>${esc(p.name)}</b><span>${fmt(p.price)}</span><div class="row"><button type="button" class="ghost" data-o="${esc(p.id)}">Үзэх</button><button type="button" class="ghost" data-fav="${esc(p.id)}">Хасах</button></div></div></div>`).join("")}</div>`
+    : `<p class="desc">Хадгалсан бараа алга. Барааны зурган дээрх ♡ дүрсийг дарж хадгална.</p>`;
+  $("sheetBody").querySelectorAll("[data-o]").forEach(b => b.onclick = () => openModal(b.dataset.o));
+  $("sheetBody").querySelectorAll("[data-fav]").forEach(b => b.onclick = async () => { await toggleFav(b.dataset.fav); openFavs(); });
+}
 // Хямдралын хувь: хуучин үнэ шинэ үнээс их бол "-19%" гэх мэт, үгүй бол хоосон
 const salePct = p => p.was && p.was > p.price ? Math.round((1 - p.price / p.was) * 100) : 0;
 function renderGrid(){
@@ -1350,7 +1450,7 @@ function renderGrid(){
   // Карт бүрийн HTML: тэмдэг, зураг, цуврал, нэр, үлдэгдэл, үнэ, товч
   $("grid").innerHTML = list.length ? list.map(p => `<article class="card">
       ${p.badge ? `<span class="badge ${p.badge === "Онцлох" ? "v" : p.badge === "360°" ? "r" : ""}">${esc(p.badge)}</span>` : ""}
-      <button type="button" class="ph" data-open="${p.id}" aria-label="${esc(p.name)} дэлгэрэнгүй"><img src="${p.img}" alt="${esc(p.name)}" loading="lazy">${salePct(p) ? `<span class="salepct">-${salePct(p)}%</span>` : ""}</button>
+      <div class="phw"><button type="button" class="ph" data-open="${p.id}" aria-label="${esc(p.name)} дэлгэрэнгүй"><img src="${p.img}" alt="${esc(p.name)}" loading="lazy">${salePct(p) ? `<span class="salepct">-${salePct(p)}%</span>` : ""}</button><button type="button" class="fav" data-fav="${p.id}" aria-pressed="${favs.has(p.id)}" aria-label="Хадгалах"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.3 4.5 6.9 4.5c2 0 3.6 1.1 5.1 3 1.5-1.9 3.1-3 5.1-3 3.6 0 5.5 3.5 4.2 6.8-1.8 4.6-9.3 9.2-9.3 9.2Z"/></svg></button></div>
       <div class="info">
         <div class="series">${esc(p.series)}</div>
         <div class="name">${esc(p.name)}</div>
@@ -1432,6 +1532,8 @@ $("q").addEventListener("input", e => { query = e.target.value; renderGrid(); })
 $("sort").addEventListener("change", e => { sort = e.target.value; renderGrid(); });
 // Карт дээр дарахад: товч бол сагслах (сонголттой бол цонх нээх), зураг бол дэлгэрэнгүй нээх
 $("grid").addEventListener("click", e => {
+  // Зүрх дарвал хадгална/хасна
+  const f = e.target.closest("[data-fav]"); if (f) return toggleFav(f.dataset.fav);
   const a = e.target.closest(".add"); if (a) return byId(a.dataset.id).options ? openModal(a.dataset.id) : toggle(a.dataset.id);
   const o = e.target.closest("[data-open]"); if (o) openModal(o.dataset.open);
 });
@@ -1462,6 +1564,8 @@ function openModal(id){
         ${p.options ? p.options.map((o, oi) => `<div class="opt"><span>${esc(o.label)}</span><div class="chips">${o.values.map(v => `<button type="button" data-o="${oi}" aria-pressed="false">${esc(v)}</button>`).join("")}</div></div>`).join("") : ""}
         <button type="button" class="add ${cart.includes(id) && !p.pre ? "in" : ""}" id="mAdd">${p.pre ? (qtyOf(id) ? `Сагсанд ${qtyOf(id)} ш · нэгийг нэмэх` : "Захиалах") : cart.includes(id) ? "Сагсанд байна ✓ (хасах)" : "Сагсанд хийх"}</button>
         <!-- Сагсанд бараа байвал шууд захиалга өгөх -->
+        <!-- Хадгалах (зүрх) -->
+        <button type="button" class="pd-fav" data-fav="${id}" aria-pressed="${favs.has(id)}" id="mFav"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.3 4.5 6.9 4.5c2 0 3.6 1.1 5.1 3 1.5-1.9 3.1-3 5.1-3 3.6 0 5.5 3.5 4.2 6.8-1.8 4.6-9.3 9.2-9.3 9.2Z"/></svg><span>${favs.has(id) ? "Хадгалсан" : "Хадгалах"}</span></button>
         <button type="button" class="go" id="mGo" ${cart.length ? "" : "hidden"}>Захиалга өгөх → <span>(${cart.length})</span></button>
         <ul class="pd-meta">
           <li>${ic('<rect x="2" y="7" width="13" height="10"/><path d="M15 10h4l3 3v4h-7M5.5 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM17.5 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/>')}УБ хотод хүргэлттэй, орон нутагт унаанд тавьж өгнө</li>
@@ -1481,6 +1585,7 @@ function openModal(id){
   $("scrim").hidden = false; $("modal").hidden = false; $("modal").scrollTop = 0;
   $("mClose").onclick = closeAll;
   $("mGo").onclick = openCart;
+  $("mFav").onclick = () => toggleFav(id);
   // Төстэй бараа дарахад тэр барааг нээнэ
   $("modal").querySelectorAll("[data-sim]").forEach(b => b.onclick = () => openModal(b.dataset.sim));
   // Зураг дээр дарахад томоор харуулна
@@ -1601,6 +1706,8 @@ function closeAll(){ $("scrim").hidden = true; $("sheet").hidden = true; $("moda
 // ☰ цэсийг нээх, хаах
 const menu = open => { $("drawer").hidden = !open; $("dscrim").hidden = !open; };
 $("openMenu").onclick = () => menu(true); $("closeMenu").onclick = () => menu(false); $("dscrim").onclick = () => menu(false);
+// "Хадгалсан бараа" дарахад жагсаалт нээнэ
+$("drawerFav").addEventListener("click", e => { e.preventDefault(); menu(false); openFavs(); });
 // Цэсний холбоос дарахад цэс хаагдана
 $("drawer").querySelectorAll("a").forEach(a => a.addEventListener("click", () => menu(false)));
 // Хайлтын дүрс: бараан хэсэг рүү гүйлгэж хайлтын талбарт курсор тавина
@@ -1900,6 +2007,83 @@ renderFilters(); renderGrid(); renderZones(); renderDrops();
 // САЙТЫН ТОХИРГОО (админ хэсгээс өөрчилнө): холбоо барих, нүүр, асуулт, өнгө, лого
 // Supabase-ийн "settings" хүснэгтээс уншина. Дараагийн удаа шууд харагдахаар хөтөчид хадгална.
 // =====================================================================
+// Слайд/постерын холбоос: "product:ID" бол барааны хуудас, "#shop" бол хэсэг рүү, бусад нь вэб хаяг
+function goLink(l){
+  if (!l) return;
+  if (l.startsWith("product:")) { if (byId(l.slice(8))) openModal(l.slice(8)); return; }
+  if (l.startsWith("#")) { const el = document.querySelector(l); if (el) el.scrollIntoView({ behavior: "smooth" }); return; }
+  if (/^https?:\/\//.test(l)) window.open(l, "_blank", "noopener");
+}
+// Слайд ба постерын өгөгдөл (мэдээллийн хуудас нээхэд)
+const PROMO = { s: [], p: [] };
+// Огноог "2026.11.10" хэлбэрт
+const ymd = v => v ? v.replace(/-/g, ".") : "";
+// Урамшууллын мэдээллийн хуудас: гарчиг/тайлбар байвал хуудас нээнэ, үгүй бол шууд холбоос руу
+function openPromo(key){
+  const x = (PROMO[key[0]] || [])[+key.slice(1)]; if (!x) return;
+  if (!x.title && !x.body) return goLink(x.link);
+  const prods = (x.products || []).map(byId).filter(Boolean);
+  // Хугацаа: эхлэх–дуусах, дуусахад хэд хоног үлдсэн
+  const left = x.end ? Math.ceil((new Date(x.end + "T23:59:59") - Date.now()) / 864e5) : null;
+  const when = x.start || x.end ? `${ymd(x.start)}${x.end ? " – " + ymd(x.end) : ""}` : "";
+  const cta = x.link ? (x.link.startsWith("product:") ? "Бараа үзэх" : x.link === "#drops" ? "Шинэ бараа үзэх" : x.link.startsWith("#") ? "Дэлгүүр үзэх" : "Дэлгэрэнгүй") : "";
+  $("modal").innerHTML = `
+    <div class="pd-close"><button class="x" id="mClose" aria-label="Хаах">×</button></div>
+    <article class="promo-page">
+      <img class="pp-img" src="${esc(x.img)}" alt="">
+      <div class="pp-body">
+        ${when ? `<div class="pp-when">${esc(when)}${left !== null ? (left > 0 ? `<span class="pp-left">${left} хоног үлдлээ</span>` : `<span class="pp-left over">Дууссан</span>`) : ""}</div>` : ""}
+        ${x.title ? `<h2>${esc(x.title)}</h2>` : ""}
+        ${x.body ? `<p class="pp-text">${esc(x.body)}</p>` : ""}
+        ${cta ? `<button type="button" class="primary" id="ppGo">${cta} →</button>` : ""}
+      </div>
+      ${prods.length ? `<section class="pd-sec pp-prods"><h4>Урамшуулалд хамаарах бараа</h4><div class="sim">${prods.map(p => `<button type="button" data-sim="${esc(p.id)}"><img src="${p.img}" alt="" loading="lazy"><b>${esc(p.name)}</b><span>${salePct(p) ? `<s style="color:#e5172f;font-size:12px">${fmt(p.was)}</s> ` : ""}${fmt(p.price)}</span></button>`).join("")}</div></section>` : ""}
+    </article>`;
+  $("scrim").hidden = false; $("modal").hidden = false; $("modal").scrollTop = 0;
+  $("mClose").onclick = closeAll;
+  if ($("ppGo")) $("ppGo").onclick = () => { if (!x.link.startsWith("product:")) closeAll(); goLink(x.link); };
+  $("modal").querySelectorAll("[data-sim]").forEach(b => b.onclick = () => openModal(b.dataset.sim));
+}
+// Нүүрний слайд: 5 секунд тутам автоматаар солигдоно, хуруугаар гүйлгэж, сум/цэгээр сольж болно
+let slTimer = null;
+function renderSlides(list){
+  const sl = $("slider"), tr = $("slTrack");
+  list = list.filter(x => x && x.img);
+  clearInterval(slTimer);
+  // Слайд байхгүй бол хуучин нүүр хэсгийг харуулна
+  sl.hidden = !list.length; $("lookbook").hidden = !!list.length;
+  if (!list.length) return;
+  PROMO.s = list;
+  tr.innerHTML = list.map((x, i) => `<button type="button" class="sl" data-pi="s${i}" aria-label="${esc(x.title || "Урамшуулал " + (i + 1))}"><img src="${esc(x.img)}" alt="" ${i ? 'loading="lazy"' : 'fetchpriority="high"'}></button>`).join("");
+  // Слайдын харьцааг эхний постерын хэмжээгээр тогтооно (бүх постер ижил хэмжээтэй байна)
+  const first = tr.querySelector("img");
+  const setAr = () => { if (first.naturalWidth) sl.style.setProperty("--sl-ar", first.naturalWidth / first.naturalHeight); };
+  if (first.complete) setAr(); else first.onload = setAr;
+  $("slDots").innerHTML = list.length > 1 ? list.map((_, i) => `<button type="button" aria-label="${i + 1}" aria-current="${i === 0}"></button>`).join("") : "";
+  $("slPrev").hidden = $("slNext").hidden = list.length < 2;
+  const n = list.length, dots = [...$("slDots").children];
+  const cur = () => Math.round(tr.scrollLeft / tr.clientWidth);
+  const go = i => tr.scrollTo({ left: ((i % n + n) % n) * tr.clientWidth, behavior: "smooth" });
+  // Гүйлгэхэд цэгийг шинэчилнэ
+  tr.onscroll = () => { const c = cur(); dots.forEach((d, j) => d.setAttribute("aria-current", j === c)); };
+  dots.forEach((d, i) => d.onclick = () => { go(i); restart(); });
+  $("slPrev").onclick = () => { go(cur() - 1); restart(); };
+  $("slNext").onclick = () => { go(cur() + 1); restart(); };
+  // Слайд дээр дарахад холбоос руу
+  tr.querySelectorAll(".sl").forEach(b => b.onclick = () => openPromo(b.dataset.pi));
+  // Автоматаар солих (хэрэглэгч гараараа гүйлгэвэл дахин эхлүүлнэ)
+  const restart = () => { clearInterval(slTimer); if (n > 1) slTimer = setInterval(() => { if (!document.hidden) go(cur() + 1); }, 5000); };
+  tr.ontouchstart = restart;
+  restart();
+}
+// Онцлох постерууд: хажуу тийш гүйдэг карт
+function renderPromos(list){
+  list = list.filter(x => x && x.img);
+  $("promos").hidden = !list.length;
+  PROMO.p = list;
+  $("prRow").innerHTML = list.map((x, i) => `<button type="button" class="pr" data-pi="p${i}" aria-label="${esc(x.title || "Онцлох")}"><img src="${esc(x.img)}" alt="" loading="lazy"></button>`).join("");
+  $("prRow").querySelectorAll(".pr").forEach(b => b.onclick = () => openPromo(b.dataset.pi));
+}
 function applySettings(st){
   if (!st || typeof st !== "object") return;
   // Холбоо барих
@@ -1913,6 +2097,9 @@ function applySettings(st){
   if (st.heroText != null) $("heroText").textContent = st.heroText;
   if (st.heroButton) $("heroBtn").textContent = st.heroButton;
   if (st.heroImage) $("heroImg").src = st.heroImage;
+  // Нүүрний слайд ба онцлох постерууд
+  renderSlides(Array.isArray(st.slides) ? st.slides : []);
+  renderPromos(Array.isArray(st.promos) ? st.promos : []);
   // Хөлийн бичвэр
   if (st.footerText != null) $("fText").textContent = st.footerText;
   // Хэрхэн захиалах: [{t: гарчиг, d: тайлбар}]
@@ -1974,6 +2161,8 @@ async function loadMe(){
   }
   // Дээд цэсний хүний дүрс дээр нэвтэрсэн эсэхийг тэмдэглэнэ
   $("openAcct").classList.toggle("on", !!me);
+  // Хадгалсан барааг уншина (гарсан бол хоосолно)
+  loadFavs();
 }
 // Алдааны кодыг монгол бичиг болгоно
 const AERR = { email: "Имэйл хаяг буруу байна.", username: "Нэр 3–20 тэмдэгт, латин жижиг үсэг, тоо, _ . байна.", password: "Нууц үг 8+ тэмдэгт, үсэг ба тоо агуулсан байна.",
@@ -2041,12 +2230,15 @@ function acctView(v, email){
     B.innerHTML = `<div class="acct">
       <div class="who"><b>${esc(me.username)}</b><span>${esc(me.email)}</span></div>
       ${me.role === "admin" ? `<a class="primary" href="/admin.html" style="text-align:center;text-decoration:none">Админ хэсэг</a>` : ""}
+      <!-- Хадгалсан бараа -->
+      <button class="ghost" type="button" id="myFavs">♡ Хадгалсан бараа (${favs.size})</button>
       <h3 class="ah">Миний захиалгууд</h3><div id="myOrders" class="myo"><p class="desc">Уншиж байна…</p></div>
       <!-- Нууц үгээ солих (нэвтэрсэн үед имэйлгүйгээр шууд солино) -->
       <button class="ghost" type="button" id="chpw">Нууц үг солих</button>
       <button class="ghost" type="button" id="logout">Гарах</button></div>`;
     // Нууц үг солих цонх руу
     $("chpw").onclick = () => acctView("newpw");
+    $("myFavs").onclick = openFavs;
     // Гарах
     $("logout").onclick = async () => { await sb.auth.signOut(); me = null; $("openAcct").classList.remove("on"); closeAll(); toast("Гарлаа"); };
     // Өөрийн захиалгуудыг уншина (RLS: зөвхөн өөрийнхөө)

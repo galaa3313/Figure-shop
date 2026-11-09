@@ -61,6 +61,15 @@ td small{color:var(--muted);display:block}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;z-index:9}
 @media (max-width:640px){.form{grid-template-columns:1fr}}
 /* Нэмэлт: бараа, тохиргооны хуудас */
+.post{display:grid;grid-template-columns:160px 1fr;gap:12px;border:1px solid var(--line);padding:10px;margin-bottom:8px;align-items:start}
+.post img{width:160px;height:110px;object-fit:cover;background:var(--bg2)}
+.post .pcol{display:flex;flex-direction:column;gap:8px}
+.post .pcol label{display:flex;flex-direction:column;gap:4px}
+.pchk{max-height:200px;overflow:auto;border:1px solid var(--line);padding:8px;display:grid;gap:6px;margin-top:6px}
+.pchk label{flex-direction:row!important;align-items:center;gap:8px!important;font-size:13px;color:var(--ink)}
+.pchk input{width:auto}
+.post .tb{display:flex;gap:4px}.post .tb button{border:1px solid var(--line);background:#fff;width:36px;height:32px}
+@media (max-width:640px){.post{grid-template-columns:100px 1fr}.post img{width:100px;height:80px}}
 .rvi{border:1px solid var(--line);padding:14px;margin-bottom:12px}.rvi.off{opacity:.55}
 nav{flex-wrap:wrap}
 .mut{color:var(--muted);font-size:12px}
@@ -184,7 +193,7 @@ function shrink(file, max = 1400){
 }
 // Зургийг Supabase Storage-д ("products" сан) хадгалж нийтийн холбоосыг буцаана
 async function upload(file, folder){
-  const blob = await shrink(file);
+  const blob = await shrink(file, folder === "slides" ? 2000 : 1400);
   const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.webp`;
   const { error } = await sb.storage.from("products").upload(path, blob, { contentType: "image/webp" });
   if (error) throw error;
@@ -354,7 +363,15 @@ async function showSettings(){
       <h3 class="full sec">Холбоо барих</h3>
       ${inp("phone", "Утас", "8911-6331")}${inp("instagram", "Instagram", "instagram.com/finn.mn1")}
       ${inp("facebook", "Facebook (хоосон бол нуугдана)", "facebook.com/…")}${inp("address", "Хаяг / дэлгүүр (заавал биш)")}
-      <h3 class="full sec">Нүүр хэсэг</h3>
+      <h3 class="full sec">Нүүрний слайд (постер)</h3>
+      <p class="full mut">Постерууд 5 секунд тутам автоматаар солигдоно. Бүгдийг <b>ижил хэмжээтэй</b> хийнэ: утсанд 1080×1080 эсвэл 1080×1350, компьютерт 1920×800 зөвлөнө. Слайд байхгүй бол доорх "Нүүр хэсэг" харагдана.<br><b>Гарчиг эсвэл тайлбар</b> бичвэл постер дарахад урамшууллын мэдээллийн хуудас нээгдэнэ (зураг, тайлбар, хугацаа, хамаарах бараа, товч).</p>
+      <div class="full" id="slList"></div>
+      <div class="full"><label class="btn" style="flex-direction:row;color:var(--ink);display:inline-flex">+ Слайд нэмэх<input type="file" id="slFile" accept="image/*" multiple hidden></label></div>
+      <h3 class="full sec">Онцлох постерууд (хажуу тийш гүйдэг)</h3>
+      <p class="full mut">Слайдын доор жижиг постер картууд гарна (брэнд, шинэ ирсэн, хямдрал гэх мэт). 4:5 харьцаатай (1080×1350) зураг зөвлөнө.</p>
+      <div class="full" id="prList"></div>
+      <div class="full"><label class="btn" style="flex-direction:row;color:var(--ink);display:inline-flex">+ Постер нэмэх<input type="file" id="prFile" accept="image/*" multiple hidden></label></div>
+      <h3 class="full sec">Нүүр хэсэг (слайд байхгүй үед)</h3>
       <label class="full">Дээд хар тууз (хоосон бол нуугдана)<input data-k="notice" value="${esc(S.notice)}"></label>
       ${inp("heroEyebrow", "Жижиг дээд гарчиг")}${inp("heroButton", "Товчны бичиг")}
       <label class="full">Том гарчиг<input data-k="heroTitle" value="${esc(S.heroTitle)}"></label>
@@ -402,6 +419,52 @@ async function showSettings(){
     how = how.map((x, i) => ({ t: $("main").querySelector(`[data-ht="${i}"]`).value.trim(), d: $("main").querySelector(`[data-hd="${i}"]`).value.trim() }));
     faq = faq.map((x, i) => ({ q: $("main").querySelector(`[data-fq="${i}"]`).value.trim(), a: $("main").querySelector(`[data-fa="${i}"]`).value.trim() }));
   };
+  // ----- Слайд, постер: зураг + холбоос, дараалал, устгах -----
+  let slides = [...(S.slides || [])], promos = [...(S.promos || [])];
+  // Холбоосын сонголт: холбоосгүй, хэсэг рүү, бараа руу, эсвэл вэб хаяг
+  const { data: plist } = await sb.from("products").select("id,name").order("sort", { ascending: false });
+  const linkOpts = cur => `<option value="">Холбоосгүй</option><option value="#shop" ${cur === "#shop" ? "selected" : ""}>→ Бүх бараа</option><option value="#drops" ${cur === "#drops" ? "selected" : ""}>→ Шинэ бараа</option>`
+    + (plist || []).map(x => `<option value="product:${esc(x.id)}" ${cur === "product:" + x.id ? "selected" : ""}>Бараа: ${esc(x.name)}</option>`).join("")
+    + `<option value="url" ${/^https?:/.test(cur || "") ? "selected" : ""}>Вэб хаяг…</option>`;
+  const drawPosters = (arr, boxId, key) => {
+    $(boxId).innerHTML = arr.map((x, i) => `<div class="post"><img src="${esc(x.img)}" alt="">
+      <div class="pcol">
+        <!-- Урамшууллын хуудасны гарчиг, тайлбар (бөглөвөл постер дарахад мэдээллийн хуудас нээгдэнэ) -->
+        <input data-${key}t="${i}" placeholder="Гарчиг (жишээ: Өвлийн хямдрал 30% хүртэл)" value="${esc(x.title || "")}">
+        <textarea data-${key}b="${i}" rows="4" placeholder="Тайлбар: нөхцөл, хугацаа, дэлгэрэнгүй мэдээлэл…">${esc(x.body || "")}</textarea>
+        <div class="row" style="gap:8px;flex-wrap:wrap"><label class="mut" style="flex:1;min-width:140px">Эхлэх<input type="date" data-${key}s="${i}" value="${esc(x.start || "")}"></label><label class="mut" style="flex:1;min-width:140px">Дуусах<input type="date" data-${key}e="${i}" value="${esc(x.end || "")}"></label></div>
+        <label class="mut">Товчны холбоос<select data-${key}l="${i}">${linkOpts(x.link)}</select></label>
+        <input data-${key}u="${i}" placeholder="https://…" value="${/^https?:/.test(x.link || "") ? esc(x.link) : ""}" ${/^https?:/.test(x.link || "") ? "" : "hidden"}>
+        <!-- Урамшуулалд хамаарах бараанууд -->
+        <details><summary class="mut">Урамшуулалд хамаарах бараа (${(x.products || []).length})</summary>
+          <div class="pchk">${(plist || []).map(pr => `<label><input type="checkbox" data-${key}p="${i}" value="${esc(pr.id)}" ${(x.products || []).includes(pr.id) ? "checked" : ""}> ${esc(pr.name)}</label>`).join("")}</div></details>
+        <div class="tb"><button type="button" data-${key}up="${i}" ${i ? "" : "disabled"}>↑</button><button type="button" data-${key}dn="${i}" ${i < arr.length - 1 ? "" : "disabled"}>↓</button><button type="button" data-${key}x="${i}">×</button></div></div></div>`).join("") || '<p class="mut">Одоохондоо алга.</p>';
+    const q = (a, i) => $(boxId).querySelector(`[data-${key}${a}="${i}"]`);
+    arr.forEach((x, i) => {
+      // Гарчиг, тайлбар, огноо
+      q("t", i).oninput = e => { x.title = e.target.value; };
+      q("b", i).oninput = e => { x.body = e.target.value; };
+      q("s", i).onchange = e => { x.start = e.target.value; };
+      q("e", i).onchange = e => { x.end = e.target.value; };
+      // Холбоос сонгох
+      q("l", i).onchange = e => { const v = e.target.value; q("u", i).hidden = v !== "url"; x.link = v === "url" ? q("u", i).value.trim() : v; };
+      q("u", i).oninput = e => { x.link = e.target.value.trim(); };
+      // Хамаарах бараа
+      $(boxId).querySelectorAll(`[data-${key}p="${i}"]`).forEach(c => c.onchange = () => { x.products = [...$(boxId).querySelectorAll(`[data-${key}p="${i}"]:checked`)].map(z => z.value); c.closest("details").querySelector("summary").textContent = `Урамшуулалд хамаарах бараа (${x.products.length})`; });
+      // Дээш, доош, устгах
+      q("up", i).onclick = () => { [arr[i - 1], arr[i]] = [arr[i], arr[i - 1]]; drawPosters(arr, boxId, key); };
+      q("dn", i).onclick = () => { [arr[i + 1], arr[i]] = [arr[i], arr[i + 1]]; drawPosters(arr, boxId, key); };
+      q("x", i).onclick = () => { arr.splice(i, 1); drawPosters(arr, boxId, key); };
+    });
+  };
+  drawPosters(slides, "slList", "s"); drawPosters(promos, "prList", "p");
+  // Зураг оруулах (хэд хэдийг зэрэг)
+  const addPosters = (fileId, arr, boxId, key) => $(fileId).onchange = async e => {
+    toast("Оруулж байна…");
+    for (const f of e.target.files) { try { arr.push({ img: await upload(f, "slides"), link: "" }); } catch (err) { toast("Алдаа: " + err.message); } }
+    e.target.value = ""; drawPosters(arr, boxId, key); toast("Орлоо — Хадгалах дарна уу");
+  };
+  addPosters("slFile", slides, "slList", "s"); addPosters("prFile", promos, "prList", "p");
   drawHow(); drawFaq();
   $("faqAdd").onclick = () => { readLists(); faq.push({ q: "", a: "" }); drawFaq(); };
   $("colReset").onclick = () => { for (const [k, v] of Object.entries(DEF.colors)) $("main").querySelector(`[data-c="${k}"]`).value = v; };
@@ -423,6 +486,9 @@ async function showSettings(){
     $("main").querySelectorAll("[data-k]").forEach(el => out[el.dataset.k] = el.value.trim());
     out.colors = {}; $("main").querySelectorAll("[data-c]").forEach(el => out.colors[el.dataset.c] = el.value);
     out.how = how.filter(x => x.t); out.faq = faq.filter(x => x.q && x.a);
+    // Слайд ба постерууд
+    const clean = x => ({ img: x.img, link: x.link || "", title: (x.title || "").trim(), body: (x.body || "").trim(), start: x.start || "", end: x.end || "", products: x.products || [] });
+    out.slides = slides.filter(x => x.img).map(clean); out.promos = promos.filter(x => x.img).map(clean);
     $("ssave").disabled = true;
     const { data: u } = await sb.auth.getUser();
     const { error } = await sb.from("settings").upsert({ id: "site", data: out, updated_at: new Date().toISOString(), updated_by: u && u.user ? u.user.id : null });

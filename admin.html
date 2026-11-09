@@ -237,6 +237,7 @@ async function showProducts(editId){
       toast(rows.length + " бараа орлоо"); showProducts();
     } catch (e) { toast("Алдаа: " + e.message); $("seed").disabled = false; $("seed").textContent = "Одоогийн барааг оруулах"; }
   };
+  window.__plist = list;
   if (editing) productForm(editing, editId === "new");
 }
 
@@ -250,7 +251,7 @@ function productForm(p, isNew){
       <div class="thumbs" id="thumbs"></div>
       <div class="row" style="margin-top:8px"><label class="btn" style="flex-direction:row;color:var(--ink)">+ Зураг оруулах<input type="file" id="pfiles" accept="image/*" multiple hidden></label>
       <input id="purl" placeholder="эсвэл зургийн холбоос (https://…)" style="flex:1"><button type="button" class="btn" id="paddurl">Нэмэх</button><span id="pmsg" class="mut"></span></div></div>
-    <label>ID (латин, зай байхгүй)<input id="p-id" value="${esc(p.id)}" ${isNew ? "" : "readonly"} placeholder="black-hoodie" required pattern="[a-z0-9_-]{2,40}"></label>
+    <input type="hidden" id="p-id" value="${esc(p.id)}">
     <label>Ангилал<select id="p-cat">${Object.entries(CATS).map(([k, v]) => `<option value="${k}" ${k === p.cat ? "selected" : ""}>${v}</option>`).join("")}</select></label>
     <label class="full">Нэр<input id="p-name" value="${esc(p.name)}" required></label>
     <label>Брэнд / цуврал<input id="p-series" value="${esc(p.series || "")}"></label>
@@ -273,10 +274,24 @@ function productForm(p, isNew){
     $("thumbs").querySelectorAll("[data-x]").forEach(b => b.onclick = () => { images.splice(+b.dataset.x, 1); drawThumbs(); });
   };
   drawThumbs();
+  // ID-г зөв хэлбэрт оруулна: жижиг латин үсэг, тоо, "-" (утас том үсгээр эхлүүлэх, кирилл бичихийг засна)
+  const TR = { а:"a",б:"b",в:"v",г:"g",д:"d",е:"e",ё:"yo",ж:"j",з:"z",и:"i",й:"i",к:"k",л:"l",м:"m",н:"n",о:"o",ө:"u",п:"p",р:"r",с:"s",т:"t",у:"u",ү:"u",ф:"f",х:"h",ц:"ts",ч:"ch",ш:"sh",щ:"sh",ъ:"",ы:"y",ь:"",э:"e",ю:"yu",я:"ya" };
+  const slug = v => String(v).toLowerCase().split("").map(c => TR[c] ?? c).join("").replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").replace(/-{2,}/g, "-").slice(0, 40);
+  // Шинэ барааны ID-г нэрнээс автоматаар үүсгэнэ (кирилл, латин аль нь ч болно). Давхардвал ард нь тэмдэгт нэмнэ
+  const makeId = () => {
+    if (!isNew) return p.id;
+    let v = slug($("p-name").value);
+    if (v.length < 2) v = "item";
+    if ((window.__plist || []).some(x => x.id === v)) v = v.slice(0, 34) + "-" + Math.random().toString(36).slice(2, 6);
+    return v;
+  };
+  if (isNew) $("p-name").addEventListener("change", () => { $("p-id").value = makeId(); });
   $("pcancel").onclick = () => showProducts();
   // Утас/компьютерээс зураг оруулах
   $("pfiles").onchange = async e => {
-    const id = $("p-id").value.trim(); if (!/^[a-z0-9_-]{2,40}$/.test(id)) { e.target.value = ""; return toast("Эхлээд ID бичнэ үү"); }
+    if (!$("p-name").value.trim()) { e.target.value = ""; return toast("Эхлээд барааны нэрээ бичнэ үү"); }
+    if (!$("p-id").value) $("p-id").value = makeId();
+    const id = $("p-id").value;
     $("pmsg").textContent = "Оруулж байна…";
     for (const f of e.target.files) { try { images.push(await upload(f, id)); drawThumbs(); } catch (err) { toast("Зураг оруулахад алдаа"); } }
     $("pmsg").textContent = ""; e.target.value = "";
@@ -288,7 +303,8 @@ function productForm(p, isNew){
     e.preventDefault(); $("psave").disabled = true;
     // Зураг өөрчлөгдсөн бол галерейн хуучин нэрсийг (labels) хасна
     const extra = { ...(p.extra || {}) }; if (JSON.stringify(images) !== origImages) delete extra.labels;
-    const row = { id: $("p-id").value.trim(), cat: $("p-cat").value, name: $("p-name").value.trim(), series: $("p-series").value.trim(), line: $("p-line").value.trim(),
+    if (!$("p-id").value) $("p-id").value = makeId();
+    const row = { id: $("p-id").value, cat: $("p-cat").value, name: $("p-name").value.trim(), series: $("p-series").value.trim(), line: $("p-line").value.trim(),
       price: Number($("p-price").value), was: Number($("p-was").value) || null, badge: $("p-badge").value || null, descr: $("p-descr").value.trim(),
       options: parseOpts($("p-opts").value), pre: $("p-pre").checked, active: $("p-active").checked, sort: Number($("p-sort").value) || 0, images, extra };
     const { error } = await sb.from("products").upsert(row);

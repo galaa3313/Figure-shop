@@ -9,9 +9,16 @@
 <body>
 <!-- ===== ХУУДАСНЫ ТОЛГОЙ: нэр, фонт, загвар ===== -->
 <!-- Хөтчийн таб дээр харагдах сайтын нэр -->
-<title>GANZONE</title>
+<title>FINN — Beyond the ordinary</title>
+<!-- Хайлт, сошиалд хуваалцах үеийн мэдээлэл -->
+<meta name="description" content="FINN — A curated world of modern culture, fashion and lifestyle. Солонгос хувцас, аниме фигур, lifestyle бараа.">
+<meta property="og:title" content="FINN — Beyond the ordinary">
+<meta property="og:description" content="A curated world of modern culture, fashion and lifestyle.">
+<meta property="og:image" content="https://figure-shop-gamma.vercel.app/brand/og.jpg">
+<meta name="theme-color" content="#ffffff">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
 <!-- Хөтчийн табын дүрс: хар дөрвөлжин дээр улаан налуу зураас -->
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0a0a'/%3E%3Cpolygon points='18,50 30,50 46,14 34,14' fill='%23ff2d48'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 160 160%22%3E%3Crect width=%22160%22 height=%22160%22 rx=%2234%22 fill=%22%230a0a0a%22/%3E%3Cg transform=%22translate%2821%2C30%29%22%3E%3Cpath d=%22M14.0%2C0.0 L118.0%2C0.0 L109.0%2C15.0 L0.0%2C15.0 Z M0.0%2C22.0 L15.0%2C22.0 L15.0%2C100.0 L0.0%2C100.0 Z M15.0%2C52.0 L94.4%2C52.0 L86.4%2C67.0 L15.0%2C67.0 Z%22 fill=%22%23f4f4f4%22/%3E%3C/g%3E%3C/svg%3E">
 <!-- Утасны дэлгэцийн захыг бүрэн ашиглахыг зөвшөөрнө -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <!-- Google Fonts руу урьдчилан холбогдож фонтыг хурдан ачаална -->
@@ -63,7 +70,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(12,10,18,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 /* Лого, цэс, сагсыг нэг мөрөнд байрлуулна */
 .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px}
-/* GANZONE лого: GAN + улаан налуу зураас + ONE */
+/* FINN лого (хуучин GAN/ONE загвар) */
 .logo{font-family:"Inter",var(--body);font-weight:900;font-size:24px;letter-spacing:-.01em;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:0}
 /* Улаан налуу зураас (Z үсгийн оронд) */
 .logo .slash{display:inline-block;width:.3em;height:.72em;background:var(--violet);transform:skewX(-26deg);margin:0 .14em 0 .1em}
@@ -213,16 +220,16 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .none{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px 0}
 
 
-/* ===== НЭМЭЛТ ЗАГВАР (GANZONE баяжуулалт) ===== */
+/* ===== НЭМЭЛТ ЗАГВАР (баяжуулалт) ===== */
 /* Хэсгийн гарчгийн өмнөх улаан налуу зураас (логоны тэмдэг) */
 .sechead h2::before{content:"";display:inline-block;width:.32em;height:.78em;background:var(--violet);transform:skewX(-26deg);margin-right:.35em;vertical-align:-.04em}
 /* Хэсгийн гарчгийг илүү тод болгоно */
 .sechead h2{font-weight:700}
-/* Нүүрний ард бүдэг том GANZONE бичиг */
+/* Нүүрний ард бүдэг том бичиг (нуусан) */
 .hero{position:relative}
 /* Том бүдэг бичиг утсан дээр хажуу тийш гүйлгэх зай үүсгэхгүй байхаар таслана */
 main{overflow-x:clip}
-.hero::before{content:"GANZONE";position:absolute;right:-2%;top:6%;font:900 clamp(80px,16vw,220px)/1 "Inter",sans-serif;letter-spacing:-.04em;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.06);pointer-events:none;z-index:-1;white-space:nowrap}
+.hero::before{content:"FINN";position:absolute;right:-2%;top:6%;font:900 clamp(80px,16vw,220px)/1 "Inter",sans-serif;letter-spacing:-.04em;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.06);pointer-events:none;z-index:-1;white-space:nowrap}
 /* Логон дээр хулгана очиход улаан зураас хөдөлнө */
 .logo .slash{transition:transform .25s}
 .logo:hover .slash{transform:skewX(-26deg) scaleY(1.18)}
@@ -884,16 +891,26 @@ footer{background:#fff;border-top:1px solid var(--line)}
 .mo>div{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
 .mo p{margin:0;font-size:13px;color:var(--muted)}
 .mo .st{font-size:12px;background:var(--bg2);padding:3px 8px}
+
+/* ----- FINN БРЭНД ----- */
+/* SVG логоны хэмжээ: өндрөөр нь тохируулна, өнгө нь текстийн өнгөөр (currentColor) */
+.logo .lgbox{display:inline-flex;align-items:center}
+.logo svg.lg{height:22px;width:auto;display:block}
+.logo img.lgimg{height:26px;width:auto;display:block}
+.drawer .logo svg.lg{height:18px}
+footer .logo svg.lg{height:26px}
+footer .logo{justify-content:flex-start!important;justify-self:start!important}
+:root{--violet:#2f7bff}
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
 <!-- Хамгийн дээд хар мэдэгдлийн тууз -->
-<div class="notice">QPay-ээр шууд төлнө · УБ хотод хүргэлттэй · Солонгосоос 7–14 хоногт</div>
+<div class="notice" id="notice">QPay-ээр шууд төлнө · УБ хотод хүргэлттэй · Солонгосоос 7–14 хоногт</div>
 <header class="top"><div class="wrap bar">
   <!-- Цэс нээх (☰) товч -->
   <button class="menubtn" id="openMenu" type="button" aria-label="Цэс нээх"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
   <!-- Голд лого -->
-  <a class="logo" href="#top" aria-label="GANZONE">GAN<span class="slash"></span>ONE</a>
+  <a class="logo" href="#top" aria-label="FINN"><span class="lgbox"><svg class="lg" viewBox="0 -4 503 108" fill="currentColor" aria-hidden="true"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/><text x="480" y="22" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="20">®</text></svg></span></a>
   <!-- Баруун талд: хайлт ба сагс -->
   <div class="hicons">
     <button class="iconbtn" id="openSearch" type="button" aria-label="Хайх"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></button>
@@ -904,7 +921,7 @@ footer{background:#fff;border-top:1px solid var(--line)}
 <!-- Хажуугаас гарах цэс (☰ дарахад) -->
 <div class="dscrim" id="dscrim" hidden></div>
 <nav class="drawer" id="drawer" hidden aria-label="Цэс">
-  <div class="dhead"><span class="logo" style="font-size:20px">GAN<span class="slash"></span>ONE</span><button class="x" id="closeMenu" type="button" aria-label="Хаах">×</button></div>
+  <div class="dhead"><span class="logo" style="font-size:20px"><span class="lgbox"><svg class="lg" viewBox="0 -4 503 108" fill="currentColor" aria-hidden="true"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/><text x="480" y="22" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="20">®</text></svg></span></span><button class="x" id="closeMenu" type="button" aria-label="Хаах">×</button></div>
   <a href="#shop">Бүх бараа</a><a href="#drops">Шинэ бараа</a><a href="#zones">Ангилал</a><a href="#how">Хэрхэн захиалах</a><a href="#faq">Түгээмэл асуулт</a><a href="#contact">Холбоо барих</a>
   <small>QPay-ээр шууд төлнө · УБ хотод хүргэлттэй</small>
 </nav>
@@ -914,17 +931,17 @@ footer{background:#fff;border-top:1px solid var(--line)}
   <!-- Нүүр хэсэг: бүтэн өргөнтэй том зураг, дээр нь гарчиг ба товчнууд -->
   <section class="lookbook">
     <!-- Арын том зураг -->
-    <img src="/img/36acb25200.webp" alt="GANZONE дэлгүүрийн бараанууд" fetchpriority="high">
+    <img src="/img/36acb25200.webp" alt="FINN" fetchpriority="high" id="heroImg">
     <!-- Зураг дээрх текст -->
     <div class="wrap lbtext">
       <!-- Жижиг дээд гарчиг -->
-      <div class="eyebrow">GANZONE</div>
+      <div class="eyebrow" id="heroEyebrow">FINN · Beyond the ordinary</div>
       <!-- Том гарчиг -->
-      <h1>Таны хүссэн бүхэн <em>нэг дор</em></h1>
+      <h1 id="heroTitle">Beyond the ordinary.</h1>
       <!-- Тайлбар -->
-      <p>Солонгос хувцас, Японы аниме фигур, цахилгаан бараа. Бэлэн бараа шууд хүргэнэ, бусдыг 7–14 хоногт захиалж авчирна.</p>
+      <p id="heroText">A curated world of modern culture, fashion and lifestyle. Солонгос хувцас, аниме фигур, lifestyle бараа.</p>
       <!-- Товчнууд -->
-      <div class="ctas"><a class="btn main" href="#shop">Бараа үзэх</a><a class="btn alt" href="#zones">Ангилал</a></div>
+      <div class="ctas"><a class="btn main" href="#shop" id="heroBtn">Бараа үзэх</a><a class="btn alt" href="#zones">Ангилал</a></div>
       <!-- Статистик (JavaScript бөглөнө, шинэ загварт нуугдана) -->
       <div class="stats" id="stats"></div>
     </div>
@@ -933,7 +950,7 @@ footer{background:#fff;border-top:1px solid var(--line)}
   <!-- Гүйдэг тууз: цувралын нэрсийг JavaScript бөглөнө -->
   <div class="marquee" aria-hidden="true"><div class="track" id="track"></div></div>
 
-  <!-- ===== ИТГЭЛИЙН МӨР: яагаад GANZONE ===== -->
+  <!-- ===== ИТГЭЛИЙН МӨР: яагаад FINN ===== -->
   <section class="wrap trust" aria-label="Давуу тал">
     <!-- Жинхэнэ бараа -->
     <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="m9 12 2 2 4-4"/></svg><p style="margin:0"><b>100% жинхэнэ</b><span>Албан ёсны бараа</span></p></div>
@@ -977,7 +994,7 @@ footer{background:#fff;border-top:1px solid var(--line)}
   <!-- ===== ХЭРХЭН ЗАХИАЛАХ ===== -->
   <section class="wrap block" id="how">
     <div class="sechead"><div><h2>Хэрхэн захиалах вэ</h2><p>4 алхам, 2 минут.</p></div></div>
-    <div class="steps3">
+    <div class="steps3" id="howSteps">
       <div class="st"><h3>Сонгох</h3><p>Бараан дээр дарж “Сагсанд хийх” товчоор сагсандаа хийнэ.</p></div>
       <div class="st"><h3>Мэдээлэл бөглөх</h3><p>Нэр, утас, хүргэлтийн хаягаа оруулж захиалгын дугаар авна.</p></div>
       <div class="st"><h3>Дансаар төлөх</h3><p>QPay-ээр эсвэл Худалдаа хөгжлийн банкны данс руу шилжүүлж, гүйлгээний утгад AG дугаараа бичнэ.</p></div>
@@ -994,7 +1011,7 @@ footer{background:#fff;border-top:1px solid var(--line)}
   <!-- ===== ТҮГЭЭМЭЛ АСУУЛТ (дарахад нээгдэнэ) ===== -->
   <section class="wrap block" id="faq">
     <div class="sechead"><div><h2>Түгээмэл асуулт</h2></div></div>
-    <div class="faq">
+    <div class="faq" id="faqList">
       <details><summary>Бараанууд жинхэнэ үү?</summary><p>Тийм. SEGA, Bandai Spirits, Banpresto, FuRyu зэрэг Японы албан ёсны үйлдвэрлэгчдийн лицензтэй бараа, хайрцаг дээр нь лицензийн тэмдэг бий.</p></details>
       <details><summary>Төлбөрөө хэрхэн төлөх вэ?</summary><p>Захиалга үүсгэхэд Худалдаа хөгжлийн банкны данс, дүн, захиалгын дугаар гарч ирнэ. Шилжүүлэхдээ гүйлгээний утгад захиалгын дугаараа (AG-ээр эхэлсэн) заавал бичнэ үү.</p></details>
       <details><summary>Хэдэн хоногт хүргэх вэ?</summary><p>Төлбөр шалгагдсаны дараа Улаанбаатар хотод ихэвчлэн 1–2 хоногт хүргэнэ. Яг цагийг утсаар тохирно.</p></details>
@@ -1007,8 +1024,8 @@ footer{background:#fff;border-top:1px solid var(--line)}
 
 <!-- ===== ХӨЛ: холбоо барих, данс (JavaScript бөглөнө) ===== -->
 <footer id="contact"><div class="wrap foot">
-  <div><div class="logo" style="margin-bottom:8px">GAN<span class="slash"></span>ONE</div><p style="color:var(--muted)">Таны хүссэн бүхэн нэг дор. Үнэ ₮-өөр.</p></div>
-  <div><h4>Холбоо барих</h4><p class="mono" id="fPhone"></p><p><a id="fFb" target="_blank" rel="noopener"></a></p><p><a href="/privacy.html">Хувийн мэдээллийн бодлого</a></p></div>
+  <div><div class="logo" style="margin-bottom:10px"><span class="lgbox"><svg class="lg" viewBox="0 -4 503 108" fill="currentColor" aria-hidden="true"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/><text x="480" y="22" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="20">®</text></svg></span></div><p style="color:var(--muted)" id="fText">Beyond the ordinary. A curated world of modern culture, fashion and lifestyle.</p></div>
+  <div><h4>Холбоо барих</h4><p class="mono" id="fPhone"></p><p><a id="fIg" target="_blank" rel="noopener"></a></p><p><a id="fFb" target="_blank" rel="noopener"></a></p><p id="fAddr"></p><p><a href="/privacy.html">Хувийн мэдээллийн бодлого</a></p></div>
   <div><h4>Төлбөрийн данс</h4><p id="fBank"></p><p class="mono" id="fIban" style="overflow-wrap:anywhere"></p></div>
 </div></footer>
 
@@ -1031,7 +1048,7 @@ footer{background:#fff;border-top:1px solid var(--line)}
 // ===== ДЭЛГҮҮРИЙН ТОХИРГОО =====
 // phone=утас, facebook=пэйж, bank/iban=данс, orderApi/qpayApi=Vercel серверийн хаяг,
 // orderUrl=Apps Script холбоос (сервергүй үед), preDays=Солонгосоос ирэх хугацаа
-const SHOP = { phone: "8911-6331", facebook: "facebook.com/ganzone.mn", // ← утас, пэйжээ солино
+const SHOP = { phone: "8911-6331", instagram: "instagram.com/finn.mn1", facebook: "", address: "", // ← админаас өөрчилнө
   bank: "Худалдаа хөгжлийн банк", iban: "MN040004004004145046",
   orderApi: "/api/order", qpayApi: "/api", orderUrl: "", preDays: "7–14 хоног" }; // ← Apps Script web app холбоос (…/exec)
 // ===== БАРААНЫ ЖАГСААЛТ =====
@@ -1085,8 +1102,14 @@ $("stats").innerHTML = `<div><b>${PRODUCTS.length}</b><span>бараа</span></d
 const mq = SECTIONS.slice(1).map(x => `<span>${esc(x.label)}</span>`).join("");
 // Тасралтгүй гүйхийн тулд 4 удаа давтана
 $("track").innerHTML = mq + mq + mq + mq;
-// Хөлд утас, Facebook бичнэ
-$("fPhone").textContent = SHOP.phone; $("fFb").textContent = SHOP.facebook; $("fFb").href = "https://" + SHOP.facebook;
+// Хөлд утас, Instagram, Facebook, хаяг бичнэ (хоосон бол нууна)
+function renderContact(){
+  $("fPhone").textContent = SHOP.phone;
+  const link = (el, v, label) => { el.hidden = !v; el.parentNode.hidden = !v; if (v) { el.textContent = label + v.replace(/^https?:\/\/(www\.)?/, ""); el.href = /^https?:/.test(v) ? v : "https://" + v; } };
+  link($("fIg"), SHOP.instagram, "Instagram · "); link($("fFb"), SHOP.facebook, "Facebook · ");
+  $("fAddr").textContent = SHOP.address || ""; $("fAddr").hidden = !SHOP.address;
+}
+renderContact();
 // Хөлд банк, дансны дугаар бичнэ
 $("fBank").textContent = SHOP.bank; $("fIban").textContent = SHOP.iban;
 
@@ -1560,7 +1583,8 @@ function showConfirmed(code, text, sent, paid){
     <button class="primary" type="button" id="cpOrder" data-v="">Захиалгыг хуулах</button>
     <div class="contact">
       <span>Утас / мессеж</span><strong>${SHOP.phone}</strong>
-      <span>Facebook пэйж</span><a href="https://${SHOP.facebook}" target="_blank" rel="noopener" style="color:var(--violet);font-weight:600">${SHOP.facebook}</a>
+      ${SHOP.instagram ? `<span>Instagram</span><a href="https://${esc(SHOP.instagram.replace(/^https?:\/\//, ""))}" target="_blank" rel="noopener" style="color:var(--ink);font-weight:600">${esc(SHOP.instagram.replace(/^https?:\/\/(www\.)?/, ""))}</a>` : ""}
+      ${SHOP.facebook ? `<span>Facebook</span><a href="https://${esc(SHOP.facebook.replace(/^https?:\/\//, ""))}" target="_blank" rel="noopener" style="color:var(--ink);font-weight:600">${esc(SHOP.facebook.replace(/^https?:\/\/(www\.)?/, ""))}</a>` : ""}
     </div>
     <button class="ghost" id="closeDone" type="button">Дэлгүүр рүү буцах</button>
   </div>`;
@@ -1578,13 +1602,52 @@ function showConfirmed(code, text, sent, paid){
 renderFilters(); renderGrid(); renderZones(); renderDrops();
 
 // =====================================================================
+// САЙТЫН ТОХИРГОО (админ хэсгээс өөрчилнө): холбоо барих, нүүр, асуулт, өнгө, лого
+// Supabase-ийн "settings" хүснэгтээс уншина. Дараагийн удаа шууд харагдахаар хөтөчид хадгална.
+// =====================================================================
+function applySettings(st){
+  if (!st || typeof st !== "object") return;
+  // Холбоо барих
+  for (const k of ["phone", "instagram", "facebook", "address", "preDays"]) if (typeof st[k] === "string") SHOP[k] = st[k];
+  renderContact();
+  // Дээд мэдэгдлийн тууз (хоосон бол нууна)
+  if (typeof st.notice === "string") { $("notice").textContent = st.notice; $("notice").hidden = !st.notice; }
+  // Нүүр хэсэг
+  if (st.heroEyebrow != null) $("heroEyebrow").textContent = st.heroEyebrow;
+  if (st.heroTitle) $("heroTitle").textContent = st.heroTitle;
+  if (st.heroText != null) $("heroText").textContent = st.heroText;
+  if (st.heroButton) $("heroBtn").textContent = st.heroButton;
+  if (st.heroImage) $("heroImg").src = st.heroImage;
+  // Хөлийн бичвэр
+  if (st.footerText != null) $("fText").textContent = st.footerText;
+  // Хэрхэн захиалах: [{t: гарчиг, d: тайлбар}]
+  if (Array.isArray(st.how) && st.how.length) $("howSteps").innerHTML = st.how.map(x => `<div class="st"><h3>${esc(x.t)}</h3><p>${esc(x.d)}</p></div>`).join("");
+  // Түгээмэл асуулт: [{q: асуулт, a: хариулт}]
+  if (Array.isArray(st.faq) && st.faq.length) $("faqList").innerHTML = st.faq.map(x => `<details><summary>${esc(x.q)}</summary><p>${esc(x.a)}</p></details>`).join("");
+  // Өнгө: өргөлт, дэвсгэр, текст
+  const c = st.colors || {}, R = document.documentElement.style, hex = v => /^#[0-9a-f]{3,8}$/i.test(v || "");
+  if (hex(c.accent)) R.setProperty("--violet", c.accent);
+  if (hex(c.bg)) { R.setProperty("--bg", c.bg); document.body.style.background = c.bg; }
+  if (hex(c.ink)) R.setProperty("--ink", c.ink);
+  // Лого: зураг оруулсан бол SVG логоны оронд тавина
+  if (st.logoUrl) document.querySelectorAll(".logo .lgbox").forEach(b => b.innerHTML = `<img class="lgimg" src="${esc(st.logoUrl)}" alt="FINN">`);
+}
+// Өмнө хадгалсан тохиргоог шууд хэрэглэнэ (хуудас анивчихгүй)
+try { applySettings(JSON.parse(localStorage.getItem("finn-settings") || "null")); } catch (e) {}
+// Supabase-ээс хамгийн сүүлийн тохиргоог уншина
+async function loadSettings(){
+  const { data } = await sb.from("settings").select("data").eq("id", "site").maybeSingle();
+  if (data && data.data) { applySettings(data.data); try { localStorage.setItem("finn-settings", JSON.stringify(data.data)); } catch (e) {} }
+}
+
+// =====================================================================
 // ХЭРЭГЛЭГЧИЙН БҮРТГЭЛ, НЭВТРЭЛТ (Supabase)
 // Бүртгүүлэх → имэйлд ирсэн 6 оронтой код → нэвтэрсэн. Имэйл эсвэл нэрээр нэвтэрнэ.
 // =====================================================================
 // Supabase клиент (тохиргоо ирсний дараа үүснэ), одоогийн хэрэглэгчийн профайл
 let sb = null, me = null;
 // Имэйлийн холбоос дарсны дараа буцах үндсэн сайтын хаяг (домэйн солигдоход энд засна)
-const SITE_URL = "https://figure-shop-gamma.vercel.app/";
+let SITE_URL = "https://figure-shop-gamma.vercel.app/";
 // Нэвтэрсэн бол серверт явуулах "Authorization" толгой
 async function authHeader(){
   if (!sb) return {};
@@ -1747,17 +1810,23 @@ $("openAcct").onclick = () => openAcct();
 
 // Админы нэмсэн барааг Supabase-ээс уншиж сайтын жагсаалтад нэмнэ
 async function loadDbProducts(){
-  const { data } = await sb.from("products").select("*").eq("active", true).order("sort", { ascending: false });
+  const { data } = await sb.from("products").select("*").eq("active", true).order("sort", { ascending: false }).order("created_at", { ascending: true });
   if (!data || !data.length) return;
-  for (const d of data) {
-    // Кодонд байгаа ижил id-тай барааг давхардуулахгүй
-    if (PRODUCTS.some(p => p.id === d.id)) continue;
-    const imgs = d.images || [];
-    PRODUCTS.push({ id: d.id, cat: d.cat, series: d.series || "", name: d.name, line: d.line || "", price: d.price, was: d.was || null,
-      badge: d.badge || null, desc: d.descr || "", pre: !!d.pre, img: imgs[0] || "", gallery: imgs.length > 1 ? imgs.map((src, i) => ({ src, label: "Зураг " + (i + 1) })) : undefined,
-      options: d.options && d.options.length ? d.options : undefined, mat: d.mat });
-  }
-  // Сагсыг дахин сэргээнэ (DB-ийн бараа ачаалагдсаны дараа)
+  // Мэдээллийн сангийн бараа бүрийг сайтын хэлбэрт оруулна (extra-д 360°, галерей, материал гэх мэт)
+  const list = data.map(d => {
+    const imgs = d.images || [], x = { ...(d.extra || {}) }, labels = x.labels || [];
+    // labels-ийг бараанд хуулахгүй
+    delete x.labels;
+    return { ...x, id: d.id, cat: d.cat, series: d.series || "", name: d.name, line: d.line || "", price: d.price, was: d.was || null,
+      badge: d.badge || null, desc: d.descr || x.desc || "", pre: !!d.pre, img: imgs[0] || x.img || "",
+      // Олон зурагтай бол галерей: [зураг, нэр] хэлбэрээр (нэрийг extra.labels-ээс)
+      gallery: imgs.length > 1 ? imgs.map((src, i) => [src, labels[i] || "Зураг " + (i + 1)]) : undefined,
+      options: d.options && d.options.length ? d.options : undefined };
+  });
+  // Туршилтын барааг (#qpaytest) хадгалж, бусдыг мэдээллийн сангийнхаар солино
+  const test = PRODUCTS.filter(p => p.id === "qpaytest");
+  PRODUCTS.length = 0; PRODUCTS.push(...test, ...list);
+  // Сагсыг дахин сэргээнэ (устсан барааг хасна)
   try { cart = JSON.parse(localStorage.getItem("fb-cart") || "[]").filter(id => PRODUCTS.some(p => p.id === keyId(id))); } catch (e) {}
   renderFilters(); renderGrid(); renderZones(); renderDrops();
 }
@@ -1769,13 +1838,15 @@ async function loadDbProducts(){
     const c = await (await fetch("/api/config")).json();
     if (!c.supabaseUrl || !c.supabaseAnon) throw 0;
     sb = window.supabase.createClient(c.supabaseUrl, c.supabaseAnon, { auth: { persistSession: true, autoRefreshToken: true } });
+    // Имэйлийн холбоосын буцах хаяг (finn.mn холбогдоход серверийн SITE_URL-ээс ирнэ)
+    if (c.siteUrl) SITE_URL = c.siteUrl.replace(/\/?$/, "/");
     $("openAcct").hidden = false;
     // Имэйлийн холбоосоор орж ирэхэд: нууц үг сэргээх бол шинэ нууц үгийн цонх, бүртгэл баталгаажсан бол мэдэгдэл
     const fromLink = /type=(signup|recovery|email)/.test(location.hash);
     sb.auth.onAuthStateChange(async ev => {
       if (ev === "PASSWORD_RECOVERY") { await loadMe(); openAcct("newpw"); }
     });
-    await Promise.all([loadMe(), loadDbProducts()]);
+    await Promise.all([loadMe(), loadDbProducts().catch(() => {}), loadSettings().catch(() => {})]);
     if (fromLink && me && !/type=recovery/.test(location.hash)) { toast("Бүртгэл баталгаажлаа 🎉"); openAcct("profile"); }
     // Хаягийн мөрөөс токенуудыг цэвэрлэнэ
     if (fromLink) history.replaceState(null, "", location.pathname);

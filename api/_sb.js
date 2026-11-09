@@ -69,12 +69,14 @@ async function markOrderPaid(code, invoice) {
   } catch (e) { return false; }
 }
 
-// Мэдээллийн сангаас идэвхтэй барааг id-гаар нь авна (үнийг сервер дээр шалгахад)
+// Мэдээллийн сангаас барааг id-гаар нь авна (үнийг сервер дээр шалгахад). Нуусан бол { inactive: true }
 async function productById(id) {
   if (!ready()) return null;
   try {
-    const rows = await rest(`products?id=eq.${encodeURIComponent(id)}&active=eq.true&select=id,name,series,price,pre,options`);
+    const rows = await rest(`products?id=eq.${encodeURIComponent(id)}&select=id,name,series,price,pre,options,active`);
     const p = rows && rows[0]; if (!p) return null;
+    // Админ нуусан бараа: захиалга авахгүй
+    if (!p.active) return { inactive: true };
     // _products.js-тэй ижил хэлбэрт оруулна: options = [[утга, утга], ...]
     return { name: p.name, series: p.series || "", price: p.price, pre: !!p.pre, options: (p.options || []).map(o => o.values || []) };
   } catch (e) { return null; }

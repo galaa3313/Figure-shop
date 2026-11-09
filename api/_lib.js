@@ -1,4 +1,4 @@
-// GANZONE серверийн туслах функцууд (Vercel энэ файлыг хаяг болгож нээхгүй, учир нь "_"-ээр эхэлдэг).
+// FINN серверийн туслах функцууд (Vercel энэ файлыг хаяг болгож нээхгүй, учир нь "_"-ээр эхэлдэг).
 // Нууц гарын үсэг (HMAC) үүсгэх Node-ийн сан
 const crypto = require("crypto");
 // Бараа, үнийн жагсаалт (_products.js)
@@ -31,7 +31,10 @@ async function order(b) {
     // Жагсаалтад байхгүй бараа бол захиалгыг хүлээж авахгүй
     // Эхлээд кодонд байгаа жагсаалтаас, олдохгүй бол админы нэмсэн (Supabase) бараанаас хайна
     const pid = clip(it && it.id, 40);
-    const p = PRODUCTS[pid] || await SB.productById(pid); if (!p) return null;
+    // Эхлээд мэдээллийн сангаас (админы засварласан үнэ), олдохгүй бол кодын жагсаалтаас
+    const dbp = await SB.productById(pid);
+    if (dbp && dbp.inactive) return null;
+    const p = dbp || PRODUCTS[pid]; if (!p) return null;
     // Тоо ширхэг 1–20 хооронд
     const n = Math.min(20, Math.max(1, Math.round(Number(it.n) || 1)));
     // Бэлэн фигур 1 ширхэг л байдаг

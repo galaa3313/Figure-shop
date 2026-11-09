@@ -1,0 +1,357 @@
+[
+ {
+  "id": "hoodie",
+  "cat": "outer",
+  "name": "Asaky Prezaky Flame Zip Hoodie",
+  "series": "Гадуур хувцас",
+  "line": "Asaky Prezaky · Солонгос брэнд",
+  "price": 289000,
+  "badge": "Шинэ",
+  "descr": "Солонгосын streetwear брэнд Asaky Prezaky-гийн нүүр хүртэл битүү татдаг өндөр захтай цахилгаантай hoodie. Ханцуйндаа галын хээ, цээжиндээ одтой хатгамал лого. Чөлөөтэй (oversize) загвар.",
+  "pre": true,
+  "options": [
+   {
+    "label": "Өнгө",
+    "values": [
+     "Цэнхэр",
+     "Хар",
+     "Цагаан"
+    ]
+   },
+   {
+    "label": "Хэмжээ",
+    "values": [
+     "S",
+     "M",
+     "L",
+     "XL"
+    ]
+   }
+  ],
+  "images": [
+   "/img/7c0177dbda.webp"
+  ],
+  "extra": {
+   "mat": "Хөвөн"
+  },
+  "active": true,
+  "sort": 16
+ },
+ {
+  "id": "beanie",
+  "cat": "hats",
+  "name": "Atiissu Dia Beanie",
+  "series": "Малгай",
+  "line": "Atiissu · Солонгос брэнд",
+  "price": 199000,
+  "badge": "Шинэ",
+  "descr": "Солонгосын Atiissu брэндийн алмаазан хээтэй зузаан сүлжмэл малгай, урд талдаа хатгамал логотой. KREAM дээр жинхэнэ эсэхийг шалгуулж авна.",
+  "pre": true,
+  "options": [
+   {
+    "label": "Өнгө",
+    "values": [
+     "Ногоон",
+     "Хар",
+     "Улаан"
+    ]
+   }
+  ],
+  "images": [
+   "/img/55161f62cb.webp"
+  ],
+  "extra": {
+   "mat": "Сүлжмэл"
+  },
+  "active": true,
+  "sort": 15
+ },
+ {
+  "id": "akatsuki",
+  "cat": "figures",
+  "name": "Akatsuki Blind Box",
+  "series": "Naruto",
+  "line": "Pop Mart Korea · Battle Against Akatsuki",
+  "price": 95000,
+  "badge": "Шинэ",
+  "descr": "Санамсаргүй блайнд бокс. Акацукийн гишүүд болон Наруто бүхий 12 дүрээс аль нэг нь гарна, аль нь гарахыг хайрцгаа онгойлгож байж мэднэ. Дүр бүр өөрийн эффекттэй суурьтай жижиг фигур. Хэд хэдийг авбал давхардаж болно.",
+  "pre": true,
+  "options": [],
+  "images": [
+   "/img/1e6983c304.webp",
+   "/img/eca44a4a51.webp",
+   "/img/c0e1f89d2b.webp",
+   "/img/1ca99c347a.webp"
+  ],
+  "extra": {
+   "labels": [
+    "Хайрцаг",
+    "12 дүр",
+    "Бүтэн сет",
+    "Нагато"
+   ]
+  },
+  "active": true,
+  "sort": 14
+ },
+ {
+  "id": "figurizma",
+  "cat": "figures",
+  "name": "Megumi Fushiguro",
+  "series": "Jujutsu Kaisen",
+  "line": "SEGA · FIGURIZMα",
+  "price": 135000,
+  "badge": "Онцлох",
+  "descr": "Арван сүүдрийн техникээ ашиглаж буй Мэгүми, хажууд нь том сүүдрийн нохой шикигами. SEGA-гийн дэлгэрэнгүй будагтай FIGURIZMα цуврал.",
+  "pre": false,
+  "options": [],
+  "images": [
+   "/img/079d141bc2.webp"
+  ],
+  "extra": {
+   "size": "~20 см"
+  },
+  "active": true,
+  "sort": 13
+ },
+ {
+  "id": "zoro",
+  "cat": "figures",
+  "name": "Roronoa Zoro",
+  "series": "One Piece",
+  "line": "Bandai · Theorama Soul",
+  "price": 95000,
+  "badge": "Хит",
+  "descr": "Сэлмээ сугалсан байлдааны поз, эффекттэй диорама суурьтай. Banpresto-гийн шинэ Theorama Soul цувралын фигур.",
+  "pre": false,
+  "options": [],
+  "images": [
+   "/img/61af55ea12.webp"
+  ],
+  "extra": {
+   "size": "~21 см"
+  },
+  "active": true,
+  "sort": 12
+ },
+ {
+  "id": "hisoka",
+  "cat": "figures",
+  "name": "Hisoka",
+  "series": "Hunter x Hunter",
+  "line": "FuRyu",
+  "price": 95000,
+  "badge": "Хит",
+  "descr": "Хисока өөрийн Bungee Gum нэн чадвараа ягаан тунгалаг эффектээр гаргаж буй поз, усан суурьтай.",
+  "pre": false,
+  "options": [],
+  "images": [
+   "/img/58ca3115e1.webp"
+  ],
+  "extra": {},
+  "active": true,
+  "sort": 11
+ },
+ {
+  "id": "endeavor",
+  "cat": "figures",
+  "name": "Endeavor",
+  "series": "My Hero Academia",
+  "line": "Ichiban Kuji · A шагнал",
+  "price": 120000,
+  "badge": "Онцлох",
+  "descr": "Ichiban Kuji сугалааны хамгийн дээд A шагнал. Японд зөвхөн сугалаагаар гардаг тул ховор. No.1 баатар Эндевор галт эффекттэй.",
+  "pre": false,
+  "options": [],
+  "images": [
+   "/img/0b10c52cca.webp"
+  ],
+  "extra": {},
+  "active": true,
+  "sort": 10
+ },
+ {
+  "id": "takaba",
+  "cat": "figures",
+  "name": "Fumihiko Takaba",
+  "series": "Jujutsu Kaisen",
+  "line": "SEGA · Luminasta",
+  "price": 89000,
+  "badge": null,
+  "descr": "Culling Game аркийн инээдмийн жүжигчин Такаба хошин позоороо. SEGA Luminasta цуврал.",
+  "pre": false,
+  "options": [],
+  "images": [
+   "/img/79f5056fd6.webp"
+  ],
+  "extra": {
+   "size": "~17 см"
+  },
+  "active": true,
+  "sort": 9
+ },
+ {
+  "id": "xstellar_black",
+  "cat": "figures",
+  "name": "Maki Zenin",
+  "series": "Jujutsu Kaisen",
+  "line": "SEGA · XStellar",
+  "price": 75000,
+  "badge": "360°",
+  "descr": "Culling Game аркийн сэрсэн Маки, түлэгдлийн сорвитой, Dragon-Bone сэлэмтэй. Бодит фигурыг бүх талаас нь эргүүлж үзээрэй.",
+  "pre": false,
+  "options": [],
+  "images": [
+   "/img/af61000bce.webp"
+  ],
+  "extra": {
+   "spin": [
+    "/img/0c06cc95a4.webp",
+    "/img/ae057b78ad.webp",
+    "/img/5411832d31.webp",
+    "/img/55600e7c5d.webp"
+   ],
+   "close": "/img/4ea0e8d186.webp"
+  },
+  "active": true,
+  "sort": 8
+ },
+ {
+  "id": "xstellar_kimono",
+  "cat": "figures",
+  "name": "Naoya Zenin",
+  "series": "Jujutsu Kaisen",
+  "line": "SEGA · XStellar",
+  "price": 75000,
+  "badge": null,
+  "descr": "Зэнин овгийн тэргүүн Наоя кимоно хувцастай, өөртөө итгэлтэй зогсолтоор. Culling Game аркийн XStellar цуврал.",
+  "pre": false,
+  "options": [],
+  "images": [
+   "/img/47c9133688.webp"
+  ],
+  "extra": {
+   "size": "~22 см"
+  },
+  "active": true,
+  "sort": 7
+ },
+ {
+  "id": "sanji",
+  "cat": "figures",
+  "name": "Sanji",
+  "series": "One Piece",
+  "line": "Banpresto · Maximatic Plus",
+  "price": 85000,
+  "badge": null,
+  "descr": "Галт өшиглөлтөөрөө довтолж буй Санжи. Том хэмжээтэй Maximatic Plus цуврал.",
+  "pre": false,
+  "options": [],
+  "images": [
+   "/img/26acab222d.webp"
+  ],
+  "extra": {
+   "size": "~27 см"
+  },
+  "active": true,
+  "sort": 6
+ },
+ {
+  "id": "nami",
+  "cat": "figures",
+  "name": "Nami",
+  "series": "One Piece",
+  "line": "Banpresto · THE 出航",
+  "price": 65000,
+  "badge": null,
+  "descr": "Egghead арлын хувцастай Нами, цаг агаарын таягтайгаа. Banpresto “THE 出航” (Аялалд гарах) цуврал.",
+  "pre": false,
+  "options": [],
+  "images": [
+   "/img/fea57de74e.webp"
+  ],
+  "extra": {},
+  "active": true,
+  "sort": 5
+ },
+ {
+  "id": "aokiji",
+  "cat": "figures",
+  "name": "Kuzan (Aokiji)",
+  "series": "One Piece",
+  "line": "Banpresto · Battle Record Collection",
+  "price": 70000,
+  "badge": null,
+  "descr": "Мөсөн Хиэ Хиэ но Ми чадвараа ашиглаж буй Аокижи, мөсөн эффекттэй.",
+  "pre": false,
+  "options": [],
+  "images": [
+   "/img/972d58f919.webp"
+  ],
+  "extra": {
+   "size": "~15 см"
+  },
+  "active": true,
+  "sort": 4
+ },
+ {
+  "id": "king",
+  "cat": "figures",
+  "name": "King",
+  "series": "One Piece",
+  "line": "Banpresto · DXF Grandline Series Extra",
+  "price": 65000,
+  "badge": null,
+  "descr": "Кайдогийн баруун гар, далавчтай Кинг гараа зөрүүлсэн поз. DXF цувралын нарийн хийц.",
+  "pre": false,
+  "options": [],
+  "images": [
+   "/img/372dfe9b03.webp"
+  ],
+  "extra": {
+   "size": "~17 см"
+  },
+  "active": true,
+  "sort": 3
+ },
+ {
+  "id": "frieren",
+  "cat": "figures",
+  "name": "Frieren & Mimic",
+  "series": "Frieren",
+  "line": "SEGA · Luminasta Plus",
+  "price": 85000,
+  "badge": null,
+  "descr": "Мимик авдарт толгойгоороо “идэгдсэн” Фрирен. Хамгийн алдартай инээдтэй хэсгийг дүрсэлсэн жижиг диорама.",
+  "pre": false,
+  "options": [],
+  "images": [
+   "/img/52434b47b3.webp"
+  ],
+  "extra": {
+   "size": "~8 см"
+  },
+  "active": true,
+  "sort": 2
+ },
+ {
+  "id": "retsu",
+  "cat": "figures",
+  "name": "Retsu Kaioh",
+  "series": "Baki",
+  "line": "SEGA · Luminasta",
+  "price": 75000,
+  "badge": null,
+  "descr": "Хятадын тулааны урлагийн мастер Рэцү Кайох тулааны байрлалдаа. Baki Dou, SEGA Luminasta цуврал.",
+  "pre": false,
+  "options": [],
+  "images": [
+   "/img/f1f306be5e.webp"
+  ],
+  "extra": {
+   "size": "~15 см"
+  },
+  "active": true,
+  "sort": 1
+ }
+]

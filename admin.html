@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <!-- Хайлтын системд энэ хуудсыг харуулахгүй -->
 <meta name="robots" content="noindex">
-<title>GANZONE · Админ</title>
+<title>FINN · Админ</title>
 <!-- Inter фонт -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap">
 <style>
@@ -60,16 +60,38 @@ td small{color:var(--muted);display:block}
 .msg{padding:40px 0;text-align:center;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;z-index:9}
 @media (max-width:640px){.form{grid-template-columns:1fr}}
+/* Нэмэлт: бараа, тохиргооны хуудас */
+.mut{color:var(--muted);font-size:12px}
+.empty{border:1px dashed var(--line);padding:18px;margin-bottom:16px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.empty p{margin:0;max-width:640px}
+.pc.off{opacity:.5}
+.pc .btns .btn{flex:1;padding:6px 8px;font-size:12px}
+.thumbs figure{width:96px;height:128px}
+.thumbs figure.main{outline:2px solid var(--ink)}
+.thumbs .tb{position:absolute;left:0;right:0;bottom:0;display:flex}
+.thumbs .tb button{position:static;flex:1;height:24px;border:0;background:rgba(0,0,0,.72);color:#fff;font-size:13px}
+.thumbs .tb button:disabled{opacity:.35}
+.thumbs em{position:absolute;top:4px;left:4px;background:#111;color:#fff;font-style:normal;font-size:10px;padding:2px 6px}
+.form h3.sec{margin:12px 0 0;font-size:15px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.pair{display:grid;grid-template-columns:24px 1fr 2fr auto;gap:8px;align-items:start;margin-bottom:8px}
+.pair b{padding-top:9px;color:var(--muted)}
+.pair .tb{display:flex;gap:4px}.pair .tb button{border:1px solid var(--line);background:#fff;width:32px;height:38px}
+.colors label{flex-direction:row!important;align-items:center;gap:8px!important;color:var(--ink)!important}
+.colors input[type=color]{width:44px;height:36px;padding:2px}
+.prev{height:90px;width:auto;max-width:240px;object-fit:cover;border:1px solid var(--line)}
+.prev.logo-p{object-fit:contain;background:#fff;padding:6px}
+@media (max-width:640px){.pair{grid-template-columns:20px 1fr}.pair input,.pair textarea{grid-column:2}}
 </style>
 </head>
 <body>
 <!-- Дээд мөр -->
 <header>
-  <a class="logo" href="/">GAN<i></i>ONE<small>АДМИН</small></a>
+  <a class="logo" href="/" aria-label="FINN"><svg viewBox="0 -4 503 108" fill="currentColor" style="height:18px;width:auto"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/></svg><small>АДМИН</small></a>
   <nav id="tabs" hidden>
     <button type="button" data-t="orders" aria-pressed="true">Захиалга</button>
     <button type="button" data-t="users" aria-pressed="false">Хэрэглэгч</button>
     <button type="button" data-t="products" aria-pressed="false">Бараа</button>
+    <button type="button" data-t="settings" aria-pressed="false">Сайтын тохиргоо</button>
   </nav>
   <span id="whoami" style="color:var(--muted);font-size:13px"></span>
 </header>
@@ -148,89 +170,246 @@ async function showUsers(){
   draw(""); $("uq").oninput = e => draw(e.target.value);
 }
 
-// ===== БАРАА =====
+// ===== ЗУРАГ ОРУУЛАХ (бараа, сайтын зураг) =====
 // Зургийг хөтөч дээр 1400px болгож webp рүү шахна (хурдан ачаалагдана)
-function shrink(file){
+function shrink(file, max = 1400){
   return new Promise((ok, no) => {
     const img = new Image();
-    img.onload = () => { const s = Math.min(1, 1400 / Math.max(img.width, img.height)); const c = document.createElement("canvas"); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); c.toBlob(b => b ? ok(b) : no(), "image/webp", .85); URL.revokeObjectURL(img.src); };
+    img.onload = () => { const s = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement("canvas"); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); c.toBlob(b => b ? ok(b) : no(), "image/webp", .86); URL.revokeObjectURL(img.src); };
     img.onerror = no; img.src = URL.createObjectURL(file);
   });
 }
-// "Өнгө: Хар, Цагаан" мөрүүдийг [{label, values}] болгоно
+// Зургийг Supabase Storage-д ("products" сан) хадгалж нийтийн холбоосыг буцаана
+async function upload(file, folder){
+  const blob = await shrink(file);
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.webp`;
+  const { error } = await sb.storage.from("products").upload(path, blob, { contentType: "image/webp" });
+  if (error) throw error;
+  return sb.storage.from("products").getPublicUrl(path).data.publicUrl;
+}
+// "Өнгө: Хар, Цагаан" мөрүүдийг [{label, values}] болгоно, эсрэгээр нь
 const parseOpts = t => t.split("\n").map(l => l.split(":")).filter(x => x.length === 2 && x[1].trim()).map(([l, v]) => ({ label: l.trim(), values: v.split(",").map(s => s.trim()).filter(Boolean) }));
 const optsText = o => (o || []).map(x => `${x.label}: ${x.values.join(", ")}`).join("\n");
 
-async function showProducts(edit){
+// ===== БАРАА: бүх барааны жагсаалт, засах, зураг солих =====
+async function showProducts(editId){
   const my = ++VIEW;
-  const { data: list, error } = await sb.from("products").select("*").order("sort", { ascending: false }).order("created_at", { ascending: false });
+  const { data: list, error } = await sb.from("products").select("*").order("sort", { ascending: false }).order("created_at", { ascending: true });
   // Өөр таб руу шилжсэн бол зогсоно
   if (my !== VIEW) return;
   if (error) { $("main").innerHTML = `<p class="msg">Алдаа: ${esc(error.message)}</p>`; return; }
-  const p = edit || { id: "", cat: "tops", name: "", series: "", line: "", price: "", was: "", badge: "", descr: "", pre: true, options: [], images: [], active: true, sort: 0 };
+  // Засах бараа (эсвэл шинэ бараа)
+  const editing = editId === "new" ? { id: "", cat: "tops", name: "", series: "", line: "", price: "", was: "", badge: "", descr: "", pre: true, options: [], images: [], active: true, sort: (list[0] ? list[0].sort + 1 : 0), extra: {} }
+    : editId ? list.find(x => x.id === editId) : null;
+  $("main").innerHTML = `
+    <div class="bar"><h2>Бараа <small style="color:var(--muted);font-weight:400">(${list.length})</small></h2>
+      <input id="pq" placeholder="Нэр, брэндээр хайх" style="max-width:220px">
+      <button class="btn dark" id="pnew">+ Шинэ бараа</button></div>
+    ${!list.length ? `<div class="empty"><p><b>Мэдээллийн санд бараа алга.</b> Сайтад одоо байгаа бүх барааг нэг товчоор оруулбал энд жагсаалтаар харж, зураг, үнийг нь засах боломжтой болно.</p><button class="btn dark" id="seed">Одоогийн барааг оруулах</button></div>` : ""}
+    <div id="pform"></div>
+    <div class="plist" id="plist"></div>`;
+  // Жагсаалт зурах (хайлтаар шүүнэ)
+  const draw = q => {
+    const rows = list.filter(x => !q || (x.name + " " + (x.series || "")).toLowerCase().includes(q.toLowerCase()));
+    $("plist").innerHTML = rows.map(x => `<div class="pc ${x.active ? "" : "off"}">
+      <img src="${esc((x.images || [])[0] || "")}" alt="" loading="lazy">
+      <div><b>${esc(x.name)}</b><br><span class="mut">${CATS[x.cat] || x.cat} · ${x.pre ? "Захиалгаар" : "Бэлэн"}</span><br>${x.was ? `<s class="mut">${fmt(x.was)}</s> ` : ""}<b>${fmt(x.price)}</b> ${x.active ? "" : '<span class="tag no">нуусан</span>'}</div>
+      <div class="btns"><button class="btn" data-e="${esc(x.id)}">Засах</button><button class="btn" data-h="${esc(x.id)}">${x.active ? "Нуух" : "Харуулах"}</button></div></div>`).join("") || (list.length ? '<p class="msg">Олдсонгүй.</p>' : "");
+    // Засах
+    $("plist").querySelectorAll("[data-e]").forEach(b => b.onclick = () => { showProducts(b.dataset.e); scrollTo(0, 0); });
+    // Нуух / харуулах (сайтаас түр нуух)
+    $("plist").querySelectorAll("[data-h]").forEach(b => b.onclick = async () => {
+      const x = list.find(r => r.id === b.dataset.h);
+      const { error } = await sb.from("products").update({ active: !x.active }).eq("id", x.id);
+      if (error) return toast("Алдаа: " + error.message);
+      toast(x.active ? "Сайтаас нуулаа" : "Сайтад харагдана"); showProducts();
+    });
+  };
+  draw(""); $("pq").oninput = e => draw(e.target.value);
+  $("pnew").onclick = () => showProducts("new");
+  // Одоогийн барааг (products-seed.json) мэдээллийн санд нэг товчоор оруулна
+  if ($("seed")) $("seed").onclick = async () => {
+    $("seed").disabled = true; $("seed").textContent = "Оруулж байна…";
+    try {
+      const rows = await (await fetch("/products-seed.json", { cache: "no-store" })).json();
+      const { error } = await sb.from("products").upsert(rows, { onConflict: "id", ignoreDuplicates: true });
+      if (error) throw error;
+      toast(rows.length + " бараа орлоо"); showProducts();
+    } catch (e) { toast("Алдаа: " + e.message); $("seed").disabled = false; $("seed").textContent = "Одоогийн барааг оруулах"; }
+  };
+  if (editing) productForm(editing, editId === "new");
+}
+
+// Барааны засах маягт (зураг солих, дараалал өөрчлөх)
+function productForm(p, isNew){
   let images = [...(p.images || [])];
-  $("main").innerHTML = `<div class="bar"><h2>${edit ? "Бараа засах" : "Шинэ бараа нэмэх"}</h2>${edit ? '<button class="btn" id="cancel">Болих</button>' : ""}</div>
-  <form class="form" id="pf">
-    <label>ID (латин, зай байхгүй)<input id="p-id" value="${esc(p.id)}" ${edit ? "readonly" : ""} placeholder="black-hoodie" required pattern="[a-z0-9_-]{2,40}"></label>
+  const origImages = JSON.stringify(images);
+  $("pform").innerHTML = `<form class="form" id="pf">
+    <div class="full row" style="justify-content:space-between"><h3 style="margin:0">${isNew ? "Шинэ бараа" : "Засах: " + esc(p.name)}</h3><button type="button" class="btn" id="pcancel">Хаах</button></div>
+    <div class="full"><label>Зургууд <span class="mut">(эхнийх нь гол зураг · ← → дарж дарааллыг солино · × устгана)</span></label>
+      <div class="thumbs" id="thumbs"></div>
+      <div class="row" style="margin-top:8px"><label class="btn" style="flex-direction:row;color:var(--ink)">+ Зураг оруулах<input type="file" id="pfiles" accept="image/*" multiple hidden></label>
+      <input id="purl" placeholder="эсвэл зургийн холбоос (https://…)" style="flex:1"><button type="button" class="btn" id="paddurl">Нэмэх</button><span id="pmsg" class="mut"></span></div></div>
+    <label>ID (латин, зай байхгүй)<input id="p-id" value="${esc(p.id)}" ${isNew ? "" : "readonly"} placeholder="black-hoodie" required pattern="[a-z0-9_-]{2,40}"></label>
     <label>Ангилал<select id="p-cat">${Object.entries(CATS).map(([k, v]) => `<option value="${k}" ${k === p.cat ? "selected" : ""}>${v}</option>`).join("")}</select></label>
     <label class="full">Нэр<input id="p-name" value="${esc(p.name)}" required></label>
-    <label>Брэнд / цуврал<input id="p-series" value="${esc(p.series)}"></label>
-    <label>Нэмэлт мэдээлэл (материал, үйлдвэрлэгч)<input id="p-line" value="${esc(p.line)}"></label>
+    <label>Брэнд / цуврал<input id="p-series" value="${esc(p.series || "")}"></label>
+    <label>Үйлдвэрлэгч / нэмэлт<input id="p-line" value="${esc(p.line || "")}"></label>
     <label>Үнэ (₮)<input id="p-price" type="number" min="1" value="${esc(p.price)}" required></label>
     <label>Хямдралын өмнөх үнэ (заавал биш)<input id="p-was" type="number" min="0" value="${esc(p.was || "")}"></label>
     <label>Тэмдэг<select id="p-badge">${["", "Шинэ", "Хит", "Хямдрал", "Онцлох"].map(b => `<option ${b === (p.badge || "") ? "selected" : ""}>${b}</option>`).join("")}</select></label>
-    <label>Эрэмбэ (их нь эхэнд)<input id="p-sort" type="number" value="${esc(p.sort)}"></label>
-    <label class="full">Тайлбар<textarea id="p-descr" rows="3">${esc(p.descr || "")}</textarea></label>
+    <label>Эрэмбэ (их нь эхэнд)<input id="p-sort" type="number" value="${esc(p.sort || 0)}"></label>
+    <label class="full">Тайлбар<textarea id="p-descr" rows="4">${esc(p.descr || "")}</textarea></label>
     <label class="full">Сонголтууд (мөр бүрт нэг: <b>Өнгө: Хар, Цагаан</b> / <b>Хэмжээ: S, M, L, XL</b>)<textarea id="p-opts" rows="2">${esc(optsText(p.options))}</textarea></label>
     <div class="full row"><label class="row" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="p-pre" ${p.pre ? "checked" : ""} style="width:auto"> Захиалгаар (Солонгосоос)</label>
       <label class="row" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="p-active" ${p.active ? "checked" : ""} style="width:auto"> Сайтад харагдана</label></div>
-    <div class="full"><label>Зураг (эхнийх нь гол зураг; цагаан дэвсгэртэй бол сайхан)<input type="file" id="p-files" accept="image/*" multiple></label><div class="thumbs" id="thumbs" style="margin-top:8px"></div></div>
-    <div class="full row"><button class="btn dark" type="submit" id="psave">Хадгалах</button><span id="pmsg" style="color:var(--muted)"></span></div>
-  </form>
-  <div class="bar"><h2>Бүх бараа (${list.length})</h2></div>
-  <div class="plist">${list.map(x => `<div class="pc"><img src="${esc((x.images || [])[0] || "")}" alt="" loading="lazy"><div><b>${esc(x.name)}</b><br>${fmt(x.price)} · ${CATS[x.cat] || x.cat} ${x.active ? "" : '<span class="tag no">нуусан</span>'}</div><div class="btns"><button class="btn" data-e="${esc(x.id)}">Засах</button><button class="btn red" data-d="${esc(x.id)}">Устгах</button></div></div>`).join("") || '<p class="msg">Одоохондоо бараа нэмээгүй. Дээрх маягтаар нэмнэ.</p>'}</div>`;
-  // Зургийн жижиг харагдац
-  const drawThumbs = () => { $("thumbs").innerHTML = images.map((u, i) => `<figure><img src="${esc(u)}" alt=""><button type="button" data-i="${i}">×</button></figure>`).join(""); $("thumbs").querySelectorAll("button").forEach(b => b.onclick = () => { images.splice(+b.dataset.i, 1); drawThumbs(); }); };
+    <div class="full row"><button class="btn dark" type="submit" id="psave">Хадгалах</button>${isNew ? "" : '<button class="btn red" type="button" id="pdel" style="margin-left:auto">Устгах</button>'}</div>
+  </form>`;
+  // Зургийн жижиг харагдац: ← → дараалал, × устгах
+  const drawThumbs = () => {
+    $("thumbs").innerHTML = images.map((u, i) => `<figure ${i === 0 ? 'class="main"' : ""}><img src="${esc(u)}" alt=""><div class="tb"><button type="button" data-l="${i}" ${i === 0 ? "disabled" : ""}>←</button><button type="button" data-r="${i}" ${i === images.length - 1 ? "disabled" : ""}>→</button><button type="button" data-x="${i}">×</button></div>${i === 0 ? "<em>Гол</em>" : ""}</figure>`).join("") || '<p class="mut">Зураг алга.</p>';
+    $("thumbs").querySelectorAll("[data-l]").forEach(b => b.onclick = () => { const i = +b.dataset.l; [images[i - 1], images[i]] = [images[i], images[i - 1]]; drawThumbs(); });
+    $("thumbs").querySelectorAll("[data-r]").forEach(b => b.onclick = () => { const i = +b.dataset.r; [images[i + 1], images[i]] = [images[i], images[i + 1]]; drawThumbs(); });
+    $("thumbs").querySelectorAll("[data-x]").forEach(b => b.onclick = () => { images.splice(+b.dataset.x, 1); drawThumbs(); });
+  };
   drawThumbs();
-  if (edit) $("cancel").onclick = () => showProducts();
-  // Зураг сонгоход шахаж Supabase Storage руу оруулна
-  $("p-files").onchange = async e => {
+  $("pcancel").onclick = () => showProducts();
+  // Утас/компьютерээс зураг оруулах
+  $("pfiles").onchange = async e => {
     const id = $("p-id").value.trim(); if (!/^[a-z0-9_-]{2,40}$/.test(id)) { e.target.value = ""; return toast("Эхлээд ID бичнэ үү"); }
-    $("pmsg").textContent = "Зураг оруулж байна…";
-    for (const f of e.target.files) {
-      try {
-        const blob = await shrink(f); const path = `${id}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.webp`;
-        const { error } = await sb.storage.from("products").upload(path, blob, { contentType: "image/webp" });
-        if (error) throw error;
-        images.push(sb.storage.from("products").getPublicUrl(path).data.publicUrl); drawThumbs();
-      } catch (err) { toast("Зураг оруулахад алдаа"); }
-    }
+    $("pmsg").textContent = "Оруулж байна…";
+    for (const f of e.target.files) { try { images.push(await upload(f, id)); drawThumbs(); } catch (err) { toast("Зураг оруулахад алдаа"); } }
     $("pmsg").textContent = ""; e.target.value = "";
   };
+  // Холбоосоор зураг нэмэх
+  $("paddurl").onclick = () => { const u = $("purl").value.trim(); if (!/^(https:\/\/|\/)/.test(u)) return toast("https:// эсвэл /-ээр эхэлсэн холбоос"); images.push(u); $("purl").value = ""; drawThumbs(); };
   // Хадгалах
   $("pf").onsubmit = async e => {
     e.preventDefault(); $("psave").disabled = true;
+    // Зураг өөрчлөгдсөн бол галерейн хуучин нэрсийг (labels) хасна
+    const extra = { ...(p.extra || {}) }; if (JSON.stringify(images) !== origImages) delete extra.labels;
     const row = { id: $("p-id").value.trim(), cat: $("p-cat").value, name: $("p-name").value.trim(), series: $("p-series").value.trim(), line: $("p-line").value.trim(),
       price: Number($("p-price").value), was: Number($("p-was").value) || null, badge: $("p-badge").value || null, descr: $("p-descr").value.trim(),
-      options: parseOpts($("p-opts").value), pre: $("p-pre").checked, active: $("p-active").checked, sort: Number($("p-sort").value) || 0, images };
+      options: parseOpts($("p-opts").value), pre: $("p-pre").checked, active: $("p-active").checked, sort: Number($("p-sort").value) || 0, images, extra };
     const { error } = await sb.from("products").upsert(row);
     $("psave").disabled = false;
     if (error) return toast("Алдаа: " + error.message);
-    toast("Хадгаллаа"); showProducts();
+    toast("Хадгаллаа · сайтад шууд харагдана"); showProducts();
   };
-  // Засах, устгах товчнууд
-  document.querySelectorAll("[data-e]").forEach(b => b.onclick = () => { showProducts(list.find(x => x.id === b.dataset.e)); scrollTo(0, 0); });
-  document.querySelectorAll("[data-d]").forEach(b => b.onclick = async () => {
-    // Санамсаргүй устгахаас сэргийлж нэрийг нь бичүүлнэ (alert/confirm ашиглахгүй)
-    if (b.dataset.sure !== "1") { b.dataset.sure = "1"; b.textContent = "Дахин дар"; return setTimeout(() => { b.dataset.sure = ""; b.textContent = "Устгах"; }, 3000); }
-    const { error } = await sb.from("products").delete().eq("id", b.dataset.d);
+  // Устгах: санамсаргүй устгахаас сэргийлж 2 удаа дарна
+  if ($("pdel")) $("pdel").onclick = async () => {
+    const b = $("pdel");
+    if (b.dataset.sure !== "1") { b.dataset.sure = "1"; b.textContent = "Итгэлтэй бол дахин дар"; return setTimeout(() => { if (b.isConnected) { b.dataset.sure = ""; b.textContent = "Устгах"; } }, 3000); }
+    const { error } = await sb.from("products").delete().eq("id", p.id);
     if (error) return toast("Алдаа: " + error.message);
     toast("Устгалаа"); showProducts();
-  });
+  };
+}
+
+// ===== САЙТЫН ТОХИРГОО: холбоо барих, нүүр, асуулт, загвар =====
+// Тохиргоо хоосон үед харуулах анхны утгууд (сайтын одоогийн бичвэр)
+const DEF = {
+  phone: "8911-6331", instagram: "instagram.com/finn.mn1", facebook: "", address: "", preDays: "7–14 хоног",
+  notice: "QPay-ээр шууд төлнө · УБ хотод хүргэлттэй · Солонгосоос 7–14 хоногт",
+  heroEyebrow: "FINN · Beyond the ordinary", heroTitle: "Beyond the ordinary.",
+  heroText: "A curated world of modern culture, fashion and lifestyle. Солонгос хувцас, аниме фигур, lifestyle бараа.", heroButton: "Бараа үзэх", heroImage: "",
+  footerText: "Beyond the ordinary. A curated world of modern culture, fashion and lifestyle.",
+  how: [{ t: "Сонгох", d: "Бараан дээр дарж “Сагсанд хийх” товчоор сагсандаа хийнэ." }, { t: "Мэдээлэл бөглөх", d: "Нэр, утас, хүргэлтийн хаягаа оруулж захиалгын дугаар авна." },
+        { t: "Төлөх", d: "QPay-ээр эсвэл дансаар шилжүүлж, гүйлгээний утгад захиалгын дугаараа бичнэ." }, { t: "Хүлээн авах", d: "Төлбөр шалгагдмагц холбогдож, хүргэж өгнө эсвэл очиж авна." }],
+  faq: [{ q: "Бараанууд жинхэнэ үү?", a: "Тийм. Албан ёсны үйлдвэрлэгч, дэлгүүрээс авдаг жинхэнэ бараа." }, { q: "Хэдэн хоногт хүргэх вэ?", a: "Төлбөр шалгагдсаны дараа Улаанбаатар хотод ихэвчлэн 1–2 хоногт хүргэнэ." },
+        { q: "“Захиалгаар” гэсэн бараа хэзээ ирэх вэ?", a: "Солонгосоос захиалж авчирдаг тул төлбөр орсноос хойш 7–14 хоногт ирнэ." }],
+  colors: { accent: "#2f7bff", bg: "#ffffff", ink: "#111111" }, logoUrl: ""
+};
+async function showSettings(){
+  const my = ++VIEW;
+  const { data, error } = await sb.from("settings").select("data,updated_at").eq("id", "site").maybeSingle();
+  if (my !== VIEW) return;
+  if (error) { $("main").innerHTML = `<p class="msg">Алдаа: ${esc(error.message)}<br>Supabase-д finn-update.sql-ийг ажиллуулсан эсэхээ шалгана уу.</p>`; return; }
+  // Хадгалсан утгыг анхны утгатай нийлүүлнэ
+  const S = { ...DEF, ...(data && data.data || {}) }; S.colors = { ...DEF.colors, ...(S.colors || {}) };
+  let faq = [...(S.faq || [])], how = [...(S.how || [])];
+  const inp = (k, label, ph = "") => `<label>${label}<input data-k="${k}" value="${esc(S[k] || "")}" placeholder="${esc(ph)}"></label>`;
+  $("main").innerHTML = `
+    <div class="bar"><h2>Сайтын тохиргоо</h2><span class="mut">${data && data.updated_at ? "Сүүлд хадгалсан: " + dt(data.updated_at) : ""}</span><a class="btn" href="/" target="_blank" rel="noopener">Сайтыг харах ↗</a><button class="btn dark" id="ssave">Хадгалах</button></div>
+    <form class="form" id="sf" onsubmit="return false">
+      <h3 class="full sec">Холбоо барих</h3>
+      ${inp("phone", "Утас", "8911-6331")}${inp("instagram", "Instagram", "instagram.com/finn.mn1")}
+      ${inp("facebook", "Facebook (хоосон бол нуугдана)", "facebook.com/…")}${inp("address", "Хаяг / дэлгүүр (заавал биш)")}
+      <h3 class="full sec">Нүүр хэсэг</h3>
+      <label class="full">Дээд хар тууз (хоосон бол нуугдана)<input data-k="notice" value="${esc(S.notice)}"></label>
+      ${inp("heroEyebrow", "Жижиг дээд гарчиг")}${inp("heroButton", "Товчны бичиг")}
+      <label class="full">Том гарчиг<input data-k="heroTitle" value="${esc(S.heroTitle)}"></label>
+      <label class="full">Тайлбар<textarea data-k="heroText" rows="2">${esc(S.heroText)}</textarea></label>
+      <div class="full"><label>Нүүрний том зураг (хэвтээ, 1600px+ зөвлөнө)</label>
+        <div class="row"><img id="heroPrev" class="prev" src="${esc(S.heroImage || "")}" alt="" ${S.heroImage ? "" : "hidden"}>
+        <label class="btn" style="flex-direction:row;color:var(--ink)">Зураг солих<input type="file" id="heroFile" accept="image/*" hidden></label>
+        <button type="button" class="btn" id="heroClr" ${S.heroImage ? "" : "hidden"}>Анхных руу буцаах</button><span id="heroMsg" class="mut"></span></div></div>
+      <h3 class="full sec">Хэрхэн захиалах (4 алхам)</h3>
+      <div class="full" id="howList"></div>
+      <h3 class="full sec">Түгээмэл асуулт</h3>
+      <div class="full" id="faqList"></div>
+      <div class="full"><button type="button" class="btn" id="faqAdd">+ Асуулт нэмэх</button></div>
+      <h3 class="full sec">Загвар</h3>
+      <div class="full row colors">
+        <label>Өргөлт өнгө<input type="color" data-c="accent" value="${esc(S.colors.accent)}"></label>
+        <label>Дэвсгэр<input type="color" data-c="bg" value="${esc(S.colors.bg)}"></label>
+        <label>Текст<input type="color" data-c="ink" value="${esc(S.colors.ink)}"></label>
+        <button type="button" class="btn" id="colReset">Анхны өнгө</button>
+      </div>
+      <div class="full"><label>Лого (хоосон бол FINN үндсэн лого. PNG/SVG, ил тод дэвсгэртэй)</label>
+        <div class="row"><img id="logoPrev" class="prev logo-p" src="${esc(S.logoUrl || "")}" alt="" ${S.logoUrl ? "" : "hidden"}>
+        <label class="btn" style="flex-direction:row;color:var(--ink)">Лого солих<input type="file" id="logoFile" accept="image/*" hidden></label>
+        <button type="button" class="btn" id="logoClr" ${S.logoUrl ? "" : "hidden"}>Үндсэн лого руу буцаах</button></div></div>
+      <h3 class="full sec">Бусад</h3>
+      ${inp("preDays", "Захиалгаар ирэх хугацаа", "7–14 хоног")}
+      <label>Хөлийн бичвэр<input data-k="footerText" value="${esc(S.footerText)}"></label>
+      <p class="full mut">🔒 Төлбөрийн дансны дугаарыг аюулгүй байдлын үүднээс зөвхөн кодоор өөрчилнө.</p>
+    </form>`;
+  // Хэрхэн захиалах: 4 мөр
+  const drawHow = () => { $("howList").innerHTML = how.map((x, i) => `<div class="pair"><b>${i + 1}</b><input data-ht="${i}" value="${esc(x.t)}" placeholder="Гарчиг"><input data-hd="${i}" value="${esc(x.d)}" placeholder="Тайлбар"></div>`).join(""); };
+  // Асуулт: нэмэх, устгах, дээш/доош
+  const drawFaq = () => {
+    $("faqList").innerHTML = faq.map((x, i) => `<div class="pair"><b>${i + 1}</b><input data-fq="${i}" value="${esc(x.q)}" placeholder="Асуулт"><textarea data-fa="${i}" rows="2" placeholder="Хариулт">${esc(x.a)}</textarea><div class="tb"><button type="button" data-fu="${i}" ${i ? "" : "disabled"}>↑</button><button type="button" data-fx="${i}">×</button></div></div>`).join("") || '<p class="mut">Асуулт алга.</p>';
+    $("faqList").querySelectorAll("[data-fx]").forEach(b => b.onclick = () => { readLists(); faq.splice(+b.dataset.fx, 1); drawFaq(); });
+    $("faqList").querySelectorAll("[data-fu]").forEach(b => b.onclick = () => { readLists(); const i = +b.dataset.fu; [faq[i - 1], faq[i]] = [faq[i], faq[i - 1]]; drawFaq(); });
+  };
+  // Талбаруудаас утгыг уншина
+  const readLists = () => {
+    how = how.map((x, i) => ({ t: $("main").querySelector(`[data-ht="${i}"]`).value.trim(), d: $("main").querySelector(`[data-hd="${i}"]`).value.trim() }));
+    faq = faq.map((x, i) => ({ q: $("main").querySelector(`[data-fq="${i}"]`).value.trim(), a: $("main").querySelector(`[data-fa="${i}"]`).value.trim() }));
+  };
+  drawHow(); drawFaq();
+  $("faqAdd").onclick = () => { readLists(); faq.push({ q: "", a: "" }); drawFaq(); };
+  $("colReset").onclick = () => { for (const [k, v] of Object.entries(DEF.colors)) $("main").querySelector(`[data-c="${k}"]`).value = v; };
+  // Нүүр зураг, лого оруулах
+  const imgField = (fileId, prevId, clrId, key, max) => {
+    $(fileId).onchange = async e => {
+      const f = e.target.files[0]; if (!f) return;
+      try { toast("Оруулж байна…"); S[key] = await upload(f, "site"); $(prevId).src = S[key]; $(prevId).hidden = false; $(clrId).hidden = false; toast("Зураг орлоо — Хадгалах дарна уу"); }
+      catch (err) { toast("Алдаа: " + err.message); }
+      e.target.value = "";
+    };
+    $(clrId).onclick = () => { S[key] = ""; $(prevId).hidden = true; $(clrId).hidden = true; };
+  };
+  imgField("heroFile", "heroPrev", "heroClr", "heroImage"); imgField("logoFile", "logoPrev", "logoClr", "logoUrl");
+  // Хадгалах
+  $("ssave").onclick = async () => {
+    readLists();
+    const out = { ...S };
+    $("main").querySelectorAll("[data-k]").forEach(el => out[el.dataset.k] = el.value.trim());
+    out.colors = {}; $("main").querySelectorAll("[data-c]").forEach(el => out.colors[el.dataset.c] = el.value);
+    out.how = how.filter(x => x.t); out.faq = faq.filter(x => x.q && x.a);
+    $("ssave").disabled = true;
+    const { data: u } = await sb.auth.getUser();
+    const { error } = await sb.from("settings").upsert({ id: "site", data: out, updated_at: new Date().toISOString(), updated_by: u && u.user ? u.user.id : null });
+    $("ssave").disabled = false;
+    if (error) return toast("Алдаа: " + error.message);
+    toast("Хадгаллаа · сайтад шууд харагдана"); showSettings();
+  };
 }
 
 // Таб солих
-const TABS = { orders: () => showOrders(""), users: showUsers, products: () => showProducts() };
+const TABS = { orders: () => showOrders(""), users: showUsers, products: () => showProducts(), settings: showSettings };
 $("tabs").addEventListener("click", e => { const b = e.target.closest("[data-t]"); if (!b) return; $("tabs").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); const my = VIEW + 1; TABS[b.dataset.t]().catch(err => { if (VIEW === my) $("main").innerHTML = `<p class="msg">Алдаа: ${esc(err.message)}</p>`; }); });
 
 // Эхлүүлэх: нэвтэрсэн, админ эсэхийг шалгана

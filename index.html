@@ -1250,6 +1250,15 @@ footer{padding:44px 0 26px!important;border-top:0!important}
 /* Доод мөр: зураасгүй, жижиг томоор бичсэн */
 .foot-bot{border-top:0!important;margin-top:22px!important;padding-top:0!important;font-size:11.5px!important;letter-spacing:.02em!important;text-transform:none}
 @media (max-width:860px){ footer{padding:36px 0 calc(22px + env(safe-area-inset-bottom,0px))!important} }
+
+/* Харанхуй горимд гүйдэг тууз цагаан дэвсгэртэй тул бичгийг хар болгоно */
+:root[data-theme="dark"] .marquee .track{color:#111}
+/* ----- "Бүх бараа" гарчиг ба хайлтын мөрийг нууна: шүүлтүүр товчнуудаас шууд эхэлнэ ----- */
+#shop .sechead{display:none}
+#shop .tools{display:none}
+/* Толгойн 🔍 дарахад л хайлтын мөр гарна */
+#shop.srch .tools{display:flex}
+#shop{padding-top:24px!important;scroll-margin-top:70px}
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -1843,7 +1852,13 @@ $("fYear").textContent = new Date().getFullYear();
 // Цэсний холбоос дарахад цэс хаагдана
 $("drawer").querySelectorAll("a").forEach(a => a.addEventListener("click", () => menu(false)));
 // Хайлтын дүрс: бараан хэсэг рүү гүйлгэж хайлтын талбарт курсор тавина
-$("openSearch").onclick = () => { $("shop").scrollIntoView({ behavior: "smooth" }); setTimeout(() => $("q").focus({ preventScroll: true }), 450); };
+// 🔍 дарахад нуугдмал хайлтын мөрийг гаргаж, курсор тавина (дахин дарвал хоосон үед нууна)
+$("openSearch").onclick = () => {
+  const sh = $("shop");
+  if (sh.classList.contains("srch") && !$("q").value) { sh.classList.remove("srch"); return; }
+  sh.classList.add("srch"); sh.scrollIntoView({ behavior: "smooth" });
+  setTimeout(() => $("q").focus({ preventScroll: true }), 450);
+};
 $("openCart").onclick = openCart; $("mbarBtn").onclick = openCart; $("closeCart").onclick = closeAll; $("scrim").onclick = closeAll;
 // Esc товч дарахад хаана
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeAll(); });

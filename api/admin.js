@@ -115,7 +115,7 @@ module.exports = async (req, res) => {
       if (from) q += `&at=gte.${encodeURIComponent(from + "T00:00:00+08:00")}`;
       if (to) q += `&at=lte.${encodeURIComponent(to + "T23:59:59.999+08:00")}`;
       if (["order", "product", "review", "settings", "user"].includes(b.entity)) q += `&entity=eq.${b.entity}`;
-      if (["delete", "hide", "unhide", "restore", "status", "insert", "update", "user"].includes(b.act)) q += `&action=eq.${b.act}`;
+      if (["delete", "hide", "unhide", "restore", "status", "insert", "update", "user", "cancel"].includes(b.act)) q += `&action=eq.${b.act}`;
       const rows = await SB.rest(q);
       return res.json({ ok: true, rows });
     }

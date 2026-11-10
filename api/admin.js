@@ -44,6 +44,8 @@ module.exports = async (req, res) => {
       if (!okCode(code) || !STATUSES.includes(b.status)) return res.status(400).json({ ok: false });
       // Өмнөх төлвийг түүхэнд бичихээр авна
       const old = await getOrder(code);
+      // Төлөв өөрчлөгдөөгүй бол юу ч хийхгүй
+      if (old && old.status === b.status) return res.json({ ok: true, same: true });
       await log(me, "status", "order", code, { from: old ? old.status : null, to: b.status, name: old && old.name });
       await SB.rest(`orders?code=eq.${encodeURIComponent(code)}`, { method: "PATCH", body: { status: b.status } });
       // Google Sheets-ийг ч шинэчилнэ (Төлөгдсөн болгосон бол)
@@ -54,8 +56,11 @@ module.exports = async (req, res) => {
     if (b.action === "hideOrder") {
       const code = L.clip(b.code, 20);
       if (!okCode(code) || typeof b.hidden !== "boolean") return res.status(400).json({ ok: false });
-      await SB.rest(`orders?code=eq.${encodeURIComponent(code)}`, { method: "PATCH", body: { hidden: b.hidden } });
       const o = await getOrder(code);
+      if (!o) return res.status(404).json({ ok: false, error: "not_found" });
+      // Аль хэдийн тийм төлөвтэй бол (давхар дарсан) түүхэнд дахин бичихгүй
+      if (!!o.hidden === b.hidden) return res.json({ ok: true, same: true });
+      await SB.rest(`orders?code=eq.${encodeURIComponent(code)}`, { method: "PATCH", body: { hidden: b.hidden } });
       await log(me, b.hidden ? "hide" : "unhide", "order", code, { name: o && o.name, total: o && o.total });
       return res.json({ ok: true });
     }

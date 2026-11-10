@@ -20,12 +20,17 @@ module.exports = async (req, res) => {
   if (!/^AG(\d{5}|\d{6}-\d{4})$/.test(code)) return res.status(400).json({ ok: false });
   try {
     // Захиалгыг уншиж эзэн, төлвийг шалгана
-    const r = await SB.rest(`orders?code=eq.${encodeURIComponent(code)}&select=code,user_id,status,name,total`);
+    const r = await SB.rest(`orders?code=eq.${encodeURIComponent(code)}&select=code,user_id,status,name,phone,total,items`);
     const o = r && r[0];
     if (!o || o.user_id !== me.id) return res.status(404).json({ ok: false, error: "not_found" });
     if (!PENDING.includes(o.status)) return res.status(409).json({ ok: false, error: "not_pending" });
     // Зөвхөн хүлээгдэж байсан үед л цуцална (давхар хамгаалалт)
     await SB.rest(`orders?code=eq.${encodeURIComponent(code)}&status=in.(${encodeURIComponent('"QPay хүлээгдэж байна","Төлбөр шалгах"')})`, { method: "PATCH", body: { status: "Цуцлагдсан" } });
+    // Telegram-д мэдэгдэж, Google Sheets дээрх төлвийг "Цуцлагдсан ❌" болгоно (алдаа гарвал цуцлалтыг зогсоохгүй)
+    await Promise.allSettled([
+      L.telegram(`❌ Захиалагч цуцаллаа ${code}\n💰 ${L.fmt(o.total)}\n👤 ${o.name || ""} · ${o.phone || ""}\nӨмнөх төлөв: ${o.status}${o.items ? "\n\n• " + String(o.items).split("; ").join("\n• ") : ""}`),
+      L.sheets({ action: "cancel", code })
+    ]);
     // Админы түүхэнд бичнэ (хэрэглэгч өөрөө цуцалсан)
     try { await SB.rest("admin_log", { method: "POST", body: { actor_id: me.id, actor: me.username, action: "cancel", entity: "order", target: code, detail: { from: o.status, name: o.name, total: o.total, by_customer: true } } }); } catch (e) {}
     return res.json({ ok: true });

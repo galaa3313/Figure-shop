@@ -128,7 +128,7 @@ td.mo{width:44px;position:relative}
 .he code{font-size:12px;background:var(--bg2);padding:1px 6px}
 .he .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:var(--bg2);font-weight:600}
 .a-delete .tag{background:#fde8ea;color:var(--red)}
-.a-hide .tag{background:#fff4e0;color:#a06200}
+.a-hide .tag,.a-cancel .tag{background:#fff4e0;color:#a06200}
 .a-restore .tag,.a-unhide .tag{background:#e6f4ea;color:#14853b}
 /* ----- УТАС: толгой, хүснэгт, түүх ----- */
 @media (max-width:640px){
@@ -901,7 +901,7 @@ async function showReviews(){
 
 // ===== ТҮҮХ: хэн, хэзээ, юу хийсэн =====
 // Үйлдэл, төрлийн монгол нэр
-const ACT = { delete: "Устгасан", hide: "Нуусан", unhide: "Харуулсан", restore: "Сэргээсэн", status: "Төлөв сольсон", insert: "Нэмсэн", update: "Засварласан", user: "Эрх өөрчилсөн" };
+const ACT = { delete: "Устгасан", hide: "Нуусан", unhide: "Харуулсан", restore: "Сэргээсэн", status: "Төлөв сольсон", insert: "Нэмсэн", update: "Засварласан", user: "Эрх өөрчилсөн", cancel: "Хэрэглэгч цуцалсан" };
 const ENT = { order: "Захиалга", product: "Бараа", review: "Сэтгэгдэл", settings: "Тохиргоо", user: "Хэрэглэгч" };
 // Тохиргоо, барааны талбаруудын монгол нэр (юу өөрчлөгдсөнийг харуулахад)
 const KEYN = { notice: "Дээд мэдээ", slides: "Слайд", promos: "Постер", heroEyebrow: "Нүүр", heroTitle: "Нүүр", heroText: "Нүүр", heroButton: "Нүүр", heroImage: "Нүүрний зураг",
@@ -939,6 +939,7 @@ async function showHistory(f){
     if (l.action === "status") return `${esc(d.from || "—")} → <b>${esc(d.to)}</b>${d.name ? " · " + esc(d.name) : ""}`;
     if (l.action === "delete" && l.entity === "order") return `${esc(d.name || "")} · ${fmt(d.total)} · ${esc(d.items || "").slice(0, 80)}`;
     if (l.action === "delete" && l.entity === "review") return `${esc(d.username || "")}: “${esc(String(d.body || "").slice(0, 60))}”`;
+    if (l.action === "cancel") return `${esc(d.name || "")} · ${fmt(d.total)} · ${esc(d.from || "")} → Цуцлагдсан`;
     if (l.action === "user") return Object.entries(d).map(([k, v]) => k === "role" ? (v === "admin" ? "Админ болгосон" : "Энгийн хэрэглэгч болгосон") : (v ? "Хаасан" : "Нээсэн")).join(", ");
     if (l.action === "restore") return d.at ? `${dt(d.at)}-ий засварын өмнөх байдал руу буцаасан${d.changed && d.changed.length ? " · " + esc(chg(d)) : ""}` : "Устгасан бичлэгийг буцаасан";
     if (d.changed) return `${d.name ? esc(d.name) + " · " : ""}Өөрчилсөн: <b>${esc(chg(d)) || "—"}</b>`;

@@ -1693,7 +1693,7 @@ function renderFilters(){
     // Тухайн хэсэгт хэдэн бараа байгааг тоолно
     const n = PRODUCTS.filter(p => inSection(p, x.id)).length;
     // Хоосон хэсэг бол идэвхгүй, "удахгүй" гэж харуулна
-    return `<button type="button" aria-pressed="${x.id === filter}" data-s="${x.id}"${n ? "" : " disabled"}>${esc(x.label)}<small>${n || "удахгүй"}</small></button>`;
+    return `<button type="button" aria-pressed="${x.id === filter}" data-s="${esc(x.id)}"${n ? "" : " disabled"}>${esc(x.label)}<small>${n || "удахгүй"}</small></button>`;
   }).join("");
 }
 // Тухайн бараа сагсанд хэд байгааг тоолно
@@ -1782,7 +1782,7 @@ function openFavs(){
   $("modal").hidden = true; $("scrim").hidden = false; $("sheet").hidden = false;
   $("sheetTitle").textContent = "Хадгалсан бараа";
   const list = PRODUCTS.filter(p => favs.has(p.id));
-  $("sheetBody").innerHTML = list.length ? `<div class="favlist">${list.map(p => `<div class="favi"><button type="button" data-o="${esc(p.id)}"><img src="${p.img}" alt=""></button><div><b>${esc(p.name)}</b><span>${fmt(p.price)}</span><div class="row"><button type="button" class="ghost" data-o="${esc(p.id)}">Үзэх</button><button type="button" class="ghost" data-fav="${esc(p.id)}">Хасах</button></div></div></div>`).join("")}</div>`
+  $("sheetBody").innerHTML = list.length ? `<div class="favlist">${list.map(p => `<div class="favi"><button type="button" data-o="${esc(p.id)}"><img src="${esc(p.img)}" alt=""></button><div><b>${esc(p.name)}</b><span>${fmt(p.price)}</span><div class="row"><button type="button" class="ghost" data-o="${esc(p.id)}">Үзэх</button><button type="button" class="ghost" data-fav="${esc(p.id)}">Хасах</button></div></div></div>`).join("")}</div>`
     : `<p class="desc">Хадгалсан бараа алга. Барааны зурган дээрх ♡ дүрсийг дарж хадгална.</p>`;
   $("sheetBody").querySelectorAll("[data-o]").forEach(b => b.onclick = () => openModal(b.dataset.o));
   $("sheetBody").querySelectorAll("[data-fav]").forEach(b => b.onclick = async () => { await toggleFav(b.dataset.fav); openFavs(); });
@@ -1801,7 +1801,7 @@ function renderGrid(){
   // Карт бүрийн HTML: тэмдэг, зураг, цуврал, нэр, үлдэгдэл, үнэ, товч
   $("grid").innerHTML = list.length ? list.map(p => `<article class="card">
       ${p.badge ? `<span class="badge ${p.badge === "Онцлох" ? "v" : p.badge === "360°" ? "r" : ""}">${esc(p.badge)}</span>` : ""}
-      <div class="phw"><button type="button" class="ph" data-open="${p.id}" aria-label="${esc(p.name)} дэлгэрэнгүй"><img src="${p.img}" alt="${esc(p.name)}" loading="lazy">${salePct(p) ? `<span class="salepct">-${salePct(p)}%</span>` : ""}</button><button type="button" class="fav" data-fav="${p.id}" aria-pressed="${favs.has(p.id)}" aria-label="Хадгалах"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.3 4.5 6.9 4.5c2 0 3.6 1.1 5.1 3 1.5-1.9 3.1-3 5.1-3 3.6 0 5.5 3.5 4.2 6.8-1.8 4.6-9.3 9.2-9.3 9.2Z"/></svg></button></div>
+      <div class="phw"><button type="button" class="ph" data-open="${esc(p.id)}" aria-label="${esc(p.name)} дэлгэрэнгүй"><img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy">${salePct(p) ? `<span class="salepct">-${salePct(p)}%</span>` : ""}</button><button type="button" class="fav" data-fav="${p.id}" aria-pressed="${favs.has(p.id)}" aria-label="Хадгалах"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.3 4.5 6.9 4.5c2 0 3.6 1.1 5.1 3 1.5-1.9 3.1-3 5.1-3 3.6 0 5.5 3.5 4.2 6.8-1.8 4.6-9.3 9.2-9.3 9.2Z"/></svg></button></div>
       <div class="info">
         <div class="series">${esc(p.series)}</div>
         <div class="name">${esc(p.name)}</div>
@@ -1862,7 +1862,7 @@ function renderZones(){
     // Бараатай хэсэг: дарахад доорх дэлгүүрийг тэр хэсгээр шүүнэ
     // Дээр сонгосон зураг
     const pick = pickOf[x.id];
-    return `<button type="button" class="zone" data-zone="${x.id}"><img src="${pick.img}" alt="" loading="lazy"><div class="zt"><div><b>${esc(x.label)}</b><small>${ZONE_NOTE[x.id] || ""}</small></div><i>${items.length}</i></div></button>`;
+    return `<button type="button" class="zone" data-zone="${esc(x.id)}"><img src="${esc(pick.img)}" alt="" loading="lazy"><div class="zt"><div><b>${esc(x.label)}</b><small>${ZONE_NOTE[x.id] || ""}</small></div><i>${items.length}</i></div></button>`;
   }).join("");
 }
 // Хавтан дээр дарахад: шүүлтийг солиод дэлгүүр хэсэг рүү гүйлгэнэ
@@ -1910,8 +1910,8 @@ function openModal(id){
     <div class="pd-close"><button class="x" id="mClose" aria-label="Хаах">×</button></div>
     <div class="pd-top">
       <!-- Зургийн цомог: 360° бол эргэдэг харагдац, бусад нь хуруугаар гүйлгэдэг -->
-      <div class="pd-gal">${p.spin ? `<div class="viewer"><div class="stage" id="stage">${p.spin.map((src, i) => `<img src="${src}" alt="${esc(p.name)}" class="${i === 0 ? "on" : ""}">`).join("")}<span class="hint">↔ Чирж эргүүлнэ · 360°</span></div></div>` : ""}
-        <div class="car ${multi ? "multi" : ""}" id="car">${pics.map((src, i) => `<img src="${src}" alt="${esc(p.name)} ${i + 1}" ${i ? 'loading="lazy"' : ""}>`).join("")}</div>
+      <div class="pd-gal">${p.spin ? `<div class="viewer"><div class="stage" id="stage">${p.spin.map((src, i) => `<img src="${esc(src)}" alt="${esc(p.name)}" class="${i === 0 ? "on" : ""}">`).join("")}<span class="hint">↔ Чирж эргүүлнэ · 360°</span></div></div>` : ""}
+        <div class="car ${multi ? "multi" : ""}" id="car">${pics.map((src, i) => `<img src="${esc(src)}" alt="${esc(p.name)} ${i + 1}" ${i ? 'loading="lazy"' : ""}>`).join("")}</div>
         ${multi ? `<div class="dots" id="dots">${pics.map((_, i) => `<button type="button" aria-label="${i + 1}-р зураг" aria-current="${i === 0}"></button>`).join("")}</div>` : ""}
       </div>
       <div class="mbody">
@@ -1940,7 +1940,7 @@ function openModal(id){
         ${p.desc ? `<p class="pd-desc">${esc(p.desc)}</p>` : ""}
         <dl class="spec">${p.line ? `<dt>Үйлдвэрлэгч</dt><dd>${esc(p.line)}</dd>` : ""}${p.size ? `<dt>Хэмжээ</dt><dd>${esc(p.size)}</dd>` : ""}${p.mat ? `<dt>Материал</dt><dd>${esc(p.mat)}</dd>` : ""}</dl></section>` : ""}
       <section class="pd-sec" id="reviews"><h4>Хэрэглэгчийн сэтгэгдэл</h4><div id="rvBox"><p class="rv-empty">Уншиж байна…</p></div></section>
-      ${sims.length ? `<section class="pd-sec"><h4>Танд таалагдаж магадгүй</h4><div class="sim">${sims.map(x => `<button type="button" data-sim="${esc(x.id)}"><img src="${x.img}" alt="" loading="lazy"><b>${esc(x.name)}</b><span>${fmt(x.price)}</span></button>`).join("")}</div></section>` : ""}
+      ${sims.length ? `<section class="pd-sec"><h4>Танд таалагдаж магадгүй</h4><div class="sim">${sims.map(x => `<button type="button" data-sim="${esc(x.id)}"><img src="${esc(x.img)}" alt="" loading="lazy"><b>${esc(x.name)}</b><span>${fmt(x.price)}</span></button>`).join("")}</div></section>` : ""}
     </div>`;
   // Цонх болон бүрхүүлийг харуулна, дээрээс нь эхлүүлнэ
   $("scrim").hidden = false; $("modal").hidden = false; $("modal").scrollTop = 0;
@@ -2793,7 +2793,10 @@ async function loadDbProducts(){
   if (!data || !data.length) return;
   // Мэдээллийн сангийн бараа бүрийг сайтын хэлбэрт оруулна (extra-д 360°, галерей, материал гэх мэт)
   const list = data.map(d => {
-    const imgs = d.images || [], x = { ...(d.extra || {}) }, labels = x.labels || [];
+    // Аюулгүй байдал: зөвхөн https:// эсвэл сайтын img/ хавтасны, хашилт/тэмдэггүй зургийн холбоосыг авна
+    const safeImg = u => typeof u === "string" && /^(https:\/\/|\/?img\/)/.test(u) && !/["'<>\s`]/.test(u) ? u : "";
+    const imgs = (d.images || []).map(safeImg).filter(Boolean), x = { ...(d.extra || {}) }, labels = x.labels || [];
+    x.img = safeImg(x.img);
     // labels-ийг бараанд хуулахгүй
     delete x.labels;
     return { ...x, id: d.id, cat: d.cat, series: d.series || "", name: d.name, line: d.line || "", price: d.price, was: d.was || null,

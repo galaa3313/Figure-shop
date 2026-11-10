@@ -420,7 +420,7 @@ async function upload(file, folder){
 }
 // "Өнгө: Хар, Цагаан" мөрүүдийг [{label, values}] болгоно, эсрэгээр нь
 const parseOpts = t => t.split("\n").map(l => l.split(":")).filter(x => x.length === 2 && x[1].trim()).map(([l, v]) => ({ label: l.trim(), values: v.split(",").map(s => s.trim()).filter(Boolean) }));
-const optsText = o => (o || []).map(x => `${x.label}: ${x.values.join(", ")}`).join("\n");
+const optsText = o => (o || []).map(x => `${x.label}: ${(x.values || []).join(", ")}`).join("\n");
 
 // ===== БАРАА: бүх барааны жагсаалт, засах, зураг солих =====
 async function showProducts(editId){

@@ -18,7 +18,11 @@ module.exports = async (req, res) => {
   if (!o) return res.status(400).json({ ok: false, error: "invalid" });
   try {
     // Төлбөр ормогц QPay мэдэгдэх хаяг
-    const host = req.headers["x-forwarded-host"] || req.headers.host;
+    // Аюулгүй байдал: ижил дугаартай захиалга аль хэдийн байвал шинэ нэхэмжлэх үүсгэхгүй
+    // (хуурамч хүсэлтээр бусад/хуучин захиалгыг хямд нэхэмжлэхээр "төлөгдсөн" болгохоос сэргийлнэ)
+    if (await SB.orderByCode(o.code)) return res.status(409).json({ ok: false, error: "code_used" });
+    // Буцах хаяг: хүсэлтийн толгойгоос биш, тохиргооны SITE_URL-аас (хуурамч host-оос хамгаална)
+    const host = (process.env.SITE_URL || "").replace(/^https?:\/\//, "").replace(/\/.*$/, "") || req.headers.host;
     // QPay-ээс тухайн дүнтэй нэхэмжлэх үүсгэнэ
     const inv = await L.qpay("/v2/invoice", {
       invoice_code: process.env.QPAY_INVOICE_CODE,

@@ -74,16 +74,36 @@ module.exports = async (req, res) => {
       await SB.rest(`orders?code=eq.${encodeURIComponent(code)}`, { method: "DELETE" });
       return res.json({ ok: true });
     }
-    // ----- Устгасныг сэргээх (захиалга, бараа) -----
+    // ----- Сэргээх / өмнөх хувилбар руу буцаах -----
     if (b.action === "restore") {
       const id = parseInt(b.id, 10);
       if (!(id > 0)) return res.status(400).json({ ok: false });
       const r = await SB.rest(`admin_log?id=eq.${id}&select=*`); const l = r && r[0];
-      if (!l || l.action !== "delete" || !l.detail || !["order", "product"].includes(l.entity)) return res.status(400).json({ ok: false, error: "cannot_restore" });
-      // Хуучин мөрийг буцааж оруулна (ижил дугаартай байвал алгасна)
-      const table = l.entity === "order" ? "orders?on_conflict=code" : "products?on_conflict=id";
-      await SB.rest(table, { method: "POST", prefer: "resolution=ignore-duplicates", body: l.detail });
-      await log(me, "restore", l.entity, l.target, { from_log: id });
+      if (!l || !l.detail) return res.status(400).json({ ok: false, error: "cannot_restore" });
+      // (а) Устгасан захиалга, барааг буцааж оруулна
+      if (l.action === "delete" && ["order", "product"].includes(l.entity)) {
+        const table = l.entity === "order" ? "orders?on_conflict=code" : "products?on_conflict=id";
+        await SB.rest(table, { method: "POST", prefer: "resolution=ignore-duplicates", body: l.detail });
+        await log(me, "restore", l.entity, l.target, { from_log: id, name: l.detail.name });
+        return res.json({ ok: true });
+      }
+      // (б) Тохиргоо эсвэл барааг засварын ӨМНӨХ хувилбар руу буцаана
+      const snapId = parseInt(l.detail.snap, 10);
+      if (!(snapId > 0) || !["settings", "product"].includes(l.entity)) return res.status(400).json({ ok: false, error: "cannot_restore" });
+      const sr = await SB.rest(`admin_snap?id=eq.${snapId}&select=*`); const snap = sr && sr[0];
+      if (!snap || !snap.data) return res.status(404).json({ ok: false, error: "no_snapshot" });
+      // Одоогийн байдлыг хадгална: буцаасандаа дургүй бол дахин буцааж болно
+      let cur, keep;
+      if (l.entity === "settings") {
+        cur = await SB.rest("settings?id=eq.site&select=data"); cur = cur && cur[0] ? cur[0].data : null;
+        keep = await SB.rest("admin_snap", { method: "POST", prefer: "return=representation", body: { entity: "settings", target: "site", data: cur } });
+        await SB.rest("settings?on_conflict=id", { method: "POST", prefer: "resolution=merge-duplicates", body: { id: "site", data: snap.data, updated_at: new Date().toISOString(), updated_by: me.id } });
+      } else {
+        cur = await SB.rest(`products?id=eq.${encodeURIComponent(snap.target)}&select=*`); cur = cur && cur[0];
+        keep = cur ? await SB.rest("admin_snap", { method: "POST", prefer: "return=representation", body: { entity: "product", target: snap.target, data: cur } }) : null;
+        await SB.rest("products?on_conflict=id", { method: "POST", prefer: "resolution=merge-duplicates", body: snap.data });
+      }
+      await log(me, "restore", l.entity, l.target, { from_log: id, at: l.at, name: snap.data.name || null, snap: keep && keep[0] ? keep[0].id : null, changed: l.detail.changed || [] });
       return res.json({ ok: true });
     }
     // ----- Түүх: огноо, төрөл, үйлдлээр шүүнэ -----

@@ -102,6 +102,61 @@ nav{flex-wrap:wrap}
 .prev{height:90px;width:auto;max-width:240px;object-fit:cover;border:1px solid var(--line)}
 .prev.logo-p{object-fit:contain;background:#fff;padding:6px}
 @media (max-width:640px){.pair{grid-template-columns:20px 1fr}.pair input,.pair textarea{grid-column:2}}
+
+/* ----- ⋯ цэс (захиалга) ----- */
+td.mo{width:44px;position:relative}
+.more summary{list-style:none;cursor:pointer;width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);font-size:18px;line-height:1;user-select:none}
+.more summary::-webkit-details-marker{display:none}
+.more[open] summary{border-color:var(--ink)}
+.more .menu{position:absolute;right:10px;top:48px;z-index:3;background:#fff;border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.12);min-width:190px;display:flex;flex-direction:column}
+.more .menu button{border:0;background:none;text-align:left;padding:11px 14px;font-size:13px}
+.more .menu button+button{border-top:1px solid var(--line)}
+.more .menu button:hover{background:var(--bg2)}
+.more .menu .del{color:var(--red)}
+.more .menu .sure{background:var(--red)!important;color:#fff}
+/* ----- Түүх ----- */
+.hf{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:16px}
+.hf label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);min-width:140px}
+.hf .quick{display:flex;gap:6px;width:100%}
+.hf .quick button{border:1px solid var(--line);background:#fff;padding:7px 12px;font-size:12.5px;border-radius:999px}
+.hf .quick button:hover{border-color:var(--ink)}
+.hl{border:1px solid var(--line)}
+.he{display:grid;grid-template-columns:130px 1fr 140px auto;gap:12px;align-items:center;padding:12px 14px;font-size:13px}
+.he+.he{border-top:1px solid var(--line)}
+.ht{color:var(--muted);font-size:12px}
+.hw{font-size:12.5px}
+.he code{font-size:12px;background:var(--bg2);padding:1px 6px}
+.he .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:var(--bg2);font-weight:600}
+.a-delete .tag{background:#fde8ea;color:var(--red)}
+.a-hide .tag{background:#fff4e0;color:#a06200}
+.a-restore .tag,.a-unhide .tag{background:#e6f4ea;color:#14853b}
+/* ----- УТАС: толгой, хүснэгт, түүх ----- */
+@media (max-width:640px){
+  /* Табууд нэг мөрөнд, хажуу тийш гүйлгэнэ */
+  header{flex-wrap:nowrap;gap:10px;padding:10px 12px}
+  header .logo small{display:none}
+  nav{flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  nav::-webkit-scrollbar{display:none}
+  nav button{white-space:nowrap;padding:8px 10px;font-size:14px}
+  #whoami{display:none}
+  /* Захиалгын хүснэгт → карт */
+  #ob, #ob tr, #ob td{display:block}
+  .tbl:has(#ob){border:0;overflow:visible}
+  .tbl:has(#ob) table{min-width:0}
+  .tbl:has(#ob) thead{display:none}
+  #ob tr{position:relative;border:1px solid var(--line);margin-bottom:10px;padding:12px 12px 4px}
+  #ob td{border:0;padding:0 0 8px}
+  #ob td.mo{position:absolute;top:10px;right:10px;width:auto;padding:0}
+  #ob td.mo .menu{right:0;top:40px}
+  #ob td:first-child{padding-right:46px}
+  /* Түүх → давхарласан мөр */
+  .he{grid-template-columns:1fr auto;gap:4px 10px}
+  .ht{grid-column:1}
+  .hw{grid-column:2;grid-row:1;text-align:right}
+  .hb{grid-column:1/3}
+  .he>button,.he>span:last-child{grid-column:1/3;justify-self:start}
+  .hf label{min-width:calc(50% - 5px);flex:1}
+}
 </style>
 </head>
 <body>
@@ -114,6 +169,7 @@ nav{flex-wrap:wrap}
     <button type="button" data-t="products" aria-pressed="false">Бараа</button>
     <button type="button" data-t="reviews" aria-pressed="false">Сэтгэгдэл</button>
     <button type="button" data-t="settings" aria-pressed="false">Сайтын тохиргоо</button>
+    <button type="button" data-t="history" aria-pressed="false">Түүх</button>
   </nav>
   <span id="whoami" style="color:var(--muted);font-size:13px"></span>
 </header>
@@ -157,7 +213,7 @@ async function api(body){
 // ===== ЗАХИАЛГА =====
 async function showOrders(status){
   const my = ++VIEW;
-  $("main").innerHTML = `<div class="bar"><h2>Захиалга</h2><select id="fst" style="width:auto"><option value="">Бүх төлөв</option><option value="unpaid" ${status === "unpaid" ? "selected" : ""}>⏳ Төлөөгүй (эргэж залгах)</option></select><button class="btn" id="rel">Шинэчлэх</button></div><div class="tbl"><table><thead><tr><th>Дугаар / огноо</th><th>Харилцагч</th><th>Бараа</th><th>Дүн</th><th>Төлөв</th></tr></thead><tbody id="ob"><tr><td colspan="5">Уншиж байна…</td></tr></tbody></table></div>`;
+  $("main").innerHTML = `<div class="bar"><h2>Захиалга</h2><select id="fst" style="width:auto"><option value="">Бүх төлөв</option><option value="unpaid" ${status === "unpaid" ? "selected" : ""}>⏳ Төлөөгүй (эргэж залгах)</option><option value="hidden" ${status === "hidden" ? "selected" : ""}>🙈 Нуусан захиалга</option></select><button class="btn" id="rel">Шинэчлэх</button></div><div class="tbl"><table><thead><tr><th>Дугаар / огноо</th><th>Харилцагч</th><th>Бараа</th><th>Дүн</th><th>Төлөв</th><th></th></tr></thead><tbody id="ob"><tr><td colspan="6">Уншиж байна…</td></tr></tbody></table></div>`;
   const j = await api({ action: "orders", status });
   // Хариу ирэх хооронд өөр таб руу шилжсэн бол юу ч хийхгүй
   if (my !== VIEW) return;
@@ -171,8 +227,26 @@ async function showOrders(status){
       <td><b>${esc(o.code)}</b><small>${dt(o.created_at)} · ${o.method === "qpay" ? "QPay" : "Данс"}</small></td>
       <td>${esc(o.name)}<small>${esc(o.phone)} · ${esc(o.delivery)}${o.address ? ": " + esc(o.address) : ""}</small>${o.note ? `<small>📝 ${esc(o.note)}</small>` : ""}</td>
       <td>${esc(o.items)}</td><td><b>${fmt(o.total)}</b>${o.paid_at ? `<small>Төлсөн: ${dt(o.paid_at)}</small>` : ""}</td>
-      <td><select data-code="${esc(o.code)}">${STATUSES.map(s => `<option ${s === o.status ? "selected" : ""}>${esc(s)}</option>`).join("")}</select></td></tr>`).join("")
-    : `<tr><td colspan="5">Захиалга алга.</td></tr>`;
+      <td><select data-code="${esc(o.code)}">${STATUSES.map(s => `<option ${s === o.status ? "selected" : ""}>${esc(s)}</option>`).join("")}</select></td>
+      <!-- ⋯ цэс: нуух / харуулах, устгах -->
+      <td class="mo"><details class="more"><summary aria-label="Бусад үйлдэл">⋯</summary><div class="menu">
+        <button type="button" data-hide="${esc(o.code)}" data-v="${o.hidden ? 0 : 1}">${o.hidden ? "👁 Буцааж харуулах" : "🙈 Нуух"}</button>
+        <button type="button" class="del" data-del="${esc(o.code)}">🗑 Устгах</button>
+      </div></details></td></tr>`).join("")
+    : `<tr><td colspan="6">${status === "hidden" ? "Нуусан захиалга алга." : "Захиалга алга."}</td></tr>`;
+  // Нэг цэс нээгдэхэд бусдыг хаана
+  $("ob").querySelectorAll("details.more").forEach(d => d.ontoggle = () => { if (d.open) $("ob").querySelectorAll("details.more[open]").forEach(x => x !== d && (x.open = false)); });
+  // Нуух / харуулах
+  $("ob").querySelectorAll("[data-hide]").forEach(b => b.onclick = async () => {
+    try { await api({ action: "hideOrder", code: b.dataset.hide, hidden: b.dataset.v === "1" }); toast(b.dataset.v === "1" ? "Нууллаа · \"Нуусан захиалга\"-аас харна" : "Буцааж харууллаа"); showOrders(status); }
+    catch (e) { toast("Алдаа: " + e.message + (e.message === "server" ? " — finn-history.sql ажиллуулсан уу?" : "")); }
+  });
+  // Устгах: эхний дарахад "Тийм, устгах" болж, дахин дарахад устгана
+  $("ob").querySelectorAll("[data-del]").forEach(b => b.onclick = async () => {
+    if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = "⚠ Тийм, устгах"; b.classList.add("sure"); return; }
+    try { await api({ action: "deleteOrder", code: b.dataset.del }); toast("Устгалаа · \"Түүх\"-ээс сэргээж болно"); showOrders(status); }
+    catch (e) { toast("Алдаа: " + e.message); }
+  });
   // Төлөв өөрчлөхөд серверт хадгална
   $("ob").querySelectorAll("select").forEach(sel => sel.onchange = async () => {
     try { await api({ action: "setStatus", code: sel.dataset.code, status: sel.value }); toast("Хадгаллаа"); } catch (e) { toast("Алдаа: " + e.message); }
@@ -385,7 +459,8 @@ function productForm(p, isNew){
 // Тохиргоо хоосон үед харуулах анхны утгууд (сайтын одоогийн бичвэр)
 const DEF = {
   phone: "8911-6331", instagram: "instagram.com/finn.mn1", facebook: "", address: "", preDays: "7–14 хоног",
-  notice: "QPay-ээр шууд төлнө · УБ хотод хүргэлттэй · Солонгосоос 7–14 хоногт",
+  // Дээд мөрний мэдээ: анхдагчаар хоосон (үйлчилгээний мэдээлэл ☰ цэсэнд байгаа)
+  notice: "",
   heroEyebrow: "FINN · Beyond the ordinary", heroTitle: "Beyond the ordinary.",
   heroText: "A curated world of modern culture, fashion and lifestyle. Солонгос хувцас, аниме фигур, lifestyle бараа.", heroButton: "Бараа үзэх", heroImage: "",
   footerText: "Beyond the ordinary. A curated world of modern culture, fashion and lifestyle.",
@@ -423,7 +498,7 @@ async function showSettings(){
       <div class="full" id="prList"></div>
       <div class="full"><label class="btn" style="flex-direction:row;color:var(--ink);display:inline-flex">+ Постер нэмэх<input type="file" id="prFile" accept="image/*" multiple hidden></label></div>
       <h3 class="full sec">Нүүр хэсэг (слайд байхгүй үед)</h3>
-      <label class="full">Дээд хар тууз (хоосон бол нуугдана)<input data-k="notice" value="${esc(S.notice)}"></label>
+      <label class="full">Дээд мөрний мэдээ — урамшуулал, шинэ бараа (хоосон бол нуугдана)<input data-k="notice" value="${esc(S.notice)}" placeholder="Жишээ: Бүх гадуур хувцас 20% хямдарлаа · 11/30 хүртэл"></label>
       ${inp("heroEyebrow", "Жижиг дээд гарчиг")}${inp("heroButton", "Товчны бичиг")}
       <label class="full">Том гарчиг<input data-k="heroTitle" value="${esc(S.heroTitle)}"></label>
       <label class="full">Тайлбар<textarea data-k="heroText" rows="2">${esc(S.heroText)}</textarea></label>
@@ -615,8 +690,58 @@ async function showReviews(){
   });
 }
 
+// ===== ТҮҮХ: хэн, хэзээ, юу хийсэн =====
+// Үйлдэл, төрлийн монгол нэр
+const ACT = { delete: "Устгасан", hide: "Нуусан", unhide: "Харуулсан", restore: "Сэргээсэн", status: "Төлөв сольсон", insert: "Нэмсэн", update: "Засварласан", user: "Эрх өөрчилсөн" };
+const ENT = { order: "Захиалга", product: "Бараа", review: "Сэтгэгдэл", settings: "Тохиргоо", user: "Хэрэглэгч" };
+// Огноог YYYY-MM-DD болгоно (Монголын цагаар)
+const ymd = d => new Date(d.getTime() + 8 * 3600e3).toISOString().slice(0, 10);
+async function showHistory(f){
+  const my = ++VIEW;
+  // Анхдагч: сүүлийн 7 хоног
+  f = f || { from: ymd(new Date(Date.now() - 6 * 864e5)), to: ymd(new Date()), entity: "", act: "" };
+  $("main").innerHTML = `<div class="bar"><h2>Түүх</h2><button class="btn" id="hrel">Шинэчлэх</button></div>
+    <div class="hf">
+      <div class="quick"><button type="button" data-q="0">Өнөөдөр</button><button type="button" data-q="6">7 хоног</button><button type="button" data-q="29">30 хоног</button><button type="button" data-q="89">3 сар</button></div>
+      <label>Эхлэх<input type="date" id="hfrom" value="${f.from}"></label>
+      <label>Дуусах<input type="date" id="hto" value="${f.to}"></label>
+      <label>Төрөл<select id="hent"><option value="">Бүгд</option>${Object.entries(ENT).map(([k, v]) => `<option value="${k}" ${k === f.entity ? "selected" : ""}>${v}</option>`).join("")}</select></label>
+      <label>Үйлдэл<select id="hact"><option value="">Бүгд</option>${Object.entries(ACT).map(([k, v]) => `<option value="${k}" ${k === f.act ? "selected" : ""}>${v}</option>`).join("")}</select></label>
+    </div>
+    <div id="hlist"><p class="mut">Уншиж байна…</p></div>`;
+  // Шүүлт өөрчлөгдөхөд дахин ачаална
+  const again = () => showHistory({ from: $("hfrom").value, to: $("hto").value, entity: $("hent").value, act: $("hact").value });
+  ["hfrom", "hto", "hent", "hact"].forEach(id => $(id).onchange = again);
+  $("hrel").onclick = again;
+  $("main").querySelectorAll("[data-q]").forEach(b => b.onclick = () => { $("hfrom").value = ymd(new Date(Date.now() - +b.dataset.q * 864e5)); $("hto").value = ymd(new Date()); again(); });
+  let j;
+  try { j = await api({ action: "log", ...f }); }
+  catch (e) { if (my === VIEW) $("hlist").innerHTML = `<p class="msg">Түүх уншиж чадсангүй. Supabase дээр <b>finn-history.sql</b>-ийг ажиллуулсан эсэхээ шалгана уу.</p>`; return; }
+  if (my !== VIEW) return;
+  // Нэмэлт мэдээллийг товч бичвэр болгоно
+  const info = l => { const d = l.detail || {};
+    if (l.action === "status") return `${esc(d.from || "—")} → <b>${esc(d.to)}</b>${d.name ? " · " + esc(d.name) : ""}`;
+    if (l.action === "delete" && l.entity === "order") return `${esc(d.name || "")} · ${fmt(d.total)} · ${esc(d.items || "").slice(0, 80)}`;
+    if (l.action === "delete" && l.entity === "review") return `${esc(d.username || "")}: “${esc(String(d.body || "").slice(0, 60))}”`;
+    if (l.action === "user") return Object.entries(d).map(([k, v]) => k === "role" ? (v === "admin" ? "Админ болгосон" : "Энгийн хэрэглэгч болгосон") : (v ? "Хаасан" : "Нээсэн")).join(", ");
+    if (l.action === "restore") return "Устгасан бичлэгийг буцаасан";
+    return esc(d.name || d.by || ""); };
+  $("hlist").innerHTML = j.rows.length ? `<div class="hl">${j.rows.map(l => `<div class="he a-${esc(l.action)}">
+      <div class="ht">${dt(l.at)}</div>
+      <div class="hb"><span class="tag">${ACT[l.action] || esc(l.action)}</span> <b>${ENT[l.entity] || esc(l.entity)}</b> ${l.target && l.entity !== "settings" ? `<code>${esc(l.target)}</code>` : ""}
+        <div class="mut">${info(l)}</div></div>
+      <div class="hw">👤 ${esc(l.actor || "—")}</div>
+      ${l.action === "delete" && (l.entity === "order" || l.entity === "product") ? `<button class="btn" data-rs="${l.id}">Сэргээх</button>` : "<span></span>"}
+    </div>`).join("")}</div><p class="mut" style="margin-top:10px">${j.rows.length} бичлэг${j.rows.length >= 500 ? " (эхний 500)" : ""}</p>`
+    : `<p class="mut">Энэ хугацаанд бичлэг алга.</p>`;
+  // Устгасныг сэргээх
+  $("hlist").querySelectorAll("[data-rs]").forEach(b => b.onclick = async () => {
+    try { await api({ action: "restore", id: b.dataset.rs }); toast("Сэргээлээ"); again(); } catch (e) { toast("Алдаа: " + e.message); }
+  });
+}
+
 // Таб солих
-const TABS = { orders: () => showOrders(""), users: showUsers, products: () => showProducts(), settings: showSettings, reviews: showReviews };
+const TABS = { orders: () => showOrders(""), users: showUsers, products: () => showProducts(), settings: showSettings, reviews: showReviews, history: () => showHistory() };
 $("tabs").addEventListener("click", e => { const b = e.target.closest("[data-t]"); if (!b) return; $("tabs").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); const my = VIEW + 1; TABS[b.dataset.t]().catch(err => { if (VIEW === my) $("main").innerHTML = `<p class="msg">Алдаа: ${esc(err.message)}</p>`; }); });
 
 // Эхлүүлэх: нэвтэрсэн, админ эсэхийг шалгана

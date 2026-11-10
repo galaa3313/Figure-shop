@@ -1375,6 +1375,60 @@ footer{padding:44px 0 26px!important;border-top:1px solid var(--line)!important;
 .fbbtn:disabled{opacity:.7}
 .fbnote{margin:-2px 0 4px;text-align:center;font-size:11.5px;color:var(--muted)}
 .fbnote a{color:var(--muted)}
+
+/* ----- Миний захиалгууд ----- */
+.link.back{align-self:flex-start;margin:-4px 0 12px;padding:0;background:none;border:0;color:var(--muted);font-size:13px;cursor:pointer}
+.mo>div:first-child{display:flex;align-items:center;gap:10px}
+.mo>div:first-child span{margin-left:auto;color:var(--muted);font-size:12px}
+.mo-x{width:28px;height:28px;border:1px solid var(--line);background:none;color:var(--muted);border-radius:50%;font-size:16px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.mo-x:hover{color:#e5172f;border-color:#e5172f}
+/* Төлвийн шошго ("st" нь алхмын дугаартай давхцдаг тул "ost") */
+.mo .ost{font-size:12px;background:var(--bg2);padding:3px 8px}
+.mo .ost.paid{background:rgba(20,133,59,.12);color:#14853b}
+.mo .ost.wait{background:rgba(214,130,0,.12);color:#b36b00}
+.mo-ask{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:10px;border-top:1px dashed var(--line);font-size:13px}
+.mo-ask span{flex:1 1 100%;font-weight:600}
+.mo-ask button{flex:1;padding:10px;border:1px solid var(--line);background:none;color:var(--ink);font-size:13px;cursor:pointer}
+.mo-ask .yes{background:#e5172f;border-color:#e5172f;color:#fff;font-weight:600}
+.mo-ask[hidden]{display:none}
+
+/* ----- Миний захиалгууд v2: зурагтай карт, өнгөт төлөв ----- */
+.myo{gap:12px!important}
+.mo-sum{margin:0 0 2px;font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.mo2{background:var(--surface,#f7f7f5);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;transition:opacity .25s}
+:root[data-theme="dark"] .mo2{background:rgba(255,255,255,.05)}
+.mo2 .moh{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mo2 time{font-size:12px;color:var(--muted)}
+/* Төлвийн шошго: өнгөт цэгтэй */
+.pill{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;padding:5px 11px 5px 9px;border-radius:999px;background:rgba(127,127,127,.12);color:var(--ink)}
+.pill i{width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.paid{background:rgba(20,133,59,.12);color:#14853b}
+.pill.wait{background:rgba(214,130,0,.14);color:#b36b00}
+.pill.ship{background:rgba(37,99,235,.12);color:#2563eb}
+:root[data-theme="dark"] .pill.paid{color:#3ccf72}
+:root[data-theme="dark"] .pill.wait{color:#f0a63a}
+/* Бараанууд */
+.mo2 ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.mo2 li{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center}
+.mo2 li .ph{display:grid;place-items:center;font-size:20px;opacity:.7}
+.mo2 li img,.mo2 li .ph{width:48px;height:48px;border-radius:10px;object-fit:cover;background:var(--bg)}
+.mo2 li b{display:block;font-size:14px;font-weight:600;line-height:1.3;color:var(--ink)}
+.mo2 li small{font-size:12px;color:var(--muted)}
+.mo2 li em{font-style:normal;font-size:13px;color:var(--muted);white-space:nowrap}
+/* Доод мөр */
+.mo2 .mof{display:flex;align-items:flex-end;justify-content:space-between;padding-top:12px;border-top:1px solid var(--line)}
+.mo2 .no{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.02em}
+.mo2 .tot{display:flex;flex-direction:column;align-items:flex-end;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.mo2 .tot small{font-size:11px;font-weight:500;color:var(--muted)}
+/* Хасах товч: бичиг маягтай, улаан */
+.mo-rm{align-self:flex-start;border:0;background:none;padding:0;color:#e5172f;font-size:13px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.mo2 .mo-ask{border-top:1px dashed var(--line)}
+.mo2 .mo-ask button{border-radius:10px}
+/* Хоосон үед */
+.mo-empty{text-align:center;padding:40px 10px;color:var(--muted)}
+.mo-empty span{font-size:36px;display:block;margin-bottom:8px}
+.mo-empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
+.mo-empty p{margin:0;font-size:13px}
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -1673,6 +1727,54 @@ async function loadFavs(){
   paintFavs();
 }
 // Хадгалсан барааны жагсаалт (хажуугийн цонхонд)
+// ===== МИНИЙ ЗАХИАЛГУУД: тусдаа цонх, төлөгдөөгүйг хэрэглэгч өөрөө хасна =====
+// Хэрэглэгч өөрөө цуцалж болох төлвүүд (төлбөр ороогүй)
+const MY_PENDING = ["QPay хүлээгдэж байна", "Төлбөр шалгах"];
+async function openOrders(){
+  if (!me) return openAcct("login");
+  $("modal").hidden = true; $("scrim").hidden = false; $("sheet").hidden = false;
+  $("sheetTitle").textContent = "Миний захиалгууд";
+  $("sheetBody").innerHTML = `<button class="link back" type="button" id="toProf">← Миний бүртгэл</button><div id="myOrders" class="myo"><p class="desc">Уншиж байна…</p></div>`;
+  $("toProf").onclick = () => openAcct("profile");
+  // Өөрийн захиалгуудыг уншина (RLS: зөвхөн өөрийнхөө). Цуцалсныг харуулахгүй
+  const { data } = await sb.from("orders").select("code,items,total,status,created_at").neq("status", "Цуцлагдсан").order("created_at", { ascending: false }).limit(50);
+  if (!$("myOrders")) return;
+  // Захиалгын текстийн мөр бүрээс барааг олж зурагтай нь харуулна ("1. Нэр (сонголт) [захиалгаар] – 95'000₮")
+  const parse = items => String(items || "").split("\n").map(l => l.trim()).filter(l => /^\d+\./.test(l)).map(l => {
+    const t = l.replace(/^\d+\.\s*/, "").replace(/\s*\(\)/g, "");
+    const name = t.split(/\s+[–-]\s+/)[0].replace(/\s*\[захиалгаар\]/, "").trim();
+    const price = (t.match(/[–-]\s*([\d' ,’]+)₮/) || [])[1] || "";
+    const p = PRODUCTS.find(x => name.startsWith(x.name));
+    const opt = p ? name.slice(p.name.length).replace(/^\s*\(|\)\s*$/g, "").trim() : "";
+    return { p, name: p ? p.name : name, opt, pre: /\[захиалгаар\]/.test(t), price: price.trim() };
+  });
+  // Төлвийн өнгө: ногоон (төлсөн/хүргэсэн), шар (хүлээгдэж байна), саарал (бусад)
+  const tone = st => /Төлөгдсөн|Хүргэгдсэн/.test(st) ? "paid" : MY_PENDING.includes(st) ? "wait" : /Хүргэлтэнд/.test(st) ? "ship" : "";
+  $("myOrders").innerHTML = data && data.length ? `<p class="mo-sum">${data.length} захиалга</p>` + data.map(o => { const lines = parse(o.items); return `<article class="mo2 ${MY_PENDING.includes(o.status) ? "pend" : ""}" data-code="${esc(o.code)}">
+      <!-- Дээд мөр: төлөв, огноо -->
+      <div class="moh"><span class="pill ${tone(o.status)}"><i></i>${esc(o.status.replace(/\s*✅/, ""))}</span><time>${new Date(o.created_at).toLocaleDateString("mn-MN", { year: "numeric", month: "short", day: "numeric" })}</time></div>
+      <!-- Бараанууд: зураг, нэр, сонголт, үнэ -->
+      <ul>${(lines.length ? lines : [{ name: o.items || "", opt: "", price: "" }]).map(x => `<li>${x.p ? `<img src="${esc(x.p.img)}" alt="">` : `<span class="ph">📦</span>`}<div><b>${esc(x.name)}</b><small>${[x.opt, x.pre ? "Захиалгаар" : ""].filter(Boolean).map(esc).join(" · ")}</small></div>${x.price ? `<em>${esc(x.price)}₮</em>` : ""}</li>`).join("")}</ul>
+      <!-- Доод мөр: дугаар, нийт дүн, хасах -->
+      <div class="mof"><span class="no">№ ${esc(o.code)}</span><span class="tot"><small>Нийт</small>${fmt(o.total)}</span></div>
+      ${MY_PENDING.includes(o.status) ? `<button class="mo-rm" type="button" data-x="${esc(o.code)}">Захиалгыг хасах</button>` : ""}
+      <div class="mo-ask" hidden><span>Энэ захиалгыг хасах уу? Дараа нь сэргээх боломжгүй.</span><button type="button" class="no">Үгүй</button><button type="button" class="yes">Тийм, хасах</button></div>
+    </article>`; }).join("") : `<div class="mo-empty"><span>📦</span><b>Захиалга алга</b><p>Бараа захиалахад энд харагдана.</p></div>`;
+  // × дарахад асуулт гаргана
+  $("myOrders").querySelectorAll("[data-x]").forEach(b => b.onclick = () => { const card = b.closest(".mo2"); card.querySelector(".mo-ask").hidden = false; b.hidden = true; });
+  $("myOrders").querySelectorAll(".mo-ask .no").forEach(b => b.onclick = () => { const card = b.closest(".mo2"); card.querySelector(".mo-ask").hidden = true; card.querySelector("[data-x]").hidden = false; });
+  // Тийм: сервер дээр цуцлаад жагсаалтаас хасна
+  $("myOrders").querySelectorAll(".mo-ask .yes").forEach(b => b.onclick = async () => {
+    const card = b.closest(".mo2"); b.disabled = true; b.textContent = "Хасаж байна…";
+    try {
+      const r = await fetch("/api/cancel-order", { method: "POST", headers: { "Content-Type": "application/json", ...(await authHeader()) }, body: JSON.stringify({ code: card.dataset.code }) });
+      const j = await r.json().catch(() => ({}));
+      if (!j.ok) throw new Error(j.error === "not_pending" ? "Төлбөр орсон тул хасах боломжгүй" : "Хасаж чадсангүй");
+      card.style.transition = "opacity .25s"; card.style.opacity = 0; setTimeout(() => { card.remove(); const n = $("myOrders").querySelectorAll(".mo2").length; if (!n) $("myOrders").innerHTML = `<div class="mo-empty"><span>📦</span><b>Захиалга алга</b><p>Бараа захиалахад энд харагдана.</p></div>`; else $("myOrders").querySelector(".mo-sum").textContent = n + " захиалга"; }, 250);
+      toast("Захиалга хасагдлаа");
+    } catch (e) { toast(e.message); b.disabled = false; b.textContent = "Тийм, хасах"; }
+  });
+}
 function openFavs(){
   if (!me) { toast("Хадгалсан бараагаа харахын тулд нэвтэрнэ үү"); return openAcct("login"); }
   $("modal").hidden = true; $("scrim").hidden = false; $("sheet").hidden = false;
@@ -2602,7 +2704,8 @@ function acctView(v, email){
       ${me.role === "admin" ? `<a class="primary" href="/admin.html" style="text-align:center;text-decoration:none">Админ хэсэг</a>` : ""}
       <!-- Хадгалсан бараа -->
       <button class="ghost" type="button" id="myFavs">♡ Хадгалсан бараа (${favs.size})</button>
-      <h3 class="ah">Миний захиалгууд</h3><div id="myOrders" class="myo"><p class="desc">Уншиж байна…</p></div>
+      <!-- Миний захиалгууд: тусдаа цонхонд нээгдэнэ -->
+      <button class="ghost" type="button" id="myOrd">📦 Миний захиалгууд <span id="myOrdN"></span></button>
       <!-- Нууц үгээ солих (нэвтэрсэн үед имэйлгүйгээр шууд солино) -->
       <button class="ghost" type="button" id="chpw">Нууц үг солих</button>
       <button class="ghost" type="button" id="logout">Гарах</button></div>`;
@@ -2611,11 +2714,9 @@ function acctView(v, email){
     $("myFavs").onclick = openFavs;
     // Гарах
     $("logout").onclick = async () => { await sb.auth.signOut(); me = null; $("openAcct").classList.remove("on"); closeAll(); toast("Гарлаа"); };
-    // Өөрийн захиалгуудыг уншина (RLS: зөвхөн өөрийнхөө)
-    sb.from("orders").select("code,items,total,status,created_at").order("created_at", { ascending: false }).limit(50).then(({ data }) => {
-      $("myOrders").innerHTML = data && data.length ? data.map(o => `<div class="mo"><div><b class="mono">${esc(o.code)}</b><span>${new Date(o.created_at).toLocaleDateString("mn-MN")}</span></div>
-        <p>${esc(o.items || "")}</p><div><span class="st">${esc(o.status)}</span><b>${fmt(o.total)}</b></div></div>`).join("") : `<p class="desc">Одоохондоо захиалга алга.</p>`;
-    });
+    $("myOrd").onclick = openOrders;
+    // Захиалгын тоог товчин дээр харуулна (цуцалсныг тоолохгүй)
+    sb.from("orders").select("code", { count: "exact", head: true }).neq("status", "Цуцлагдсан").then(({ count }) => { if ($("myOrdN") && count) $("myOrdN").textContent = `(${count})`; });
     return;
   }
   // Холбоос товчнууд (Бүртгүүлэх, Нэвтрэх, Мартсан…)

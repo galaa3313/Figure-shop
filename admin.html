@@ -263,6 +263,10 @@ body:has(.slay) header{background:#fff}
 .prow .tb{display:flex;gap:4px}.prow .tb button{border:1px solid var(--line);background:#fff;width:34px;height:40px;border-radius:8px}
 .prow .tb button:disabled{opacity:.35}
 @media (max-width:640px){ .prow{grid-template-columns:1fr auto} .prow select{grid-column:1} .prow .tb{grid-column:2;grid-row:1} .prow input{grid-column:1/-1} }
+
+.he .btn.rv{font-size:12.5px;padding:7px 12px;white-space:nowrap}
+.he .btn.sure{background:var(--red);border-color:var(--red);color:#fff}
+.hkeep{margin:-6px 0 12px}
 </style>
 </head>
 <body>
@@ -595,7 +599,7 @@ async function showSettings(){
   // Хэсэг бүрийн толгой: гарчиг + сайтын хаана гарах тайлбар
   const head = (ic, t, where) => `<div class="full shead"><span class="sic">${ic}</span><div><h3>${t}</h3><p class="where">${where}</p></div></div>`;
   $("main").innerHTML = `
-    <div class="bar"><h2>Сайтын тохиргоо</h2><span class="mut">${data && data.updated_at ? "Сүүлд хадгалсан: " + dt(data.updated_at) : ""}</span><a class="btn" href="/" target="_blank" rel="noopener" style="margin-left:auto">Сайтыг харах ↗</a></div>
+    <div class="bar"><h2>Сайтын тохиргоо</h2><span class="mut">${data && data.updated_at ? "Сүүлд хадгалсан: " + dt(data.updated_at) : ""}</span><button class="btn" type="button" id="verBtn" style="margin-left:auto">↶ Өмнөх хувилбарууд</button><a class="btn" href="/" target="_blank" rel="noopener">Сайтыг харах ↗</a></div>
     <p class="mut sintro">Хэсгүүд сайт дээр <b>дээрээс доош</b> харагдах дарааллаар байна. Өөрчлөөд доод талын <b>Хадгалах</b> товчийг дарна.</p>
     <!-- Хэсэг рүү үсрэх товчнууд -->
     <div class="slay">
@@ -726,6 +730,8 @@ async function showSettings(){
     // Утсан дээр идэвхтэй товчийг харагдах хэсэгт гүйлгэнэ
     if (on && matchMedia("(max-width:860px)").matches) { const n = $("snav"); n.scrollTo({ left: a.offsetLeft - n.clientWidth / 2 + a.offsetWidth / 2, behavior: "smooth" }); } }); }), { rootMargin: "-30% 0px -60% 0px" });
   $("sf").querySelectorAll("section.scard").forEach(sc => io.observe(sc));
+  // Тохиргооны өмнөх хувилбарууд: Түүх табыг "Тохиргоо" шүүлттэйгээр нээнэ
+  $("verBtn").onclick = () => { $("tabs").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.t === "history")); showHistory({ from: ymd(new Date(Date.now() - 89 * 864e5)), to: ymd(new Date()), entity: "settings", act: "" }); };
   // Хэсэг рүү зөөлөн гүйлгэнэ
   $("snav").querySelectorAll("a").forEach(a => a.onclick = e => { e.preventDefault(); $(a.getAttribute("href").slice(1)).scrollIntoView({ behavior: "smooth", block: "start" }); });
   // Хэрхэн захиалах: 4 мөр
@@ -897,6 +903,12 @@ async function showReviews(){
 // Үйлдэл, төрлийн монгол нэр
 const ACT = { delete: "Устгасан", hide: "Нуусан", unhide: "Харуулсан", restore: "Сэргээсэн", status: "Төлөв сольсон", insert: "Нэмсэн", update: "Засварласан", user: "Эрх өөрчилсөн" };
 const ENT = { order: "Захиалга", product: "Бараа", review: "Сэтгэгдэл", settings: "Тохиргоо", user: "Хэрэглэгч" };
+// Тохиргоо, барааны талбаруудын монгол нэр (юу өөрчлөгдсөнийг харуулахад)
+const KEYN = { notice: "Дээд мэдээ", slides: "Слайд", promos: "Постер", heroEyebrow: "Нүүр", heroTitle: "Нүүр", heroText: "Нүүр", heroButton: "Нүүр", heroImage: "Нүүрний зураг",
+  cats: "Ангилал", how: "Хэрхэн захиалах", faq: "Асуулт", perks: "Үйлчилгээ", phone: "Утас", instagram: "Instagram", facebook: "Facebook", address: "Хаяг", preDays: "Хугацаа",
+  colors: "Өнгө", logoUrl: "Лого", footerText: "Хөлийн уриа", footerImage: "Хөлийн зураг", fbLogin: "Facebook нэвтрэлт",
+  name: "Нэр", price: "Үнэ", was: "Хуучин үнэ", images: "Зураг", descr: "Тайлбар", options: "Сонголт", cat: "Ангилал", series: "Брэнд", line: "Үйлдвэрлэгч", badge: "Тэмдэг", pre: "Захиалгаар", active: "Харагдах", sort: "Эрэмбэ", extra: "Нэмэлт" };
+const chg = d => [...new Set((d && d.changed || []).map(k => KEYN[k] || k))].join(", ");
 // Огноог YYYY-MM-DD болгоно (Монголын цагаар)
 const ymd = d => new Date(d.getTime() + 8 * 3600e3).toISOString().slice(0, 10);
 async function showHistory(f){
@@ -911,6 +923,7 @@ async function showHistory(f){
       <label>Төрөл<select id="hent"><option value="">Бүгд</option>${Object.entries(ENT).map(([k, v]) => `<option value="${k}" ${k === f.entity ? "selected" : ""}>${v}</option>`).join("")}</select></label>
       <label>Үйлдэл<select id="hact"><option value="">Бүгд</option>${Object.entries(ACT).map(([k, v]) => `<option value="${k}" ${k === f.act ? "selected" : ""}>${v}</option>`).join("")}</select></label>
     </div>
+    <p class="mut hkeep">ℹ Засварын өмнөх хувилбар <b>30 хоног</b>, түүх <b>180 хоног</b> хадгалагдаад автоматаар устна.</p>
     <div id="hlist"><p class="mut">Уншиж байна…</p></div>`;
   // Шүүлт өөрчлөгдөхөд дахин ачаална
   const again = () => showHistory({ from: $("hfrom").value, to: $("hto").value, entity: $("hent").value, act: $("hact").value });
@@ -927,20 +940,25 @@ async function showHistory(f){
     if (l.action === "delete" && l.entity === "order") return `${esc(d.name || "")} · ${fmt(d.total)} · ${esc(d.items || "").slice(0, 80)}`;
     if (l.action === "delete" && l.entity === "review") return `${esc(d.username || "")}: “${esc(String(d.body || "").slice(0, 60))}”`;
     if (l.action === "user") return Object.entries(d).map(([k, v]) => k === "role" ? (v === "admin" ? "Админ болгосон" : "Энгийн хэрэглэгч болгосон") : (v ? "Хаасан" : "Нээсэн")).join(", ");
-    if (l.action === "restore") return "Устгасан бичлэгийг буцаасан";
+    if (l.action === "restore") return d.at ? `${dt(d.at)}-ий засварын өмнөх байдал руу буцаасан${d.changed && d.changed.length ? " · " + esc(chg(d)) : ""}` : "Устгасан бичлэгийг буцаасан";
+    if (d.changed) return `${d.name ? esc(d.name) + " · " : ""}Өөрчилсөн: <b>${esc(chg(d)) || "—"}</b>`;
     return esc(d.name || d.by || ""); };
   $("hlist").innerHTML = j.rows.length ? `<div class="hl">${j.rows.map(l => `<div class="he a-${esc(l.action)}">
       <div class="ht">${dt(l.at)}</div>
       <div class="hb"><span class="tag">${ACT[l.action] || esc(l.action)}</span> <b>${ENT[l.entity] || esc(l.entity)}</b> ${l.target && l.entity !== "settings" ? `<code>${esc(l.target)}</code>` : ""}
         <div class="mut">${info(l)}</div></div>
       <div class="hw">👤 ${esc(l.actor || "—")}</div>
-      ${l.action === "delete" && (l.entity === "order" || l.entity === "product") ? `<button class="btn" data-rs="${l.id}">Сэргээх</button>` : "<span></span>"}
+      ${l.action === "delete" && (l.entity === "order" || l.entity === "product") ? `<button class="btn" data-rs="${l.id}">Сэргээх</button>`
+        // Хувилбар 30 хоног хадгалагдана: түүнээс хуучин бол буцаах товч гаргахгүй
+        : l.detail && l.detail.snap && Date.now() - new Date(l.at) < 30 * 864e5 ? `<button class="btn rv" data-rs="${l.id}" title="Энэ засвар хийгдэхээс өмнөх байдал руу буцаана">↶ Өмнөх рүү буцаах</button>` : "<span></span>"}
     </div>`).join("")}</div><p class="mut" style="margin-top:10px">${j.rows.length} бичлэг${j.rows.length >= 500 ? " (эхний 500)" : ""}</p>`
     : `<p class="mut">Энэ хугацаанд бичлэг алга.</p>`;
   // Устгасныг сэргээх
   $("hlist").querySelectorAll("[data-rs]").forEach(b => b.onclick = async () => {
+    // Хувилбар руу буцаахаас өмнө нэг удаа баталгаажуулна
+    if (b.classList.contains("rv") && !b.dataset.sure) { b.dataset.sure = 1; b.textContent = "⚠ Тийм, буцаах"; b.classList.add("sure"); return; }
     if (b.disabled) return; b.disabled = true;
-    try { await api({ action: "restore", id: b.dataset.rs }); toast("Сэргээлээ"); again(); } catch (e) { b.disabled = false; toast("Алдаа: " + e.message); }
+    try { await api({ action: "restore", id: b.dataset.rs }); toast(b.classList.contains("rv") ? "Буцаалаа · дургүй бол шинэ мөрөөс дахин буцаана" : "Сэргээлээ"); again(); } catch (e) { b.disabled = false; toast("Алдаа: " + e.message); }
   });
 }
 

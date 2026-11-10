@@ -570,6 +570,8 @@ async function showSettings(){
   if (error) { $("main").innerHTML = `<p class="msg">Алдаа: ${esc(error.message)}<br>Supabase-д finn-update.sql-ийг ажиллуулсан эсэхээ шалгана уу.</p>`; return; }
   // Хадгалсан утгыг анхны утгатай нийлүүлнэ
   const S = { ...DEF, ...(data && data.data || {}) }; S.colors = { ...DEF.colors, ...(S.colors || {}) };
+  // Хуучин үйлчилгээний бичиг мэдээ талбарт үлдсэн бол хоосолно (сайт үүнийг аль хэдийн харуулдаггүй)
+  if (/^QPay-ээр шууд төлнө · УБ хотод хүргэлттэй/.test(String(S.notice || "").trim())) S.notice = "";
   let faq = [...(S.faq || [])], how = [...(S.how || [])];
   const inp = (k, label, ph = "") => `<label>${label}<input data-k="${k}" value="${esc(S[k] || "")}" placeholder="${esc(ph)}"></label>`;
   // Хэсэг бүрийн толгой: гарчиг + сайтын хаана гарах тайлбар

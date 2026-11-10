@@ -34,7 +34,9 @@ async function order(b) {
     // Эхлээд мэдээллийн сангаас (админы засварласан үнэ), олдохгүй бол кодын жагсаалтаас
     const dbp = await SB.productById(pid);
     if (dbp && dbp.inactive) return null;
-    const p = dbp || PRODUCTS[pid]; if (!p) return null;
+    // Аюулгүй байдал: Supabase холбогдсон бол ЗӨВХӨН мэдээллийн сангийн бараа, үнийг хүлээн авна.
+    // (Админ устгасан бараа, 100₮-ийн туршилтын бараа кодны хуучин жагсаалтаар захиалагдахаас сэргийлнэ)
+    const p = dbp || (SB.ready() ? null : PRODUCTS[pid]); if (!p) return null;
     // Тоо ширхэг 1–20 хооронд
     const n = Math.min(20, Math.max(1, Math.round(Number(it.n) || 1)));
     // Бэлэн фигур 1 ширхэг л байдаг
@@ -150,6 +152,13 @@ function limited(req, max = 6, winMs = 10 * 60 * 1000) {
 
 // Төлөгдсөн гэж тэмдэглэнэ. Sheets байгаа бол давхардлыг тэр шийднэ.
 async function markPaid(code, amount, inv) {
+  // Аюулгүй байдал: мэдээллийн санд энэ дугаартай захиалга байвал нэхэмжлэх нь таарч,
+  // төлсөн дүн захиалгын нийт дүнгээс багагүй байх ёстой. Үгүй бол "төлөгдсөн" болгохгүй.
+  const o = await SB.orderByCode(code);
+  if (o && ((o.invoice && o.invoice !== inv) || Number(amount) < Number(o.total))) {
+    await telegram(`⚠️ Сэжигтэй төлбөр ${code}\nНэхэмжлэх: ${inv} (захиалгынх: ${o.invoice || "—"})\nТөлсөн: ${fmt(amount)} · Захиалгын дүн: ${fmt(o.total)}\nТӨЛӨГДСӨН гэж тэмдэглээгүй — QPay-ээс гараар шалгана уу.`);
+    return false;
+  }
   // Supabase-ийн захиалгын хүснэгтэд ч тэмдэглэнэ
   await SB.markOrderPaid(code, inv);
   const s = await sheets({ action: "paid", code, invoice: inv, amount });

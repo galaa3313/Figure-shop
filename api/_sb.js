@@ -82,5 +82,12 @@ async function productById(id) {
   } catch (e) { return null; }
 }
 
+// Захиалгыг дугаараар нь уншина (байхгүй бол null)
+async function orderByCode(code) {
+  if (!ready()) return null;
+  try { const r = await rest(`orders?code=eq.${encodeURIComponent(code)}&select=code,total,invoice,status,user_id`); return r && r[0] || null; }
+  catch (e) { return null; }
+}
+
 // Бусад файлд ашиглах
-module.exports = { ready, rest, userFrom, saveOrder, markOrderPaid, productById, URL_, ANON };
+module.exports = { ready, rest, userFrom, saveOrder, markOrderPaid, productById, orderByCode, URL_, ANON };

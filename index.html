@@ -1367,6 +1367,8 @@ footer{padding:44px 0 26px!important;border-top:1px solid var(--line)!important;
 .dperks b{font-size:12px!important}
 .dperks li>span>span{font-size:11px}
 
+/* Үйлчилгээний мөр бүгд устсан бол хэсгийг бүрэн нууна */
+.dperks[hidden]{display:none!important}
 /* ----- Facebook-ээр нэвтрэх товч ----- */
 .fbbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;border-radius:0;padding:13px;background:#1877f2;color:#fff;font-weight:600;font-size:14.5px;cursor:pointer}
 .fbbtn svg{width:20px;height:20px}
@@ -2400,6 +2402,20 @@ function renderPromos(list){
 }
 // Facebook-ээр нэвтрэх товч (админ → Сайтын тохиргоо → Нэвтрэх-ээс асаана)
 let FB_ON = false;
+// Үйлчилгээний мөрийн дүрснүүд (админаас сонгоно)
+const PERK_SVG = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const PERK_IC = {
+  truck: PERK_SVG('<rect x="2" y="7" width="13" height="10"/><path d="M15 10h4l3 3v4h-7"/><circle cx="6" cy="18.5" r="1.5"/><circle cx="18" cy="18.5" r="1.5"/>'),
+  clock: PERK_SVG('<path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5M12 7v5l3 2"/>'),
+  card: PERK_SVG('<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/>'),
+  chat: PERK_SVG('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/>'),
+  gift: PERK_SVG('<rect x="3" y="8" width="18" height="4"/><path d="M5 12v9h14v-9M12 8v13M12 8S10 3 7.5 4.5 9 8 12 8Zm0 0s2-5 4.5-3.5S15 8 12 8Z"/>'),
+  shield: PERK_SVG('<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/>'),
+  star: PERK_SVG('<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/>'),
+  box: PERK_SVG('<path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5v-9Z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/>'),
+  return: PERK_SVG('<path d="M4 9h11a5 5 0 0 1 0 10H8"/><path d="M8 5 4 9l4 4"/>'),
+  phone: PERK_SVG('<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>')
+};
 function applySettings(st){
   if (!st || typeof st !== "object") return;
   // Холбоо барих
@@ -2437,13 +2453,13 @@ function applySettings(st){
   if (st.footerText != null) $("fText").textContent = st.footerText;
   // Facebook-ээр нэвтрэх товч асаалттай эсэх
   if (typeof st.fbLogin === "boolean") FB_ON = st.fbLogin;
-  // ☰ цэсний үйлчилгээний 4 мөр (админаас засна)
-  if (Array.isArray(st.perks) && st.perks.length === 4) document.querySelectorAll(".dperks li").forEach((li, i) => {
-    const x = st.perks[i] || {}, b = li.querySelector("b"), d = li.querySelector("span > span");
-    if (b && x.t) b.textContent = x.t;
-    // Хугацааны мөрийг гараар бичсэн бол хоногийн автомат бичвэрийг дарж бичнэ
-    if (d && x.d) { d.textContent = x.d; d.removeAttribute("id"); }
-  });
+  // ☰ цэсний үйлчилгээний мэдээлэл: админаас нэмж, хасаж, засна (хоосон бол нуугдана)
+  if (Array.isArray(st.perks)) {
+    const ul = document.querySelector(".dperks"), DEF_IC = ["truck", "clock", "card", "chat"];
+    const rows = st.perks.filter(x => x && (x.t || x.d));
+    ul.innerHTML = rows.map((x, i) => `<li>${PERK_IC[x.i] || PERK_IC[DEF_IC[i]] || PERK_IC.star}<span><b>${esc(x.t || "")}</b><span>${esc(x.d || "")}</span></span></li>`).join("");
+    ul.hidden = !rows.length;
+  }
   // Хэрхэн захиалах: [{t: гарчиг, d: тайлбар}]
   if (Array.isArray(st.how) && st.how.length) $("howSteps").innerHTML = st.how.map(x => `<div class="st"><h3>${esc(x.t)}</h3><p>${esc(x.d)}</p></div>`).join("");
   // Түгээмэл асуулт: [{q: асуулт, a: хариулт}]

@@ -257,6 +257,12 @@ body:has(.slay) header{background:#fff}
   .scard .colors #colReset{grid-column:1/-1}
   .scard .colors .mut{grid-column:2/-1;align-self:center}
 }
+
+/* Үйлчилгээний мөр: дүрс | гарчиг | тайлбар | товчнууд */
+.prow{display:grid;grid-template-columns:150px 1fr 1.4fr auto;gap:8px;align-items:center;background:#fafaf8;border-radius:12px;padding:10px;margin-bottom:8px}
+.prow .tb{display:flex;gap:4px}.prow .tb button{border:1px solid var(--line);background:#fff;width:34px;height:40px;border-radius:8px}
+.prow .tb button:disabled{opacity:.35}
+@media (max-width:640px){ .prow{grid-template-columns:1fr auto} .prow select{grid-column:1} .prow .tb{grid-column:2;grid-row:1} .prow input{grid-column:1/-1} }
 </style>
 </head>
 <body>
@@ -573,7 +579,7 @@ const DEF = {
         { q: "“Захиалгаар” гэсэн бараа хэзээ ирэх вэ?", a: "Солонгосоос захиалж авчирдаг тул төлбөр орсноос хойш 7–14 хоногт ирнэ." }],
   colors: { accent: "#2f7bff", bg: "#ffffff", ink: "#111111", footer: "#ffffff" }, logoUrl: "", footerImage: "",
   // ☰ цэсний доод үйлчилгээний мэдээлэл (4 мөр)
-  perks: [{ t: "Хүргэлттэй", d: "УБ хотод хүргэнэ" }, { t: "Солонгосоос", d: "7–14 хоногт авчирна" }, { t: "Шууд төлбөр", d: "QPay, банкны апп" }, { t: "Тусламж", d: "Утсаар холбогдоно" }]
+  perks: [{ i: "truck", t: "Хүргэлттэй", d: "УБ хотод хүргэнэ" }, { i: "clock", t: "Солонгосоос", d: "7–14 хоногт авчирна" }, { i: "card", t: "Шууд төлбөр", d: "QPay, банкны апп" }, { i: "chat", t: "Тусламж", d: "Утсаар холбогдоно" }]
 };
 async function showSettings(){
   const my = ++VIEW;
@@ -641,8 +647,9 @@ async function showSettings(){
         <div class="full"><button type="button" class="btn add" id="faqAdd">+ Асуулт нэмэх</button></div>
       </section>
       <section class="form scard" id="s-perks">
-        ${head("🚚", "Үйлчилгээний мэдээлэл", "☰ цэсний доод талын 4 мөр (хүргэлт, хугацаа, төлбөр, тусламж).")}
+        ${head("🚚", "Үйлчилгээний мэдээлэл", "☰ цэсний доод талын мөрүүд (хүргэлт, хугацаа, төлбөр, тусламж…). Бүгдийг устгавал хэсэг нуугдана.")}
         <div class="full" id="perkList"></div>
+        <div class="full"><button type="button" class="btn add" id="perkAdd">+ Мөр нэмэх</button></div>
         ${inp("preDays", "Солонгосоос ирэх хугацаа", "7–14 хоног")}
         <p class="mut" style="align-self:end">Сагс, барааны цонхонд "Солонгосоос <b>${esc(S.preDays)}</b>-т ирнэ" гэж гарна.</p>
       </section>
@@ -683,9 +690,27 @@ async function showSettings(){
     </div>
     <!-- Доод талд үргэлж харагдах хадгалах мөр -->
     <div class="savebar"><span id="dirty" class="mut">✓ Бүх өөрчлөлт хадгалагдсан</span><button class="btn dark" id="ssave">Хадгалах</button></div>`;
-  // ----- Үйлчилгээний 4 мөр (☰ цэс) -----
-  let perks = (Array.isArray(S.perks) && S.perks.length === 4 ? S.perks : DEF.perks).map(x => ({ ...x }));
-  $("perkList").innerHTML = perks.map((x, i) => `<div class="pair"><b>${i + 1}</b><input data-pt="${i}" value="${esc(x.t)}" placeholder="Гарчиг"><input data-pd="${i}" value="${esc(x.d)}" placeholder="Тайлбар"></div>`).join("");
+  // ----- Үйлчилгээний мөрүүд (☰ цэс): нэмэх, засах, дараалал, устгах -----
+  const PIC = { truck: "🚚 Хүргэлт", clock: "⏱ Хугацаа", card: "💳 Төлбөр", chat: "💬 Тусламж", gift: "🎁 Бэлэг", shield: "🛡 Баталгаа", star: "⭐ Онцлох", box: "📦 Савлагаа", return: "↩ Буцаалт", phone: "📞 Утас" };
+  const DIC = ["truck", "clock", "card", "chat"];
+  let perks = (Array.isArray(S.perks) ? S.perks : DEF.perks).map((x, i) => ({ i: x.i || DIC[i] || "star", t: x.t || "", d: x.d || "" }));
+  // Талбаруудаас утгыг perks руу уншина (дахин зурахын өмнө)
+  const readPerks = () => $("perkList").querySelectorAll(".prow").forEach((r, i) => { perks[i] = { i: r.querySelector("[data-pi]").value, t: r.querySelector("[data-pt]").value, d: r.querySelector("[data-pd]").value }; });
+  const drawPerks = () => {
+    $("perkList").innerHTML = perks.length ? perks.map((x, i) => `<div class="prow">
+      <select data-pi="${i}" aria-label="Дүрс">${Object.entries(PIC).map(([k, v]) => `<option value="${k}" ${k === x.i ? "selected" : ""}>${v}</option>`).join("")}</select>
+      <input data-pt="${i}" value="${esc(x.t)}" placeholder="Гарчиг (жишээ: Хүргэлттэй)">
+      <input data-pd="${i}" value="${esc(x.d)}" placeholder="Тайлбар (жишээ: УБ хотод хүргэнэ)">
+      <div class="tb"><button type="button" data-pu="${i}" ${i ? "" : "disabled"} aria-label="Дээш">↑</button><button type="button" data-pdn="${i}" ${i < perks.length - 1 ? "" : "disabled"} aria-label="Доош">↓</button><button type="button" data-px="${i}" aria-label="Устгах">×</button></div>
+    </div>`).join("") : `<p class="mut">Мөр алга — ☰ цэсэнд энэ хэсэг харагдахгүй.</p>`;
+    // Дээш, доош, устгах
+    $("perkList").querySelectorAll("[data-pu]").forEach(b => b.onclick = () => { readPerks(); const i = +b.dataset.pu; [perks[i - 1], perks[i]] = [perks[i], perks[i - 1]]; drawPerks(); });
+    $("perkList").querySelectorAll("[data-pdn]").forEach(b => b.onclick = () => { readPerks(); const i = +b.dataset.pdn; [perks[i + 1], perks[i]] = [perks[i], perks[i + 1]]; drawPerks(); });
+    $("perkList").querySelectorAll("[data-px]").forEach(b => b.onclick = () => { readPerks(); perks.splice(+b.dataset.px, 1); drawPerks(); });
+  };
+  drawPerks();
+  // Шинэ мөр нэмэх (8 хүртэл)
+  $("perkAdd").onclick = () => { readPerks(); if (perks.length >= 8) return toast("8-аас олон мөр нэмэх боломжгүй"); perks.push({ i: "star", t: "", d: "" }); drawPerks(); $("perkList").querySelector(".prow:last-child [data-pt]").focus(); };
   // ----- Хадгалаагүй өөрчлөлтийг илрүүлнэ -----
   let dirty = false;
   const markDirty = () => { if (dirty) return; dirty = true; $("dirty").textContent = "● Хадгалаагүй өөрчлөлт байна"; $("dirty").className = "warn"; $("ssave").classList.add("pulse"); };
@@ -813,7 +838,7 @@ async function showSettings(){
     // Facebook-ээр нэвтрэх товч
     out.fbLogin = $("fbOn").checked;
     // Үйлчилгээний 4 мөр
-    out.perks = perks.map((x, i) => ({ t: $("main").querySelector(`[data-pt="${i}"]`).value.trim(), d: $("main").querySelector(`[data-pd="${i}"]`).value.trim() }));
+    readPerks(); out.perks = perks.map(x => ({ i: x.i, t: x.t.trim(), d: x.d.trim() })).filter(x => x.t || x.d);
     // Ангилал: нэргүйг хасна
     out.cats = cats.map(x => ({ id: x.id, label: (x.label || "").trim() })).filter(x => x.label);
     if (!out.cats.length) return toast("Дор хаяж нэг ангилал байх ёстой");

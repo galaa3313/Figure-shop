@@ -1265,6 +1265,75 @@ footer{padding:44px 0 26px!important;border-top:1px solid var(--line)!important;
 .dperks li{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);line-height:1.4}
 .dperks svg{width:16px;height:16px;flex:none;color:var(--muted)}
 .dperks b{font-weight:600;color:var(--ink)}
+
+/* ----- Барааны цонх: сагсны тоо − / + ----- */
+.pd-qty{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--ink);height:54px;margin:0 0 10px}
+.pd-qty button{width:58px;height:100%;border:0;background:none;color:var(--ink);font-size:22px;display:grid;place-items:center;cursor:pointer}
+.pd-qty button:active{background:var(--line)}
+.pd-qty svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.pd-qty span{font-size:14px;letter-spacing:.04em}
+.pd-qty b{font-weight:600}
+
+/* "Сагснаас хасах" товч: барааны цонх ба сагсанд жижиг улаан бичиг */
+.pd-rm{display:block;width:100%;margin:0 0 10px;padding:8px 0;border:0;background:none;color:#e5172f;font-size:13px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.it .rm{display:inline-block;margin-top:6px;padding:0;color:#e5172f;font-size:12.5px;cursor:pointer}
+
+/* ----- ЗАХИАЛГА АМЖИЛТТАЙ дэлгэц: голлуулсан, нягт ----- */
+.ok2{gap:14px;padding-top:4px}
+.ok-head{text-align:center;padding:6px 0 2px}
+/* Дугуй тэмдэг: нимгэн хүрээтэй, ногоон зураас */
+.ok-ic{width:52px;height:52px;margin:0 auto 12px;border-radius:50%;background:rgba(20,133,59,.1);display:grid;place-items:center}
+.ok-ic svg{width:26px;height:26px;fill:none;stroke:#14853b;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ok-head h3{margin:0 0 4px;font-size:19px;font-weight:600;letter-spacing:-.01em}
+.ok-code{font-size:12.5px;color:var(--muted)}
+.ok-code b{color:var(--ink);font-weight:600;margin-left:4px}
+.ok-msg{margin:0;text-align:center;font-size:13px;line-height:1.55;color:var(--muted)}
+.ok-msg b{color:var(--ink);font-weight:600}
+/* Захиалгын товч: нимгэн зураасаар тусгаарласан мөрүүд */
+.ok-sum{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 0;display:flex;flex-direction:column;gap:7px;font-size:13px}
+.ok-item{font-weight:500;color:var(--ink)}
+.ok-row{display:flex;justify-content:space-between;gap:16px;color:var(--muted)}
+.ok-row span:last-child{color:var(--ink);text-align:right}
+.ok-total{padding-bottom:7px;margin-bottom:2px;border-bottom:1px dashed var(--line)}
+.ok-total b{color:var(--ink);font-weight:600}
+/* Гол товч: хар, жижиг өндөртэй */
+.ok-main{height:46px;border:0;background:var(--ink);color:var(--bg);font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+/* Хуулах: бичиг маягийн жижиг товч */
+.ok-copy{display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:none;color:var(--muted);font-size:12.5px;padding:2px 0;cursor:pointer}
+.ok-copy svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.7}
+/* Холбоо барих */
+.ok-help{text-align:center;font-size:11.5px;color:var(--muted);margin-top:4px}
+.ok-help>div{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:8px}
+.ok-help .cline{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 13px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;color:var(--ink);text-decoration:none}
+.ok-help svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round}
+
+/* ----- АМЖИЛТ дэлгэц: нэмэлт гоёл ----- */
+/* Тэмдэг: томорч гарч ирээд ✓ зурагдана */
+.ok-ic{animation:okpop .45s cubic-bezier(.2,1.4,.4,1) both}
+.ok-ic svg path{stroke-dasharray:24;stroke-dashoffset:24;animation:okdraw .4s .3s ease-out forwards}
+@keyframes okpop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes okdraw{to{stroke-dashoffset:0}}
+/* Гарчиг, мэдээлэл доороос зөөлөн гарч ирнэ */
+.ok2>*:not(.ok-head){animation:okup .45s .15s ease-out both}
+@keyframes okup{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+/* Алхмын зураас */
+.ok-steps{list-style:none;margin:2px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);font-size:11px;color:var(--muted);text-align:center}
+.ok-steps li{position:relative;padding-top:16px}
+.ok-steps i{position:absolute;top:0;left:50%;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;background:var(--line);z-index:1}
+.ok-steps li+li::before{content:"";position:absolute;top:4px;right:50%;width:100%;height:1px;background:var(--line)}
+.ok-steps li.on{color:var(--ink);font-weight:600}
+.ok-steps li.on i{background:#14853b;box-shadow:0 0 0 4px rgba(20,133,59,.15)}
+/* Баримт маягийн хайрцаг */
+.ok-sum{background:var(--surface);border:0!important;border-radius:14px;padding:14px!important}
+.ok-it{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding-bottom:10px;margin-bottom:3px;border-bottom:1px dashed var(--line)}
+.ok-it img{width:44px;height:44px;object-fit:cover;border-radius:8px;background:var(--bg)}
+.ok-it b{display:block;font-size:13px;font-weight:600;line-height:1.3;color:var(--ink)}
+.ok-it span{font-size:11.5px;color:var(--muted)}
+.ok-it em{font-style:normal;font-size:13px;font-weight:600;color:var(--ink)}
+.ok-total{border-bottom:1px solid var(--line)!important;font-size:14px}
+.ok-total span{color:var(--ink)}
+.ok-main{border-radius:0}
+@media (prefers-reduced-motion:reduce){.ok-ic,.ok-ic svg path,.ok2>*{animation:none!important;stroke-dashoffset:0!important}}
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -1616,6 +1685,12 @@ function toast(msg){
   clearTimeout(toastT); toastT = setTimeout(() => t.remove(), 1800);
 }
 // Сагсанд бараа нэмэх / хасах
+// Сагснаас тухайн барааны нэгийг хасна
+function removeOne(id){
+  const i = cart.lastIndexOf(id); if (i < 0) return;
+  cart.splice(i, 1); save(); renderGrid();
+  toast(qtyOf(id) ? `${byId(id).name} · ${qtyOf(id)} ш үлдлээ` : `${byId(id).name} сагснаас хасагдлаа`);
+}
 function toggle(id){
   const p = byId(id), adding = p.pre || !cart.includes(id);
   const opt = String(id).split("::")[1];
@@ -1698,7 +1773,11 @@ function openModal(id){
         <button type="button" class="pd-rate" id="rateLink" hidden><span class="stars" id="rateStars"></span><span id="rateTxt"></span></button>
         <div class="pd-price ${salePct(p) ? "sale" : ""}">${salePct(p) ? `<s>${fmt(p.was)}</s>` : ""}${fmt(p.price)}${salePct(p) ? `<span class="pct">-${salePct(p)}%</span>` : ""}</div>
         ${p.options ? p.options.map((o, oi) => `<div class="opt"><span>${esc(o.label)}</span><div class="chips">${o.values.map(v => `<button type="button" data-o="${oi}" aria-pressed="false">${esc(v)}</button>`).join("")}</div></div>`).join("") : ""}
-        <button type="button" class="add ${cart.includes(id) && !p.pre ? "in" : ""}" id="mAdd">${p.pre ? (qtyOf(id) ? `Сагсанд ${qtyOf(id)} ш · нэгийг нэмэх` : "Захиалах") : cart.includes(id) ? "Сагсанд байна ✓ (хасах)" : "Сагсанд хийх"}</button>
+        ${p.pre && !p.options && qtyOf(id) ? `<!-- Сагсанд байгаа бол тоог − / + товчоор өөрчилнө -->
+        <div class="pd-qty"><button type="button" id="mMinus" aria-label="Нэгийг хасах">${qtyOf(id) > 1 ? "−" : "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13'/></svg>"}</button><span>Сагсанд <b>${qtyOf(id)}</b> ш</span><button type="button" id="mPlus" aria-label="Нэгийг нэмэх">+</button></div>` : ""}
+        <button type="button" class="add ${cart.includes(id) && !p.pre ? "in" : ""}" id="mAdd" ${p.pre && !p.options && qtyOf(id) ? "hidden" : ""}>${p.pre ? (qtyOf(id) ? `Сагсанд ${qtyOf(id)} ш · нэгийг нэмэх` : "Захиалах") : cart.includes(id) ? "Сагсанд байна ✓ (хасах)" : "Сагсанд хийх"}</button>
+        <!-- Энэ бараа (бүх өнгө/хэмжээ) сагсанд байвал бүгдийг нь хасах -->
+        <button type="button" class="pd-rm" id="mRm" ${cart.some(x => keyId(x) === id) ? "" : "hidden"}>Сагснаас хасах</button>
         <!-- Сагсанд бараа байвал шууд захиалга өгөх -->
         <!-- Хадгалах (зүрх) -->
         <button type="button" class="pd-fav" data-fav="${id}" aria-pressed="${favs.has(id)}" id="mFav"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.3 4.5 6.9 4.5c2 0 3.6 1.1 5.1 3 1.5-1.9 3.1-3 5.1-3 3.6 0 5.5 3.5 4.2 6.8-1.8 4.6-9.3 9.2-9.3 9.2Z"/></svg><span>${favs.has(id) ? "Хадгалсан" : "Хадгалах"}</span></button>
@@ -1743,8 +1822,21 @@ function openModal(id){
       ab.textContent = ok ? `Сагсанд нэмэх · ${sel.join(" / ")}` : "Сонголтоо хийнэ үү";
     });
     ab.onclick = () => { if (!sel.every(Boolean)) return; toggle(id + "::" + sel.join(" / ")); ab.textContent = "Нэмэгдлээ ✓ · дахин нэмэх";
-      $("mGo").hidden = false; $("mGo").querySelector("span").textContent = `(${cart.length})`; };
-  } else $("mAdd").onclick = () => { toggle(id); const y = $("modal").scrollTop; openModal(id); $("modal").scrollTop = y; };
+      $("mGo").hidden = false; $("mGo").querySelector("span").textContent = `(${cart.length})`; $("mRm").hidden = false; };
+  } else {
+    // Цонхыг гүйлгэлтийн байрлалаа алдалгүй дахин зурна
+    const redraw = () => { const y = $("modal").scrollTop; openModal(id); $("modal").scrollTop = y; };
+    $("mAdd").onclick = () => { toggle(id); redraw(); };
+    // + : нэгийг нэмнэ, − : нэгийг хасна (1 үлдсэн бол хогийн сав → сагснаас бүр хасна)
+    if ($("mPlus")) $("mPlus").onclick = () => { toggle(id); redraw(); };
+    if ($("mMinus")) $("mMinus").onclick = () => { removeOne(id); redraw(); };
+  }
+  // "Сагснаас хасах": энэ барааны бүх ширхэг, бүх сонголтыг сагснаас хасна
+  $("mRm").onclick = () => {
+    cart = cart.filter(x => keyId(x) !== id); save(); renderGrid();
+    toast(p.name + " сагснаас хасагдлаа");
+    const y = $("modal").scrollTop; openModal(id); $("modal").scrollTop = y;
+  };
   // Сэтгэгдлүүдийг ачаална
   loadReviews(p);
   // 360°: хуруугаар 55px чирэх бүрт дараагийн өнцөг рүү шилжинэ
@@ -1880,7 +1972,7 @@ function renderCart(){
   const total = items.reduce((s, p) => s + p.price, 0);
   // Сагсны HTML: бараанууд, сануулга, нийт дүн, маягт
   $("sheetBody").innerHTML = `
-    <div class="items">${groupCart(cart).map(({ k, p, n, opt }) => `<div class="it"><img src="${p.img}" alt=""><div><div class="n">${esc(p.name)}</div>${opt ? `<div class="p">${esc(opt)}</div>` : ""}<div class="p">${fmt(p.price)}${n > 1 ? ` × ${n}` : ""}${p.pre ? " · захиалгаар" : ""}</div></div>${p.pre ? `<div class="qty"><button type="button" class="dec" data-id="${esc(k)}" aria-label="Хасах">−</button><b>${n}</b><button type="button" class="inc" data-id="${esc(k)}" aria-label="Нэмэх">+</button></div>` : `<button class="rm" data-id="${p.id}">Хасах</button>`}</div>`).join("")}</div>
+    <div class="items">${groupCart(cart).map(({ k, p, n, opt }) => `<div class="it"><img src="${p.img}" alt=""><div><div class="n">${esc(p.name)}</div>${opt ? `<div class="p">${esc(opt)}</div>` : ""}<div class="p">${fmt(p.price)}${n > 1 ? ` × ${n}` : ""}${p.pre ? " · захиалгаар" : ""}</div><button type="button" class="rm" data-id="${esc(k)}">Сагснаас хасах</button></div>${p.pre ? `<div class="qty"><button type="button" class="dec" data-id="${esc(k)}" aria-label="Хасах">−</button><b>${n}</b><button type="button" class="inc" data-id="${esc(k)}" aria-label="Нэмэх">+</button></div>` : ""}</div>`).join("")}</div>
     ${items.some(p => p.pre) ? `<div class="note">Захиалгаар ирэх бараа Солонгосоос ${SHOP.preDays}-т ирнэ. Төлбөрийг 100% урьдчилж төлнө.</div>` : ""}
     <div class="total"><span>Нийт (${items.length})</span><span>${fmt(total)}</span></div>
     <form id="orderForm" novalidate>
@@ -2130,25 +2222,53 @@ function showBank(items, total, code, q){
 }
 // "Захиалга баталгаажсан / Төлбөр амжилттай" дэлгэц
 function showConfirmed(code, text, sent, paid){
+  // Сагсыг цэвэрлэхээс өмнө бараануудыг (зураг, тоо, сонголт) авч үлдэнэ
+  const its = groupCart(cart).filter(x => x.p);
   cart = []; save(); renderGrid();
-  $("sheetTitle").textContent = "Баярлалаа!";
-  $("sheetBody").innerHTML = `<div class="done">
-    <div class="ok"><div class="tick">✓</div><div><strong>${paid ? "Төлбөр амжилттай" : "Захиалга баталгаажсан"}</strong><span>Дугаар: <b class="mono">${code}</b></span></div></div>
-    <p style="margin:0">${paid ? `Таны захиалга хадгалагдлаа. Бид тантай <b>${esc(draft.phone.trim())}</b> дугаараар холбогдож хүргэлтээ тохирно.` : `${sent ? "Захиалга бидэнд ирлээ. " : ""}Төлбөр орсныг шалгаад тантай <b>${esc(draft.phone.trim())}</b> дугаараар холбогдоно.${sent ? "" : " Захиалгаа доорх товчоор хуулж пэйж рүү илгээгээрэй."}`}</p>
-    <pre id="orderText"></pre>
-    <button class="primary" type="button" id="cpOrder" data-v="">Захиалгыг хуулах</button>
-    <div class="contact">
-      <span>Утас / мессеж</span><strong>${SHOP.phone}</strong>
-      ${SHOP.instagram ? `<span>Instagram</span><a href="https://${esc(SHOP.instagram.replace(/^https?:\/\//, ""))}" target="_blank" rel="noopener" style="color:var(--ink);font-weight:600">${esc(SHOP.instagram.replace(/^https?:\/\/(www\.)?/, ""))}</a>` : ""}
-      ${SHOP.facebook ? `<span>Facebook</span><a href="https://${esc(SHOP.facebook.replace(/^https?:\/\//, ""))}" target="_blank" rel="noopener" style="color:var(--ink);font-weight:600">${esc(SHOP.facebook.replace(/^https?:\/\/(www\.)?/, ""))}</a>` : ""}
+  $("sheetTitle").textContent = "";
+  // Захиалгын текстийг мөр мөрөөр нь задалж "гарчиг: утга" хүснэгт болгоно
+  const full = text + (paid ? "\nТөлбөр: QPay-ээр төлсөн ✅" : "\nТөлбөр: шилжүүлсэн");
+  const lines = full.split("\n").slice(1).filter(Boolean);
+  // Бараануудын мөр ("1. ...") ба бусад мөрийг ялгана
+  const goods = lines.filter(l => /^\d+\./.test(l)).map(l => l.replace(/^\d+\.\s*/, "").replace(/\s*\(\)\s*/, " "));
+  const rows = lines.filter(l => !/^\d+\./.test(l) && l.includes(":")).map(l => { const i = l.indexOf(":"); return [l.slice(0, i).trim(), l.slice(i + 1).trim().replace(/\s*✅$/, "")]; })
+    .filter(([k]) => k !== "Нийт");
+  const totalRow = lines.find(l => l.startsWith("Нийт:"));
+  const ig = SHOP.instagram ? SHOP.instagram.replace(/^https?:\/\/(www\.)?/, "") : "";
+  $("sheetBody").innerHTML = `<div class="done ok2">
+    <!-- Амжилтын толгой: дугуй тэмдэг, гарчиг, дугаар -->
+    <div class="ok-head">
+      <div class="ok-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7"/></svg></div>
+      <h3>${paid ? "Төлбөр амжилттай" : "Захиалга баталгаажлаа"}</h3>
+      <div class="ok-code">Захиалгын дугаар <b class="mono">${code}</b></div>
     </div>
-    <button class="ghost" id="closeDone" type="button">Дэлгүүр рүү буцах</button>
+    <p class="ok-msg">${paid ? `Таны захиалга хадгалагдлаа. Бид тантай <b>${esc(draft.phone.trim())}</b> дугаараар холбогдож хүргэлтээ тохирно.` : `${sent ? "Захиалга бидэнд ирлээ. " : ""}Төлбөр орсныг шалгаад тантай <b>${esc(draft.phone.trim())}</b> дугаараар холбогдоно.${sent ? "" : " Захиалгаа доорх товчоор хуулж пэйж рүү илгээгээрэй."}`}</p>
+    <!-- Захиалгын товч мэдээлэл -->
+    <!-- Дараагийн алхмууд: төлбөр → бэлтгэх → хүргэлт -->
+    <ol class="ok-steps"><li class="on"><i></i>${paid ? "Төлсөн" : "Захиалсан"}</li><li><i></i>Бэлтгэж байна</li><li><i></i>Хүргэлт</li></ol>
+    <div class="ok-sum">
+      ${its.length ? its.map(({ p, n, opt }) => `<div class="ok-it"><img src="${esc(p.img)}" alt=""><div><b>${esc(p.name)}</b><span>${opt ? esc(opt) + " · " : ""}${n} ш${p.pre ? " · захиалгаар" : ""}</span></div><em>${fmt(p.price * n)}</em></div>`).join("")
+        : goods.map(g => `<div class="ok-item">${esc(g)}</div>`).join("")}
+      ${totalRow ? `<div class="ok-row ok-total"><span>Нийт</span><b>${esc(totalRow.split(":")[1].trim())}</b></div>` : ""}
+      ${rows.map(([k, v]) => `<div class="ok-row"><span>${esc(k)}</span><span>${esc(v)}</span></div>`).join("")}
+    </div>
+    <pre id="orderText" hidden></pre>
+    <!-- Товчнууд: дэлгүүр рүү буцах (гол), захиалгыг хуулах (жижиг) -->
+    <button class="ok-main" id="closeDone" type="button">Дэлгүүр рүү буцах</button>
+    <button class="ok-copy" type="button" id="cpOrder" data-v=""><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="1.5"/><path d="M5 15V5a1 1 0 0 1 1-1h9"/></svg><span>Захиалгыг хуулах</span></button>
+    <!-- Холбоо барих: жижиг товчнууд -->
+    <div class="ok-help"><span>Асуулт байвал</span>
+      <div><a class="cline" href="tel:${esc(String(SHOP.phone).replace(/[^\d+]/g, ""))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>${esc(SHOP.phone)}</a>
+      ${ig ? `<a class="cline" href="https://${esc(ig)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6"/></svg>@${esc(ig.replace(/^instagram\.com\//, "").replace(/\/$/, ""))}</a>` : ""}</div>
+    </div>
   </div>`;
-  $("orderText").textContent = text + (paid ? "\nТөлбөр: QPay-ээр төлсөн ✅" : "\nТөлбөр: шилжүүлсэн");
-  $("cpOrder").dataset.v = $("orderText").textContent;
+  $("orderText").textContent = full;
+  $("cpOrder").dataset.v = full;
+  // Хуулах: хуулбал товчны бичиг "Хуулагдлаа ✓" болно
   $("cpOrder").onclick = async () => {
-    try { await navigator.clipboard.writeText($("cpOrder").dataset.v); $("cpOrder").textContent = "Хуулагдлаа ✓"; }
-    catch (e) { const r = document.createRange(); r.selectNodeContents($("orderText")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); $("cpOrder").textContent = "Текстийг сонголоо, хуулна уу"; }
+    const t = $("cpOrder").querySelector("span");
+    try { await navigator.clipboard.writeText($("cpOrder").dataset.v); t.textContent = "Хуулагдлаа ✓"; }
+    catch (e) { $("orderText").hidden = false; const r = document.createRange(); r.selectNodeContents($("orderText")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); t.textContent = "Текстийг сонголоо, хуулна уу"; }
   };
   $("closeDone").onclick = closeAll;
 }
@@ -2242,6 +2362,19 @@ function applySettings(st){
   if (!st || typeof st !== "object") return;
   // Холбоо барих
   for (const k of ["phone", "instagram", "facebook", "address", "preDays"]) if (typeof st[k] === "string") SHOP[k] = st[k];
+  // Ангилал: админаас өөрчилсөн бол шүүлтүүр товч, гүйдэг туузыг шинэчилнэ
+  if (Array.isArray(st.cats) && st.cats.length) {
+    const cats = st.cats.filter(x => x && x.id && x.label).map(x => ({ id: String(x.id), label: String(x.label) }));
+    if (cats.length) {
+      // "Бүгд"-ийг үлдээгээд бусдыг солино
+      SECTIONS.splice(1, SECTIONS.length - 1, ...cats);
+      const m = cats.map(x => `<span>${esc(x.label)}</span>`).join("");
+      $("track").innerHTML = m + m + m + m;
+      // Сонгосон ангилал устсан бол "Бүгд" рүү буцна
+      if (!SECTIONS.some(x => x.id === filter)) filter = "all";
+      renderFilters(); renderGrid();
+    }
+  }
   renderContact();
   // Дээд мэдэгдлийн тууз (хоосон бол нууна)
   if (typeof st.notice === "string") { $("notice").textContent = st.notice; $("notice").hidden = !st.notice; }

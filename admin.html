@@ -583,7 +583,7 @@ async function showSettings(){
     <div class="slay">
     <div class="snav" id="snav">
       <a href="#s-notice">📢 Мэдээ</a><a href="#s-slides">🖼 Слайд</a><a href="#s-promos">🧩 Постер</a><a href="#s-hero">🏠 Нүүр</a><a href="#s-cats">🏷 Ангилал</a>
-      <a href="#s-how">🧾 Захиалах</a><a href="#s-faq">❓ Асуулт</a><a href="#s-perks">🚚 Үйлчилгээ</a><a href="#s-contact">📞 Холбоо барих</a><a href="#s-style">🎨 Загвар</a><a href="#s-foot">⬇ Хөл</a>
+      <a href="#s-how">🧾 Захиалах</a><a href="#s-faq">❓ Асуулт</a><a href="#s-perks">🚚 Үйлчилгээ</a><a href="#s-contact">📞 Холбоо барих</a><a href="#s-login">🔐 Нэвтрэх</a><a href="#s-style">🎨 Загвар</a><a href="#s-foot">⬇ Хөл</a>
     </div>
     <div id="sf">
       <section class="form scard" id="s-notice">
@@ -639,6 +639,11 @@ async function showSettings(){
         ${inp("phone", "Утас", "8911-6331")}${inp("instagram", "Instagram", "instagram.com/finn.mn1")}
         ${inp("facebook", "Facebook (хоосон бол нуугдана)", "facebook.com/…")}${inp("address", "Хаяг / дэлгүүр (заавал биш)")}
         <p class="full mut">🔒 Төлбөрийн дансны дугаарыг аюулгүй байдлын үүднээс зөвхөн кодоор өөрчилнө.</p>
+      </section>
+      <section class="form scard" id="s-login">
+        ${head("🔐", "Нэвтрэх арга", "👤 Нэвтрэх / Бүртгүүлэх цонх.")}
+        <label class="full row" style="flex-direction:row;align-items:center;gap:10px;color:var(--ink)!important;font-size:14px!important"><input type="checkbox" id="fbOn" ${S.fbLogin ? "checked" : ""} style="width:20px;height:20px"> <b>Facebook-ээр нэвтрэх</b> товч харуулах</label>
+        <p class="full mut">⚠ Эхлээд Meta (Facebook) апп үүсгэж, Supabase → Authentication → Providers → Facebook-ийг асаасны дараа л чагтална. Эс бөгөөс товч дарахад алдаа гарна.</p>
       </section>
       <section class="form scard" id="s-style">
         ${head("🎨", "Загвар: өнгө, лого", "Бүх хуудсанд. Өргөлт өнгө = сонгосон шүүлтүүр, барааны брэнд, тэмдэг.")}
@@ -793,6 +798,8 @@ async function showSettings(){
     $("main").querySelectorAll("[data-k]").forEach(el => out[el.dataset.k] = el.value.trim());
     out.colors = {}; $("main").querySelectorAll("[data-c]").forEach(el => out.colors[el.dataset.c] = el.value);
     out.how = how.filter(x => x.t); out.faq = faq.filter(x => x.q && x.a);
+    // Facebook-ээр нэвтрэх товч
+    out.fbLogin = $("fbOn").checked;
     // Үйлчилгээний 4 мөр
     out.perks = perks.map((x, i) => ({ t: $("main").querySelector(`[data-pt="${i}"]`).value.trim(), d: $("main").querySelector(`[data-pd="${i}"]`).value.trim() }));
     // Ангилал: нэргүйг хасна

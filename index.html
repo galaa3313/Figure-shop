@@ -1366,6 +1366,13 @@ footer{padding:44px 0 26px!important;border-top:1px solid var(--line)!important;
 .dperks li>span{gap:1px}
 .dperks b{font-size:12px!important}
 .dperks li>span>span{font-size:11px}
+
+/* ----- Facebook-ээр нэвтрэх товч ----- */
+.fbbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;border-radius:0;padding:13px;background:#1877f2;color:#fff;font-weight:600;font-size:14.5px;cursor:pointer}
+.fbbtn svg{width:20px;height:20px}
+.fbbtn:disabled{opacity:.7}
+.fbnote{margin:-2px 0 4px;text-align:center;font-size:11.5px;color:var(--muted)}
+.fbnote a{color:var(--muted)}
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -2391,6 +2398,8 @@ function renderPromos(list){
   $("prRow").innerHTML = list.map((x, i) => `<button type="button" class="pr" data-pi="p${i}" aria-label="${esc(x.title || "Онцлох")}"><img src="${esc(x.img)}" alt="" loading="lazy"></button>`).join("");
   $("prRow").querySelectorAll(".pr").forEach(b => b.onclick = () => openPromo(b.dataset.pi));
 }
+// Facebook-ээр нэвтрэх товч (админ → Сайтын тохиргоо → Нэвтрэх-ээс асаана)
+let FB_ON = false;
 function applySettings(st){
   if (!st || typeof st !== "object") return;
   // Холбоо барих
@@ -2426,6 +2435,8 @@ function applySettings(st){
   renderPromos(Array.isArray(st.promos) ? st.promos : []);
   // Хөлийн бичвэр
   if (st.footerText != null) $("fText").textContent = st.footerText;
+  // Facebook-ээр нэвтрэх товч асаалттай эсэх
+  if (typeof st.fbLogin === "boolean") FB_ON = st.fbLogin;
   // ☰ цэсний үйлчилгээний 4 мөр (админаас засна)
   if (Array.isArray(st.perks) && st.perks.length === 4) document.querySelectorAll(".dperks li").forEach((li, i) => {
     const x = st.perks[i] || {}, b = li.querySelector("b"), d = li.querySelector("span > span");
@@ -2476,6 +2487,10 @@ async function loadSettings(){
 let sb = null, me = null;
 // Имэйлийн холбоос дарсны дараа буцах үндсэн сайтын хаяг (домэйн солигдоход энд засна)
 let SITE_URL = "https://figure-shop-gamma.vercel.app/";
+// Facebook товчны HTML: асаагүй бол хоосон
+const fbBlock = () => FB_ON ? `<div class="asep">эсвэл</div>
+      <button class="fbbtn" type="button" id="fbLogin"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.4l-.5 3.5h-2.9v8.4A12 12 0 0 0 24 12Z"/></svg>Facebook-ээр нэвтрэх</button>
+      <p class="fbnote">Үргэлжлүүлснээр <a href="/privacy.html" target="_blank" rel="noopener">Хувийн мэдээллийн бодлого</a>-ыг зөвшөөрнө.</p>` : "";
 // Нэвтэрсэн бол серверт явуулах "Authorization" толгой
 async function authHeader(){
   if (!sb) return {};
@@ -2529,6 +2544,7 @@ function acctView(v, email){
       <p class="aerr" id="aerr"></p>
       <button class="primary" type="submit">Нэвтрэх</button>
       <button class="link" type="button" data-v="forgot">Нууц үгээ мартсан уу?</button>
+      ${fbBlock()}
       <div class="asep">Бүртгэлгүй юу?</div>
       <button class="ghost" type="button" data-v="signup">Бүртгүүлэх</button></form>`;
   // ----- Бүртгүүлэх -----
@@ -2541,7 +2557,14 @@ function acctView(v, email){
       <label class="consent"><input type="checkbox" id="a-ok" required> <span><a href="/privacy.html" target="_blank" rel="noopener">Хувийн мэдээллийн бодлого</a>-ыг уншиж зөвшөөрч байна</span></label>
       <p class="aerr" id="aerr"></p>
       <button class="primary" type="submit">Бүртгүүлэх</button>
+      ${fbBlock()}
       <button class="link" type="button" data-v="login">Бүртгэлтэй юу? Нэвтрэх</button></form>`;
+  // Facebook товч: Facebook руу шилжиж, зөвшөөрсний дараа finn.mn руу нэвтэрсэн байдлаар буцна
+  if ($("fbLogin")) $("fbLogin").onclick = async () => {
+    $("fbLogin").disabled = true; $("fbLogin").lastChild.textContent = "Facebook руу шилжиж байна…";
+    const { error } = await sb.auth.signInWithOAuth({ provider: "facebook", options: { redirectTo: SITE_URL, scopes: "email" } });
+    if (error) { $("fbLogin").disabled = false; $("fbLogin").lastChild.textContent = "Facebook-ээр нэвтрэх"; $("aerr").textContent = "Facebook нэвтрэлт түр ажиллахгүй байна. Имэйлээр нэвтэрнэ үү."; }
+  };
   // ----- 6 оронтой код оруулах -----
   if (v === "verify" || v === "reset") B.innerHTML = `<form class="acct" id="af">
       <p class="desc"><b>${esc(email)}</b> хаяг руу имэйл илгээлээ. Spam хавтсаа ч шалгаарай. Имэйлд <b>6 оронтой код</b> ирсэн бол доор оруулна, <b>холбоос</b> ирсэн бол түүн дээр дарахад шууд нэвтэрнэ.</p>
@@ -2676,13 +2699,17 @@ async function loadDbProducts(){
     $("openAcct").hidden = false;
     // Имэйлийн холбоосоор орж ирэхэд: нууц үг сэргээх бол шинэ нууц үгийн цонх, бүртгэл баталгаажсан бол мэдэгдэл
     const fromLink = /type=(signup|recovery|email)/.test(location.hash);
+    // Facebook-ээс буцаж ирсэн эсэх (амжилттай бол access_token, цуцалсан бол error)
+    const fromOAuth = !fromLink && /access_token=|error_description=/.test(location.hash);
+    const oauthErr = /error_description=/.test(location.hash);
     sb.auth.onAuthStateChange(async ev => {
       if (ev === "PASSWORD_RECOVERY") { await loadMe(); openAcct("newpw"); }
     });
     await Promise.all([loadMe(), loadDbProducts().catch(() => {}), loadSettings().catch(() => {})]);
     if (fromLink && me && !/type=recovery/.test(location.hash)) { toast("Бүртгэл баталгаажлаа 🎉"); openAcct("profile"); }
     // Хаягийн мөрөөс токенуудыг цэвэрлэнэ
-    if (fromLink) history.replaceState(null, "", location.pathname);
+    if (fromOAuth) { toast(oauthErr ? "Facebook нэвтрэлт цуцлагдлаа" : me ? `Тавтай морил, ${me.username} 👋` : "Нэвтэрлээ"); }
+    if (fromLink || fromOAuth) history.replaceState(null, "", location.pathname);
   } catch (e) { /* Бүртгэл ажиллахгүй үед дэлгүүр хэвийн ажиллана */ }
 })();
 </script>

@@ -165,6 +165,86 @@ td.mo{width:44px;position:relative}
 .hf select{height:42px;border-radius:0;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23111' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 12px center;padding-right:32px}
 .hf .quick button{color:var(--ink)}
 @media (max-width:640px){ .hf{display:grid;grid-template-columns:1fr 1fr;gap:10px} .hf .quick{grid-column:1/3;overflow-x:auto} .hf label{min-width:0!important} }
+
+/* ===== САЙТЫН ТОХИРГОО: хэсэг тус бүр карт, хаана гарахыг тайлбарласан ===== */
+.sintro{margin:-6px 0 14px}
+/* Хэсэг рүү үсрэх товчнууд: дээд талд наалдана */
+.snav{position:sticky;top:57px;z-index:4;background:#fff;display:flex;gap:6px;overflow-x:auto;padding:10px 0;margin-bottom:14px;border-bottom:1px solid var(--line);scrollbar-width:none}
+.snav::-webkit-scrollbar{display:none}
+.snav a{flex:none;font-size:12.5px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;color:var(--ink);text-decoration:none;white-space:nowrap}
+.snav a:hover{border-color:var(--ink)}
+/* Карт: зай ихтэй, бөөрөнхий */
+.scard{border-radius:14px;padding:20px 20px 22px!important;margin-bottom:16px!important;gap:14px 16px!important;scroll-margin-top:120px;background:#fff}
+.shead{border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:2px}
+.shead h3{margin:0;font-size:17px;font-weight:600}
+.shead .where{margin:5px 0 0;font-size:12.5px;color:var(--muted)}
+/* Нүүр хэсгийн төлөв */
+.shint{margin:0;padding:10px 12px;font-size:12.5px;border-radius:8px}
+.shint.off{background:#fff4e0;color:#8a5a00}
+.shint.on{background:#e6f4ea;color:#14853b}
+.btn.add{border-style:dashed;color:var(--ink)}
+/* Доод хадгалах мөр */
+.savebar{position:sticky;bottom:0;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border-top:1px solid var(--line);padding:12px max(16px,3vw) calc(12px + env(safe-area-inset-bottom,0px));margin:0 calc(-1 * max(16px,3vw)) -60px;box-shadow:0 -8px 24px rgba(0,0,0,.05)}
+.savebar .btn{padding:11px 26px}
+.savebar .warn{color:#b35c00;font-size:13px;font-weight:600}
+.btn.pulse{animation:pls 1.6s ease-in-out infinite}
+@keyframes pls{50%{box-shadow:0 0 0 6px rgba(17,17,17,.15)}}
+@media (max-width:640px){ .snav{top:53px} .scard{padding:16px 14px 18px!important} .shead h3{font-size:16px} }
+
+/* Ангиллын мөр: дугаар | нэр | бараа тоо | товчнууд */
+.crow{display:grid;grid-template-columns:22px 1fr auto auto;gap:8px;align-items:center;margin-bottom:8px}
+.crow .mut{white-space:nowrap;min-width:56px;text-align:right}
+.crow .tb{display:flex;gap:4px}.crow .tb button{border:1px solid var(--line);background:#fff;width:34px;height:38px}
+@media (max-width:640px){ .crow{grid-template-columns:22px 1fr auto;row-gap:6px} .crow .tb{grid-column:2/4;justify-self:end} .crow .mut{grid-column:3;grid-row:1} }
+
+/* ===== САЙТЫН ТОХИРГОО v2: зүүн цэс + цагаан картууд саарал дэвсгэр дээр ===== */
+main:has(.slay){max-width:1180px}
+body:has(.slay){background:#f4f4f2}
+body:has(.slay) header{background:#fff}
+.slay{display:grid;grid-template-columns:210px minmax(0,1fr);gap:24px;align-items:start}
+/* Зүүн цэс: босоо, наалддаг */
+.slay .snav{position:sticky;top:76px;flex-direction:column;gap:2px;border:0;padding:0;margin:0;background:none;overflow:visible}
+.slay .snav a{border:0;border-radius:8px;padding:9px 12px;font-size:13.5px;color:var(--muted);background:none;transition:background .15s,color .15s}
+.slay .snav a:hover{background:#fff;color:var(--ink)}
+.slay .snav a.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+/* Карт */
+.scard{border:0!important;box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.03);padding:24px!important;border-radius:16px}
+.shead{display:flex;gap:14px;align-items:flex-start;border-bottom:1px solid #efefed!important;padding-bottom:16px!important}
+.shead .sic{flex:none;width:40px;height:40px;border-radius:11px;background:#f4f4f2;display:grid;place-items:center;font-size:19px}
+.shead h3{font-size:16.5px!important;line-height:1.3}
+.shead .where{margin-top:3px!important;line-height:1.45}
+/* Талбарууд: бөөрөнхий, өндөр, тод хүрээ */
+.scard input:not([type=checkbox]):not([type=color]):not([type=file]),.scard select,.scard textarea{border-radius:9px;border-color:#e3e3e0;padding:11px 12px;font-size:14px;background:#fff;transition:border-color .15s,box-shadow .15s}
+.scard input:focus,.scard select:focus,.scard textarea:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(17,17,17,.07)}
+.scard label{font-size:12.5px!important;color:#6b6b6b!important;font-weight:500}
+.scard .btn{border-radius:9px}
+.scard .btn.add{border:1.5px dashed #cfcfcb;color:#444;padding:10px 16px}
+.scard .btn.add:hover{border-color:var(--ink);color:var(--ink)}
+/* Жагсаалтын мөрүүд (асуулт, алхам, ангилал, үйлчилгээ) */
+.scard .pair,.scard .crow{background:#fafaf8;border-radius:12px;padding:10px;margin-bottom:8px}
+.scard .pair b,.scard .crow b{color:#9a9a96;font-size:12px;text-align:center}
+.scard .tb button{border-radius:8px}
+/* Хоосон төлөв */
+.scard #slList:not(:has(.post)),.scard #prList:not(:has(.post)){border:1.5px dashed #e3e3e0;border-radius:12px;padding:22px;text-align:center;color:#9a9a96;font-size:13px}
+.scard .post{border-radius:12px;background:#fafaf8;border-color:#efefed}
+.scard .post img{border-radius:8px}
+.scard .prev{border-radius:10px}
+.colors label{background:#fafaf8;padding:6px 12px 6px 6px;border-radius:10px}
+.colors input[type=color]{border-radius:8px;border:1px solid #e3e3e0;cursor:pointer}
+.shint{border-radius:10px}
+/* Хадгалах мөр */
+.savebar{background:rgba(255,255,255,.92)!important;backdrop-filter:blur(10px)}
+.savebar .btn{border-radius:10px}
+/* Таблет, утас: цэс дээр хэвтээ товч болно */
+@media (max-width:860px){
+  .slay{grid-template-columns:minmax(0,1fr);gap:0}
+  main:has(.slay){overflow-x:clip}
+  .slay .snav{position:sticky;top:53px;flex-direction:row;overflow-x:auto;background:#f4f4f2;padding:10px 0;margin:0 0 6px;z-index:4}
+  .slay .snav a{flex:none;background:#fff;border:1px solid #e8e8e5;border-radius:999px;padding:7px 13px;font-size:12.5px}
+  .slay .snav a.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .scard{padding:18px 16px!important;border-radius:14px}
+  .shead .sic{width:36px;height:36px;font-size:17px;border-radius:10px}
+}
 </style>
 </head>
 <body>
@@ -479,7 +559,9 @@ const DEF = {
         { t: "Төлөх", d: "QPay-ээр эсвэл дансаар шилжүүлж, гүйлгээний утгад захиалгын дугаараа бичнэ." }, { t: "Хүлээн авах", d: "Төлбөр шалгагдмагц холбогдож, хүргэж өгнө эсвэл очиж авна." }],
   faq: [{ q: "Бараанууд жинхэнэ үү?", a: "Тийм. Албан ёсны үйлдвэрлэгч, дэлгүүрээс авдаг жинхэнэ бараа." }, { q: "Хэдэн хоногт хүргэх вэ?", a: "Төлбөр шалгагдсаны дараа Улаанбаатар хотод ихэвчлэн 1–2 хоногт хүргэнэ." },
         { q: "“Захиалгаар” гэсэн бараа хэзээ ирэх вэ?", a: "Солонгосоос захиалж авчирдаг тул төлбөр орсноос хойш 7–14 хоногт ирнэ." }],
-  colors: { accent: "#2f7bff", bg: "#ffffff", ink: "#111111", footer: "#ffffff" }, logoUrl: "", footerImage: ""
+  colors: { accent: "#2f7bff", bg: "#ffffff", ink: "#111111", footer: "#ffffff" }, logoUrl: "", footerImage: "",
+  // ☰ цэсний доод үйлчилгээний мэдээлэл (4 мөр)
+  perks: [{ t: "Хүргэлттэй", d: "УБ хотод хүргэнэ" }, { t: "Солонгосоос", d: "7–14 хоногт авчирна" }, { t: "Шууд төлбөр", d: "QPay, банкны апп" }, { t: "Тусламж", d: "Утсаар холбогдоно" }]
 };
 async function showSettings(){
   const my = ++VIEW;
@@ -490,59 +572,118 @@ async function showSettings(){
   const S = { ...DEF, ...(data && data.data || {}) }; S.colors = { ...DEF.colors, ...(S.colors || {}) };
   let faq = [...(S.faq || [])], how = [...(S.how || [])];
   const inp = (k, label, ph = "") => `<label>${label}<input data-k="${k}" value="${esc(S[k] || "")}" placeholder="${esc(ph)}"></label>`;
+  // Хэсэг бүрийн толгой: гарчиг + сайтын хаана гарах тайлбар
+  const head = (ic, t, where) => `<div class="full shead"><span class="sic">${ic}</span><div><h3>${t}</h3><p class="where">${where}</p></div></div>`;
   $("main").innerHTML = `
-    <div class="bar"><h2>Сайтын тохиргоо</h2><span class="mut">${data && data.updated_at ? "Сүүлд хадгалсан: " + dt(data.updated_at) : ""}</span><a class="btn" href="/" target="_blank" rel="noopener">Сайтыг харах ↗</a><button class="btn dark" id="ssave">Хадгалах</button></div>
-    <form class="form" id="sf" onsubmit="return false">
-      <h3 class="full sec">Холбоо барих</h3>
-      ${inp("phone", "Утас", "8911-6331")}${inp("instagram", "Instagram", "instagram.com/finn.mn1")}
-      ${inp("facebook", "Facebook (хоосон бол нуугдана)", "facebook.com/…")}${inp("address", "Хаяг / дэлгүүр (заавал биш)")}
-      <h3 class="full sec">Ангилал</h3>
-      <p class="full mut">Сайтын шүүлтүүр товч, гүйдэг туузанд энэ дарааллаар гарна. Бараатай ангиллыг устгах боломжгүй — эхлээд барааг өөр ангилалд шилжүүлнэ.</p>
-      <div class="full" id="catList"></div>
-      <div class="full row"><input id="catNew" placeholder="Шинэ ангиллын нэр (жишээ: Спорт хувцас)" style="flex:1"><button type="button" class="btn" id="catAdd">+ Ангилал нэмэх</button></div>
-      <h3 class="full sec">Нүүрний слайд (постер)</h3>
-      <p class="full mut">Постерууд 5 секунд тутам автоматаар солигдоно. Бүгдийг <b>ижил хэмжээтэй</b> хийнэ: утсанд 1080×1080 эсвэл 1080×1350, компьютерт 1920×800 зөвлөнө. Слайд байхгүй бол доорх "Нүүр хэсэг" харагдана.<br><b>Гарчиг эсвэл тайлбар</b> бичвэл постер дарахад урамшууллын мэдээллийн хуудас нээгдэнэ (зураг, тайлбар, хугацаа, хамаарах бараа, товч).</p>
-      <div class="full" id="slList"></div>
-      <div class="full"><label class="btn" style="flex-direction:row;color:var(--ink);display:inline-flex">+ Слайд нэмэх<input type="file" id="slFile" accept="image/*" multiple hidden></label></div>
-      <h3 class="full sec">Онцлох постерууд (хажуу тийш гүйдэг)</h3>
-      <p class="full mut">Слайдын доор жижиг постер картууд гарна (брэнд, шинэ ирсэн, хямдрал гэх мэт). 4:5 харьцаатай (1080×1350) зураг зөвлөнө.</p>
-      <div class="full" id="prList"></div>
-      <div class="full"><label class="btn" style="flex-direction:row;color:var(--ink);display:inline-flex">+ Постер нэмэх<input type="file" id="prFile" accept="image/*" multiple hidden></label></div>
-      <h3 class="full sec">Нүүр хэсэг (слайд байхгүй үед)</h3>
-      <label class="full">Дээд мөрний мэдээ — урамшуулал, шинэ бараа (хоосон бол нуугдана)<input data-k="notice" value="${esc(S.notice)}" placeholder="Жишээ: Бүх гадуур хувцас 20% хямдарлаа · 11/30 хүртэл"></label>
-      ${inp("heroEyebrow", "Жижиг дээд гарчиг")}${inp("heroButton", "Товчны бичиг")}
-      <label class="full">Том гарчиг<input data-k="heroTitle" value="${esc(S.heroTitle)}"></label>
-      <label class="full">Тайлбар<textarea data-k="heroText" rows="2">${esc(S.heroText)}</textarea></label>
+    <div class="bar"><h2>Сайтын тохиргоо</h2><span class="mut">${data && data.updated_at ? "Сүүлд хадгалсан: " + dt(data.updated_at) : ""}</span><a class="btn" href="/" target="_blank" rel="noopener" style="margin-left:auto">Сайтыг харах ↗</a></div>
+    <p class="mut sintro">Хэсгүүд сайт дээр <b>дээрээс доош</b> харагдах дарааллаар байна. Өөрчлөөд доод талын <b>Хадгалах</b> товчийг дарна.</p>
+    <!-- Хэсэг рүү үсрэх товчнууд -->
+    <div class="slay">
+    <div class="snav" id="snav">
+      <a href="#s-notice">📢 Мэдээ</a><a href="#s-slides">🖼 Слайд</a><a href="#s-promos">🧩 Постер</a><a href="#s-hero">🏠 Нүүр</a><a href="#s-cats">🏷 Ангилал</a>
+      <a href="#s-how">🧾 Захиалах</a><a href="#s-faq">❓ Асуулт</a><a href="#s-perks">🚚 Үйлчилгээ</a><a href="#s-contact">📞 Холбоо барих</a><a href="#s-style">🎨 Загвар</a><a href="#s-foot">⬇ Хөл</a>
+    </div>
+    <div id="sf">
+      <section class="form scard" id="s-notice">
+        ${head("📢", "Дээд мөрний мэдээ", "Сайтын хамгийн дээд талд, лого-ны дээр нарийн мөр. Хоосон бол харагдахгүй.")}
+        <label class="full">Мэдээний бичвэр<input data-k="notice" value="${esc(S.notice)}" placeholder="Жишээ: Бүх гадуур хувцас 20% хямдарлаа · 11/30 хүртэл"></label>
+      </section>
+      <section class="form scard" id="s-slides">
+        ${head("🖼", "Нүүрний слайд", "Нүүр хуудасны хамгийн дээд том зураг. 5 секунд тутам солигдоно.")}
+        <p class="full mut">Бүх слайдыг <b>ижил хэмжээтэй</b> хийнэ: 1080×1350 (утас) эсвэл 1920×800 (компьютер). Гарчиг, тайлбар бичвэл дарахад мэдээллийн хуудас нээгдэнэ.</p>
+        <div class="full" id="slList"></div>
+        <div class="full"><label class="btn add" style="flex-direction:row;display:inline-flex">+ Слайд нэмэх<input type="file" id="slFile" accept="image/*" multiple hidden></label></div>
+      </section>
+      <section class="form scard" id="s-promos">
+        ${head("🧩", "Онцлох постерууд", "Слайдын доор хажуу тийш гүйдэг жижиг картууд (брэнд, шинэ ирсэн, хямдрал).")}
+        <p class="full mut">4:5 харьцаатай (1080×1350) зураг зөвлөнө. Гарчиг, тайлбар бичвэл дарахад мэдээллийн хуудас нээгдэнэ.</p>
+        <div class="full" id="prList"></div>
+        <div class="full"><label class="btn add" style="flex-direction:row;display:inline-flex">+ Постер нэмэх<input type="file" id="prFile" accept="image/*" multiple hidden></label></div>
+      </section>
+      <section class="form scard" id="s-hero">
+        ${head("🏠", "Нүүр хэсэг (слайдгүй үед)", "Слайд оруулаагүй үед нүүрний дээд хэсэгт зураг, гарчиг, товч гарна.")}
+        <p class="full shint" id="heroState"></p>
+        ${inp("heroEyebrow", "Жижиг дээд гарчиг")}${inp("heroButton", "Товчны бичиг")}
+        <label class="full">Том гарчиг<input data-k="heroTitle" value="${esc(S.heroTitle)}"></label>
+        <label class="full">Тайлбар<textarea data-k="heroText" rows="2">${esc(S.heroText)}</textarea></label>
       <div class="full"><label>Нүүрний том зураг (хэвтээ, 1600px+ зөвлөнө)</label>
         <div class="row"><img id="heroPrev" class="prev" src="${esc(S.heroImage || "")}" alt="" ${S.heroImage ? "" : "hidden"}>
         <label class="btn" style="flex-direction:row;color:var(--ink)">Зураг солих<input type="file" id="heroFile" accept="image/*" hidden></label>
         <button type="button" class="btn" id="heroClr" ${S.heroImage ? "" : "hidden"}>Анхных руу буцаах</button><span id="heroMsg" class="mut"></span></div></div>
-      <h3 class="full sec">Хэрхэн захиалах (4 алхам)</h3>
-      <div class="full" id="howList"></div>
-      <h3 class="full sec">Түгээмэл асуулт</h3>
-      <div class="full" id="faqList"></div>
-      <div class="full"><button type="button" class="btn" id="faqAdd">+ Асуулт нэмэх</button></div>
-      <h3 class="full sec">Загвар</h3>
+      </section>
+      <section class="form scard" id="s-cats">
+        ${head("🏷", "Ангилал", "Барааны дээрх шүүлтүүр товчнууд (Бүгд, Гадуур хувцас…) ба гүйдэг тууз.")}
+        <p class="full mut">↑ ↓ товчоор дарааллыг солино. Бараатай ангиллыг устгахгүй — эхлээд барааг өөр ангилалд шилжүүлнэ.</p>
+        <div class="full" id="catList"></div>
+        <div class="full row"><input id="catNew" placeholder="Шинэ ангиллын нэр (жишээ: Спорт хувцас)" style="flex:1"><button type="button" class="btn" id="catAdd">+ Нэмэх</button></div>
+      </section>
+      <section class="form scard" id="s-how">
+        ${head("🧾", "Хэрхэн захиалах", "Барааны жагсаалтын доор 01–04 дугаартай алхмууд. ☰ цэс → Хэрхэн захиалах.")}
+        <div class="full" id="howList"></div>
+      </section>
+      <section class="form scard" id="s-faq">
+        ${head("❓", "Түгээмэл асуулт", "☰ цэс → Түгээмэл асуулт дарахад нээгдэх цонх.")}
+        <div class="full" id="faqList"></div>
+        <div class="full"><button type="button" class="btn add" id="faqAdd">+ Асуулт нэмэх</button></div>
+      </section>
+      <section class="form scard" id="s-perks">
+        ${head("🚚", "Үйлчилгээний мэдээлэл", "☰ цэсний доод талын 4 мөр (хүргэлт, хугацаа, төлбөр, тусламж).")}
+        <div class="full" id="perkList"></div>
+        ${inp("preDays", "Солонгосоос ирэх хугацаа", "7–14 хоног")}
+        <p class="mut" style="align-self:end">Сагс, барааны цонхонд "Солонгосоос <b>${esc(S.preDays)}</b>-т ирнэ" гэж гарна.</p>
+      </section>
+      <section class="form scard" id="s-contact">
+        ${head("📞", "Холбоо барих", "Хөл, захиалга амжилттай болсон дэлгэц, төлбөрийн хэсэгт гарна.")}
+        ${inp("phone", "Утас", "8911-6331")}${inp("instagram", "Instagram", "instagram.com/finn.mn1")}
+        ${inp("facebook", "Facebook (хоосон бол нуугдана)", "facebook.com/…")}${inp("address", "Хаяг / дэлгүүр (заавал биш)")}
+        <p class="full mut">🔒 Төлбөрийн дансны дугаарыг аюулгүй байдлын үүднээс зөвхөн кодоор өөрчилнө.</p>
+      </section>
+      <section class="form scard" id="s-style">
+        ${head("🎨", "Загвар: өнгө, лого", "Бүх хуудсанд. Өргөлт өнгө = сонгосон шүүлтүүр, барааны брэнд, тэмдэг.")}
       <div class="full row colors">
         <label>Өргөлт өнгө<input type="color" data-c="accent" value="${esc(S.colors.accent)}"></label>
         <label>Дэвсгэр<input type="color" data-c="bg" value="${esc(S.colors.bg)}"></label>
         <label>Текст<input type="color" data-c="ink" value="${esc(S.colors.ink)}"></label>
-        <label>Хөлийн өнгө<input type="color" data-c="footer" value="${esc(S.colors.footer || "#ffffff")}"></label>
-        <button type="button" class="btn" id="colReset">Анхны өнгө</button>
+                <button type="button" class="btn" id="colReset">Анхны өнгө</button>
       </div>
-      <div class="full"><label>Хөлийн арын зураг (заавал биш. Дээр нь хөлийн өнгө бүдгээр давхарлагдана)</label>
-        <div class="row"><img id="footPrev" class="prev" src="${esc(S.footerImage || "")}" alt="" ${S.footerImage ? "" : "hidden"}>
-        <label class="btn" style="flex-direction:row;color:var(--ink)">Зураг оруулах<input type="file" id="footFile" accept="image/*" hidden></label>
-        <button type="button" class="btn" id="footClr" ${S.footerImage ? "" : "hidden"}>Зураг хасах</button></div></div>
       <div class="full"><label>Лого (хоосон бол FINN үндсэн лого. PNG/SVG, ил тод дэвсгэртэй)</label>
         <div class="row"><img id="logoPrev" class="prev logo-p" src="${esc(S.logoUrl || "")}" alt="" ${S.logoUrl ? "" : "hidden"}>
         <label class="btn" style="flex-direction:row;color:var(--ink)">Лого солих<input type="file" id="logoFile" accept="image/*" hidden></label>
         <button type="button" class="btn" id="logoClr" ${S.logoUrl ? "" : "hidden"}>Үндсэн лого руу буцаах</button></div></div>
-      <h3 class="full sec">Бусад</h3>
-      ${inp("preDays", "Захиалгаар ирэх хугацаа", "7–14 хоног")}
-      <label>Хөлийн бичвэр<input data-k="footerText" value="${esc(S.footerText)}"></label>
-      <p class="full mut">🔒 Төлбөрийн дансны дугаарыг аюулгүй байдлын үүднээс зөвхөн кодоор өөрчилнө.</p>
-    </form>`;
+      </section>
+      <section class="form scard" id="s-foot">
+        ${head("⬇", "Хөл", "Сайтын хамгийн доод хэсэг: уриа, холбоо барих товчнууд.")}
+        <label class="full">Хөлийн уриа<input data-k="footerText" value="${esc(S.footerText)}"></label>
+        <div class="full row colors"><label>Хөлийн өнгө<input type="color" data-c="footer" value="${esc(S.colors.footer || "#ffffff")}"></label><span class="mut">Цагаан бол харанхуй горимд автоматаар бараан болно</span></div>
+      <div class="full"><label>Хөлийн арын зураг (заавал биш. Дээр нь хөлийн өнгө бүдгээр давхарлагдана)</label>
+        <div class="row"><img id="footPrev" class="prev" src="${esc(S.footerImage || "")}" alt="" ${S.footerImage ? "" : "hidden"}>
+        <label class="btn" style="flex-direction:row;color:var(--ink)">Зураг оруулах<input type="file" id="footFile" accept="image/*" hidden></label>
+        <button type="button" class="btn" id="footClr" ${S.footerImage ? "" : "hidden"}>Зураг хасах</button></div></div>
+      </section>
+    </div>
+    </div>
+    <!-- Доод талд үргэлж харагдах хадгалах мөр -->
+    <div class="savebar"><span id="dirty" class="mut">✓ Бүх өөрчлөлт хадгалагдсан</span><button class="btn dark" id="ssave">Хадгалах</button></div>`;
+  // ----- Үйлчилгээний 4 мөр (☰ цэс) -----
+  let perks = (Array.isArray(S.perks) && S.perks.length === 4 ? S.perks : DEF.perks).map(x => ({ ...x }));
+  $("perkList").innerHTML = perks.map((x, i) => `<div class="pair"><b>${i + 1}</b><input data-pt="${i}" value="${esc(x.t)}" placeholder="Гарчиг"><input data-pd="${i}" value="${esc(x.d)}" placeholder="Тайлбар"></div>`).join("");
+  // ----- Хадгалаагүй өөрчлөлтийг илрүүлнэ -----
+  let dirty = false;
+  const markDirty = () => { if (dirty) return; dirty = true; $("dirty").textContent = "● Хадгалаагүй өөрчлөлт байна"; $("dirty").className = "warn"; $("ssave").classList.add("pulse"); };
+  $("sf").addEventListener("input", markDirty); $("sf").addEventListener("change", markDirty);
+  // Жагсаалтын товч (нэмэх, устгах, дараалал) дарахад ч өөрчлөлт гэж үзнэ
+  $("sf").addEventListener("click", e => { if (e.target.closest("button")) markDirty(); });
+  // Хадгалаагүй байхад хуудаснаас гарвал анхааруулна
+  window.onbeforeunload = () => dirty && VIEW === my ? true : undefined;
+  // Харагдаж буй хэсгийг цэсэнд тодруулна
+  const navA = [...$("snav").querySelectorAll("a")];
+  const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) navA.forEach(a => {
+    const on = a.getAttribute("href") === "#" + en.target.id; a.classList.toggle("on", on);
+    // Утсан дээр идэвхтэй товчийг харагдах хэсэгт гүйлгэнэ
+    if (on && matchMedia("(max-width:860px)").matches) { const n = $("snav"); n.scrollTo({ left: a.offsetLeft - n.clientWidth / 2 + a.offsetWidth / 2, behavior: "smooth" }); } }); }), { rootMargin: "-30% 0px -60% 0px" });
+  $("sf").querySelectorAll("section.scard").forEach(sc => io.observe(sc));
+  // Хэсэг рүү зөөлөн гүйлгэнэ
+  $("snav").querySelectorAll("a").forEach(a => a.onclick = e => { e.preventDefault(); $(a.getAttribute("href").slice(1)).scrollIntoView({ behavior: "smooth", block: "start" }); });
   // Хэрхэн захиалах: 4 мөр
   const drawHow = () => { $("howList").innerHTML = how.map((x, i) => `<div class="pair"><b>${i + 1}</b><input data-ht="${i}" value="${esc(x.t)}" placeholder="Гарчиг"><input data-hd="${i}" value="${esc(x.d)}" placeholder="Тайлбар"></div>`).join(""); };
   // Асуулт: нэмэх, устгах, дээш/доош
@@ -569,7 +710,7 @@ async function showSettings(){
   const catId = v => { let id = String(v).toLowerCase().split("").map(c => CTR[c] ?? c).join("").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 24) || "cat";
     if (id === "all" || id === "drops" || cats.some(x => x.id === id)) id += "-" + Math.random().toString(36).slice(2, 5); return id; };
   const drawCats = () => {
-    $("catList").innerHTML = cats.map((x, i) => `<div class="pair"><b>${i + 1}</b><input data-cl="${i}" value="${esc(x.label)}" placeholder="Нэр"><span class="mut" style="white-space:nowrap">${catN(x.id)} бараа</span>
+    $("catList").innerHTML = cats.map((x, i) => `<div class="crow"><b>${i + 1}</b><input data-cl="${i}" value="${esc(x.label)}" placeholder="Нэр"><span class="mut">${catN(x.id)} бараа</span>
       <div class="tb"><button type="button" data-cu="${i}" ${i ? "" : "disabled"}>↑</button><button type="button" data-cd="${i}" ${i < cats.length - 1 ? "" : "disabled"}>↓</button><button type="button" data-cx="${i}">×</button></div></div>`).join("");
     // Нэр засах
     $("catList").querySelectorAll("[data-cl]").forEach(el => el.oninput = () => { cats[+el.dataset.cl].label = el.value; });
@@ -588,6 +729,9 @@ async function showSettings(){
     + (plist || []).map(x => `<option value="product:${esc(x.id)}" ${cur === "product:" + x.id ? "selected" : ""}>Бараа: ${esc(x.name)}</option>`).join("")
     + `<option value="url" ${/^https?:/.test(cur || "") ? "selected" : ""}>Вэб хаяг…</option>`;
   const drawPosters = (arr, boxId, key) => {
+    // Слайд байгаа эсэхээс хамаарч "Нүүр хэсэг" харагдах эсэхийг бичнэ
+    if (key === "s") $("heroState").innerHTML = arr.length ? `⚠ Одоо <b>${arr.length} слайд</b> байгаа тул энэ хэсэг сайтад <b>харагдахгүй</b>. Слайдуудыг устгавал гарна.` : "✓ Слайд байхгүй тул энэ хэсэг сайтад <b>харагдаж байна</b>.";
+    if (key === "s") $("heroState").className = "full shint " + (arr.length ? "off" : "on");
     $(boxId).innerHTML = arr.map((x, i) => `<div class="post"><img src="${esc(x.img)}" alt="">
       <div class="pcol">
         <!-- Урамшууллын хуудасны гарчиг, тайлбар (бөглөвөл постер дарахад мэдээллийн хуудас нээгдэнэ) -->
@@ -647,6 +791,8 @@ async function showSettings(){
     $("main").querySelectorAll("[data-k]").forEach(el => out[el.dataset.k] = el.value.trim());
     out.colors = {}; $("main").querySelectorAll("[data-c]").forEach(el => out.colors[el.dataset.c] = el.value);
     out.how = how.filter(x => x.t); out.faq = faq.filter(x => x.q && x.a);
+    // Үйлчилгээний 4 мөр
+    out.perks = perks.map((x, i) => ({ t: $("main").querySelector(`[data-pt="${i}"]`).value.trim(), d: $("main").querySelector(`[data-pd="${i}"]`).value.trim() }));
     // Ангилал: нэргүйг хасна
     out.cats = cats.map(x => ({ id: x.id, label: (x.label || "").trim() })).filter(x => x.label);
     if (!out.cats.length) return toast("Дор хаяж нэг ангилал байх ёстой");
@@ -658,7 +804,7 @@ async function showSettings(){
     const { error } = await sb.from("settings").upsert({ id: "site", data: out, updated_at: new Date().toISOString(), updated_by: u && u.user ? u.user.id : null });
     $("ssave").disabled = false;
     if (error) return toast("Алдаа: " + error.message);
-    toast("Хадгаллаа · сайтад шууд харагдана"); showSettings();
+    dirty = false; toast("Хадгаллаа · сайтад шууд харагдана"); showSettings();
   };
 }
 

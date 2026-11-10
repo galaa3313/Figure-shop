@@ -2426,6 +2426,13 @@ function applySettings(st){
   renderPromos(Array.isArray(st.promos) ? st.promos : []);
   // Хөлийн бичвэр
   if (st.footerText != null) $("fText").textContent = st.footerText;
+  // ☰ цэсний үйлчилгээний 4 мөр (админаас засна)
+  if (Array.isArray(st.perks) && st.perks.length === 4) document.querySelectorAll(".dperks li").forEach((li, i) => {
+    const x = st.perks[i] || {}, b = li.querySelector("b"), d = li.querySelector("span > span");
+    if (b && x.t) b.textContent = x.t;
+    // Хугацааны мөрийг гараар бичсэн бол хоногийн автомат бичвэрийг дарж бичнэ
+    if (d && x.d) { d.textContent = x.d; d.removeAttribute("id"); }
+  });
   // Хэрхэн захиалах: [{t: гарчиг, d: тайлбар}]
   if (Array.isArray(st.how) && st.how.length) $("howSteps").innerHTML = st.how.map(x => `<div class="st"><h3>${esc(x.t)}</h3><p>${esc(x.d)}</p></div>`).join("");
   // Түгээмэл асуулт: [{q: асуулт, a: хариулт}]

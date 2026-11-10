@@ -313,6 +313,10 @@ const toast = m => { const t = document.createElement("div"); t.className = "toa
 // Ангиллууд: анхны утга. Админ "Сайтын тохиргоо → Ангилал"-аас өөрчилбөл түүгээр солигдоно
 let CATS = { tops: "Цамц", outer: "Гадуур хувцас", bottoms: "Өмд", set: "Иж бүрдэл", shoes: "Гутал", hats: "Малгай", bags: "Цүнх", access: "Гоёл чимэглэл", figures: "Фигур" };
 let sb, STATUSES = [];
+// Аюулгүй байдал: сэтгэгдлийн зураг зөвхөн манай Supabase "reviews" сангийнх бол харуулна
+// (хэрэглэгч "javascript:" мэт хортой холбоос оруулж админы эрхийг хулгайлахаас сэргийлнэ)
+let SB_BASE = "";
+const okPhoto = u => typeof u === "string" && !!SB_BASE && u.startsWith(SB_BASE + "/storage/v1/object/public/reviews/") && !/["'<>\s]/.test(u);
 // Тохиргооноос ангиллын жагсаалтыг уншиж CATS-ийг шинэчилнэ
 async function loadCats(){
   const { data } = await sb.from("settings").select("data").eq("id", "site").maybeSingle();
@@ -886,7 +890,7 @@ async function showReviews(){
     <div class="rvl">${list.map(r => `<div class="rvi ${r.hidden ? "off" : ""}">
       <div class="row" style="justify-content:space-between;flex-wrap:wrap"><div><b>${esc(pname(r.product_id))}</b> · <span style="color:#f5b301">${st(r.rating)}</span> · ${esc(r.username)} ${r.verified ? '<span class="tag ok">Худалдан авсан</span>' : ""} ${r.hidden ? '<span class="tag no">нуусан</span>' : ""}</div><span class="mut">${dt(r.created_at)}</span></div>
       <p style="white-space:pre-line;margin:8px 0">${esc(r.body)}</p>
-      ${(r.photos || []).length ? `<div class="thumbs">${r.photos.map(u => `<figure><a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt=""></a></figure>`).join("")}</div>` : ""}
+      ${(r.photos || []).filter(okPhoto).length ? `<div class="thumbs">${r.photos.filter(okPhoto).map(u => `<figure><a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt=""></a></figure>`).join("")}</div>` : ""}
       <div class="row" style="margin-top:8px;align-items:flex-start"><textarea data-rp="${r.id}" rows="2" placeholder="FINN-ий хариулт (заавал биш)" style="flex:1">${esc(r.reply || "")}</textarea>
         <button class="btn" data-save="${r.id}">Хариулт хадгалах</button><button class="btn" data-hide="${r.id}">${r.hidden ? "Харуулах" : "Нуух"}</button><button class="btn red" data-del="${r.id}">Устгах</button></div>
     </div>`).join("") || '<p class="msg">Одоохондоо сэтгэгдэл алга.</p>'}</div>`;
@@ -995,6 +999,7 @@ $("tabs").addEventListener("click", e => { const b = e.target.closest("[data-t]"
   try {
     const c = await (await fetch("/api/config")).json();
     if (!c.supabaseUrl) throw new Error("Supabase тохируулаагүй байна.");
+    SB_BASE = c.supabaseUrl.replace(/\/$/, "");
     sb = window.supabase.createClient(c.supabaseUrl, c.supabaseAnon);
     const { data } = await sb.auth.getUser();
     if (!data.user) { $("main").innerHTML = `<p class="msg">Эхлээд <a href="/">сайт дээрээ</a> админ бүртгэлээрээ нэвтэрнэ үү.</p>`; return; }

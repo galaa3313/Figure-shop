@@ -2018,7 +2018,7 @@ async function loadReviews(p){
     <div class="rv-list">${list.map(r => `<div class="rv"><div class="av">${esc((r.username || "?")[0].toUpperCase())}</div><div>
       <div class="rv-who"><span class="stars">${starTxt(r.rating)}</span>${r.verified ? '<span class="ok">✓ Худалдан авсан</span>' : ""}<b>${esc(r.username)}</b><span class="when">${new Date(r.created_at).toLocaleDateString("mn-MN")}</span></div>
       <p>${esc(r.body)}</p>
-      ${(r.photos || []).length ? `<div class="rv-ph">${r.photos.map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join("")}</div>` : ""}
+      ${(r.photos || []).filter(okPhoto).length ? `<div class="rv-ph">${r.photos.filter(okPhoto).map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join("")}</div>` : ""}
       ${r.reply ? `<div class="reply"><b>FINN хариулт:</b><br>${esc(r.reply)}</div>` : ""}
     </div></div>`).join("")}</div>`;
   box.querySelectorAll(".rv-ph img").forEach(im => im.onclick = () => zoomImg(im.src));
@@ -2605,6 +2605,10 @@ async function loadSettings(){
 // =====================================================================
 // Supabase клиент (тохиргоо ирсний дараа үүснэ), одоогийн хэрэглэгчийн профайл
 let sb = null, me = null;
+// Supabase-ийн хаяг: сэтгэгдлийн зураг зөвхөн манай сангаас ирсэн эсэхийг шалгахад
+let SB_BASE = "";
+// Аюулгүй байдал: сэтгэгдлийн зургийн холбоос зөвхөн манай "reviews" сангийнх байх ёстой (гадны/хортой холбоос хаана)
+const okPhoto = u => typeof u === "string" && !!SB_BASE && u.startsWith(SB_BASE + "/storage/v1/object/public/reviews/") && !/["'<>\s]/.test(u);
 // Имэйлийн холбоос дарсны дараа буцах үндсэн сайтын хаяг (домэйн солигдоход энд засна)
 let SITE_URL = "https://figure-shop-gamma.vercel.app/";
 // Facebook товчны HTML: асаагүй бол хоосон
@@ -2812,6 +2816,7 @@ async function loadDbProducts(){
     if (!window.supabase) throw 0;
     const c = await (await fetch("/api/config")).json();
     if (!c.supabaseUrl || !c.supabaseAnon) throw 0;
+    SB_BASE = c.supabaseUrl.replace(/\/$/, "");
     sb = window.supabase.createClient(c.supabaseUrl, c.supabaseAnon, { auth: { persistSession: true, autoRefreshToken: true } });
     // Имэйлийн холбоосын буцах хаяг (finn.mn холбогдоход серверийн SITE_URL-ээс ирнэ)
     if (c.siteUrl) SITE_URL = c.siteUrl.replace(/\/?$/, "/");

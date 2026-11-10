@@ -1369,6 +1369,8 @@ footer{padding:44px 0 26px!important;border-top:1px solid var(--line)!important;
 
 /* Үйлчилгээний мөр бүгд устсан бол хэсгийг бүрэн нууна */
 .dperks[hidden]{display:none!important}
+/* Бичих талбар: гүйлгэх зураасгүй, агуулгаараа томорно */
+textarea{resize:none;overflow:hidden;min-height:64px}
 /* ----- Facebook-ээр нэвтрэх товч ----- */
 .fbbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;border-radius:0;padding:13px;background:#1877f2;color:#fff;font-weight:600;font-size:14.5px;cursor:pointer}
 .fbbtn svg{width:20px;height:20px}
@@ -2829,4 +2831,9 @@ async function loadDbProducts(){
     if (fromLink || fromOAuth) history.replaceState(null, "", location.pathname);
   } catch (e) { /* Бүртгэл ажиллахгүй үед дэлгүүр хэвийн ажиллана */ }
 })();
+
+// ===== БИЧИХ ТАЛБАР (хаяг, тайлбар, сэтгэгдэл): бичихэд өндөр нь өсч бүх бичиг харагдана =====
+function fitTA(t){ if (!t.isConnected) return; t.style.height = "auto"; t.style.height = (t.scrollHeight + 2) + "px"; }
+document.addEventListener("input", e => { if (e.target.tagName === "TEXTAREA") fitTA(e.target); }, true);
+document.addEventListener("focusin", e => { if (e.target.tagName === "TEXTAREA") fitTA(e.target); }, true);
 </script>

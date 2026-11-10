@@ -267,6 +267,17 @@ body:has(.slay) header{background:#fff}
 .he .btn.rv{font-size:12.5px;padding:7px 12px;white-space:nowrap}
 .he .btn.sure{background:var(--red);border-color:var(--red);color:#fff}
 .hkeep{margin:-6px 0 12px}
+
+/* Нэг мөрт бичих талбар: оролт шиг харагдана, урт бол доош томорно */
+textarea.one{resize:none;overflow:hidden;min-height:44px;line-height:1.45;font:inherit;width:100%;box-sizing:border-box}
+textarea{overflow:hidden}
+
+/* Ачаалж байх үеийн дугуй ба төлөв */
+.spin{display:inline-block;width:14px;height:14px;margin-right:8px;vertical-align:-2px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+.btn.busy{opacity:.85;cursor:wait}
+.btn.done{background:#14853b!important;border-color:#14853b!important;color:#fff!important}
+.he.flash{animation:flash 2s ease-out}
+@keyframes flash{0%{background:#e6f4ea}100%{background:transparent}}
 </style>
 </head>
 <body>
@@ -473,9 +484,9 @@ function productForm(p, isNew){
       <input id="purl" placeholder="эсвэл зургийн холбоос (https://…)" style="flex:1"><button type="button" class="btn" id="paddurl">Нэмэх</button><span id="pmsg" class="mut"></span></div></div>
     <input type="hidden" id="p-id" value="${esc(p.id)}">
     <label>Ангилал<select id="p-cat">${(p.cat && !CATS[p.cat] ? [[p.cat, p.cat + " (устсан ангилал)"]] : []).concat(Object.entries(CATS)).map(([k, v]) => `<option value="${k}" ${k === p.cat ? "selected" : ""}>${v}</option>`).join("")}</select></label>
-    <label class="full">Нэр<input id="p-name" value="${esc(p.name)}" required></label>
-    <label>Брэнд / цуврал<input id="p-series" value="${esc(p.series || "")}"></label>
-    <label>Үйлдвэрлэгч / нэмэлт<input id="p-line" value="${esc(p.line || "")}"></label>
+    <label class="full">Нэр<textarea rows="1" class="one" id="p-name" required>${esc(p.name)}</textarea></label>
+    <label>Брэнд / цуврал<textarea rows="1" class="one" id="p-series">${esc(p.series || "")}</textarea></label>
+    <label>Үйлдвэрлэгч / нэмэлт<textarea rows="1" class="one" id="p-line">${esc(p.line || "")}</textarea></label>
     <label>Үнэ (₮)<input id="p-price" type="number" min="1" value="${esc(p.price)}" required></label>
     <label>Хямдралын өмнөх үнэ (заавал биш)<input id="p-was" type="number" min="0" value="${esc(p.was || "")}"></label>
     <label>Тэмдэг<select id="p-badge">${["", "Шинэ", "Хит", "Хямдрал", "Онцлох"].map(b => `<option ${b === (p.badge || "") ? "selected" : ""}>${b}</option>`).join("")}</select></label>
@@ -595,7 +606,7 @@ async function showSettings(){
   // Хуучин үйлчилгээний бичиг мэдээ талбарт үлдсэн бол хоосолно (сайт үүнийг аль хэдийн харуулдаггүй)
   if (/^QPay-ээр шууд төлнө · УБ хотод хүргэлттэй/.test(String(S.notice || "").trim())) S.notice = "";
   let faq = [...(S.faq || [])], how = [...(S.how || [])];
-  const inp = (k, label, ph = "") => `<label>${label}<input data-k="${k}" value="${esc(S[k] || "")}" placeholder="${esc(ph)}"></label>`;
+  const inp = (k, label, ph = "") => `<label>${label}<textarea rows="1" class="one" data-k="${k}" placeholder="${esc(ph)}">${esc(S[k] || "")}</textarea></label>`;
   // Хэсэг бүрийн толгой: гарчиг + сайтын хаана гарах тайлбар
   const head = (ic, t, where) => `<div class="full shead"><span class="sic">${ic}</span><div><h3>${t}</h3><p class="where">${where}</p></div></div>`;
   $("main").innerHTML = `
@@ -610,7 +621,7 @@ async function showSettings(){
     <div id="sf">
       <section class="form scard" id="s-notice">
         ${head("📢", "Дээд мөрний мэдээ", "Сайтын хамгийн дээд талд, лого-ны дээр нарийн мөр. Хоосон бол харагдахгүй.")}
-        <label class="full">Мэдээний бичвэр<input data-k="notice" value="${esc(S.notice)}" placeholder="Жишээ: Бүх гадуур хувцас 20% хямдарлаа · 11/30 хүртэл"></label>
+        <label class="full">Мэдээний бичвэр<textarea rows="1" class="one" data-k="notice" placeholder="Жишээ: Бүх гадуур хувцас 20% хямдарлаа · 11/30 хүртэл">${esc(S.notice)}</textarea></label>
       </section>
       <section class="form scard" id="s-slides">
         ${head("🖼", "Нүүрний слайд", "Нүүр хуудасны хамгийн дээд том зураг. 5 секунд тутам солигдоно.")}
@@ -628,7 +639,7 @@ async function showSettings(){
         ${head("🏠", "Нүүр хэсэг (слайдгүй үед)", "Слайд оруулаагүй үед нүүрний дээд хэсэгт зураг, гарчиг, товч гарна.")}
         <p class="full shint" id="heroState"></p>
         ${inp("heroEyebrow", "Жижиг дээд гарчиг")}${inp("heroButton", "Товчны бичиг")}
-        <label class="full">Том гарчиг<input data-k="heroTitle" value="${esc(S.heroTitle)}"></label>
+        <label class="full">Том гарчиг<textarea rows="1" class="one" data-k="heroTitle">${esc(S.heroTitle)}</textarea></label>
         <label class="full">Тайлбар<textarea data-k="heroText" rows="2">${esc(S.heroText)}</textarea></label>
       <div class="full"><label>Нүүрний том зураг (хэвтээ, 1600px+ зөвлөнө)</label>
         <div class="row"><img id="heroPrev" class="prev" src="${esc(S.heroImage || "")}" alt="" ${S.heroImage ? "" : "hidden"}>
@@ -639,7 +650,7 @@ async function showSettings(){
         ${head("🏷", "Ангилал", "Барааны дээрх шүүлтүүр товчнууд (Бүгд, Гадуур хувцас…) ба гүйдэг тууз.")}
         <p class="full mut">↑ ↓ товчоор дарааллыг солино. Бараатай ангиллыг устгахгүй — эхлээд барааг өөр ангилалд шилжүүлнэ.</p>
         <div class="full" id="catList"></div>
-        <div class="full row"><input id="catNew" placeholder="Шинэ ангиллын нэр (жишээ: Спорт хувцас)" style="flex:1"><button type="button" class="btn" id="catAdd">+ Нэмэх</button></div>
+        <div class="full row"><textarea rows="1" class="one" id="catNew" placeholder="Шинэ ангиллын нэр (жишээ: Спорт хувцас)" style="flex:1"></textarea><button type="button" class="btn" id="catAdd">+ Нэмэх</button></div>
       </section>
       <section class="form scard" id="s-how">
         ${head("🧾", "Хэрхэн захиалах", "Барааны жагсаалтын доор 01–04 дугаартай алхмууд. ☰ цэс → Хэрхэн захиалах.")}
@@ -683,7 +694,7 @@ async function showSettings(){
       </section>
       <section class="form scard" id="s-foot">
         ${head("⬇", "Хөл", "Сайтын хамгийн доод хэсэг: уриа, холбоо барих товчнууд.")}
-        <label class="full">Хөлийн уриа<input data-k="footerText" value="${esc(S.footerText)}"></label>
+        <label class="full">Хөлийн уриа<textarea rows="1" class="one" data-k="footerText">${esc(S.footerText)}</textarea></label>
         <div class="full row colors"><label>Хөлийн өнгө<input type="color" data-c="footer" value="${esc(S.colors.footer || "#ffffff")}"></label><span class="mut">Цагаан бол харанхуй горимд автоматаар бараан болно</span></div>
       <div class="full"><label>Хөлийн арын зураг (заавал биш. Дээр нь хөлийн өнгө бүдгээр давхарлагдана)</label>
         <div class="row"><img id="footPrev" class="prev" src="${esc(S.footerImage || "")}" alt="" ${S.footerImage ? "" : "hidden"}>
@@ -703,8 +714,8 @@ async function showSettings(){
   const drawPerks = () => {
     $("perkList").innerHTML = perks.length ? perks.map((x, i) => `<div class="prow">
       <select data-pi="${i}" aria-label="Дүрс">${Object.entries(PIC).map(([k, v]) => `<option value="${k}" ${k === x.i ? "selected" : ""}>${v}</option>`).join("")}</select>
-      <input data-pt="${i}" value="${esc(x.t)}" placeholder="Гарчиг (жишээ: Хүргэлттэй)">
-      <input data-pd="${i}" value="${esc(x.d)}" placeholder="Тайлбар (жишээ: УБ хотод хүргэнэ)">
+      <textarea rows="1" class="one" data-pt="${i}" placeholder="Гарчиг (жишээ: Хүргэлттэй)">${esc(x.t)}</textarea>
+      <textarea rows="1" class="one" data-pd="${i}" placeholder="Тайлбар (жишээ: УБ хотод хүргэнэ)">${esc(x.d)}</textarea>
       <div class="tb"><button type="button" data-pu="${i}" ${i ? "" : "disabled"} aria-label="Дээш">↑</button><button type="button" data-pdn="${i}" ${i < perks.length - 1 ? "" : "disabled"} aria-label="Доош">↓</button><button type="button" data-px="${i}" aria-label="Устгах">×</button></div>
     </div>`).join("") : `<p class="mut">Мөр алга — ☰ цэсэнд энэ хэсэг харагдахгүй.</p>`;
     // Дээш, доош, устгах
@@ -735,10 +746,10 @@ async function showSettings(){
   // Хэсэг рүү зөөлөн гүйлгэнэ
   $("snav").querySelectorAll("a").forEach(a => a.onclick = e => { e.preventDefault(); $(a.getAttribute("href").slice(1)).scrollIntoView({ behavior: "smooth", block: "start" }); });
   // Хэрхэн захиалах: 4 мөр
-  const drawHow = () => { $("howList").innerHTML = how.map((x, i) => `<div class="pair"><b>${i + 1}</b><input data-ht="${i}" value="${esc(x.t)}" placeholder="Гарчиг"><input data-hd="${i}" value="${esc(x.d)}" placeholder="Тайлбар"></div>`).join(""); };
+  const drawHow = () => { $("howList").innerHTML = how.map((x, i) => `<div class="pair"><b>${i + 1}</b><textarea rows="1" class="one" data-ht="${i}" placeholder="Гарчиг">${esc(x.t)}</textarea><textarea rows="1" class="one" data-hd="${i}" placeholder="Тайлбар">${esc(x.d)}</textarea></div>`).join(""); };
   // Асуулт: нэмэх, устгах, дээш/доош
   const drawFaq = () => {
-    $("faqList").innerHTML = faq.map((x, i) => `<div class="pair"><b>${i + 1}</b><input data-fq="${i}" value="${esc(x.q)}" placeholder="Асуулт"><textarea data-fa="${i}" rows="2" placeholder="Хариулт">${esc(x.a)}</textarea><div class="tb"><button type="button" data-fu="${i}" ${i ? "" : "disabled"}>↑</button><button type="button" data-fx="${i}">×</button></div></div>`).join("") || '<p class="mut">Асуулт алга.</p>';
+    $("faqList").innerHTML = faq.map((x, i) => `<div class="pair"><b>${i + 1}</b><textarea rows="1" class="one" data-fq="${i}" placeholder="Асуулт">${esc(x.q)}</textarea><textarea data-fa="${i}" rows="2" placeholder="Хариулт">${esc(x.a)}</textarea><div class="tb"><button type="button" data-fu="${i}" ${i ? "" : "disabled"}>↑</button><button type="button" data-fx="${i}">×</button></div></div>`).join("") || '<p class="mut">Асуулт алга.</p>';
     $("faqList").querySelectorAll("[data-fx]").forEach(b => b.onclick = () => { readLists(); faq.splice(+b.dataset.fx, 1); drawFaq(); });
     $("faqList").querySelectorAll("[data-fu]").forEach(b => b.onclick = () => { readLists(); const i = +b.dataset.fu; [faq[i - 1], faq[i]] = [faq[i], faq[i - 1]]; drawFaq(); });
   };
@@ -760,7 +771,7 @@ async function showSettings(){
   const catId = v => { let id = String(v).toLowerCase().split("").map(c => CTR[c] ?? c).join("").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 24) || "cat";
     if (id === "all" || id === "drops" || cats.some(x => x.id === id)) id += "-" + Math.random().toString(36).slice(2, 5); return id; };
   const drawCats = () => {
-    $("catList").innerHTML = cats.map((x, i) => `<div class="crow"><b>${i + 1}</b><input data-cl="${i}" value="${esc(x.label)}" placeholder="Нэр"><span class="mut">${catN(x.id)} бараа</span>
+    $("catList").innerHTML = cats.map((x, i) => `<div class="crow"><b>${i + 1}</b><textarea rows="1" class="one" data-cl="${i}" placeholder="Нэр">${esc(x.label)}</textarea><span class="mut">${catN(x.id)} бараа</span>
       <div class="tb"><button type="button" data-cu="${i}" ${i ? "" : "disabled"}>↑</button><button type="button" data-cd="${i}" ${i < cats.length - 1 ? "" : "disabled"}>↓</button><button type="button" data-cx="${i}">×</button></div></div>`).join("");
     // Нэр засах
     $("catList").querySelectorAll("[data-cl]").forEach(el => el.oninput = () => { cats[+el.dataset.cl].label = el.value; });
@@ -785,11 +796,11 @@ async function showSettings(){
     $(boxId).innerHTML = arr.map((x, i) => `<div class="post"><img src="${esc(x.img)}" alt="">
       <div class="pcol">
         <!-- Урамшууллын хуудасны гарчиг, тайлбар (бөглөвөл постер дарахад мэдээллийн хуудас нээгдэнэ) -->
-        <input data-${key}t="${i}" placeholder="Гарчиг (жишээ: Өвлийн хямдрал 30% хүртэл)" value="${esc(x.title || "")}">
+        <textarea rows="1" class="one" data-${key}t="${i}" placeholder="Гарчиг (жишээ: Өвлийн хямдрал 30% хүртэл)">${esc(x.title || "")}</textarea>
         <textarea data-${key}b="${i}" rows="4" placeholder="Тайлбар: нөхцөл, хугацаа, дэлгэрэнгүй мэдээлэл…">${esc(x.body || "")}</textarea>
         <div class="row" style="gap:8px;flex-wrap:wrap"><label class="mut" style="flex:1;min-width:140px">Эхлэх<input type="date" data-${key}s="${i}" value="${esc(x.start || "")}"></label><label class="mut" style="flex:1;min-width:140px">Дуусах<input type="date" data-${key}e="${i}" value="${esc(x.end || "")}"></label></div>
         <label class="mut">Товчны холбоос<select data-${key}l="${i}">${linkOpts(x.link)}</select></label>
-        <input data-${key}u="${i}" placeholder="https://…" value="${/^https?:/.test(x.link || "") ? esc(x.link) : ""}" ${/^https?:/.test(x.link || "") ? "" : "hidden"}>
+        <textarea rows="1" class="one" data-${key}u="${i}" placeholder="https://…" ${/^https?:/.test(x.link || "") ? "" : "hidden"}>${/^https?:/.test(x.link || "") ? esc(x.link) : ""}</textarea>
         <!-- Урамшуулалд хамаарах бараанууд -->
         <details><summary class="mut">Урамшуулалд хамаарах бараа (${(x.products || []).length})</summary>
           <div class="pchk">${(plist || []).map(pr => `<label><input type="checkbox" data-${key}p="${i}" value="${esc(pr.id)}" ${(x.products || []).includes(pr.id) ? "checked" : ""}> ${esc(pr.name)}</label>`).join("")}</div></details>
@@ -958,8 +969,20 @@ async function showHistory(f){
   $("hlist").querySelectorAll("[data-rs]").forEach(b => b.onclick = async () => {
     // Хувилбар руу буцаахаас өмнө нэг удаа баталгаажуулна
     if (b.classList.contains("rv") && !b.dataset.sure) { b.dataset.sure = 1; b.textContent = "⚠ Тийм, буцаах"; b.classList.add("sure"); return; }
-    if (b.disabled) return; b.disabled = true;
-    try { await api({ action: "restore", id: b.dataset.rs }); toast(b.classList.contains("rv") ? "Буцаалаа · дургүй бол шинэ мөрөөс дахин буцаана" : "Сэргээлээ"); again(); } catch (e) { b.disabled = false; toast("Алдаа: " + e.message); }
+    if (b.disabled) return;
+    // Ачаалж байгааг харуулна: товч түгжигдэж, эргэлддэг дугуй гарна
+    const rv = b.classList.contains("rv");
+    b.disabled = true; b.classList.add("busy"); b.innerHTML = `<i class="spin"></i>${rv ? "Буцааж байна…" : "Сэргээж байна…"}`;
+    try {
+      await api({ action: "restore", id: b.dataset.rs });
+      // Амжилттай: ногоон болгож түр харуулаад жагсаалтыг шинэчилнэ
+      b.classList.remove("busy", "sure"); b.classList.add("done"); b.innerHTML = "✓ Буцаалаа";
+      toast(rv ? "✓ Буцаалаа · дургүй бол дээд мөрийн ↶ товчоор дахин буцаана" : "✓ Сэргээлээ");
+      await new Promise(z => setTimeout(z, 700));
+      await again();
+      // Шинэ мөрийг (хамгийн дээд) түр тодруулна
+      const top = document.querySelector("#hlist .he"); if (top) top.classList.add("flash");
+    } catch (e) { b.disabled = false; b.classList.remove("busy"); b.innerHTML = rv ? "↶ Өмнөх рүү буцаах" : "Сэргээх"; delete b.dataset.sure; b.classList.remove("sure"); toast("Алдаа: " + e.message); }
   });
 }
 
@@ -982,6 +1005,19 @@ $("tabs").addEventListener("click", e => { const b = e.target.closest("[data-t]"
     await showOrders("").catch(e => { if (VIEW === first) $("main").innerHTML = `<p class="msg">Алдаа: ${esc(e.message)}</p>`; });
   } catch (e) { $("main").innerHTML = `<p class="msg">${esc(e.message)}</p>`; }
 })();
+
+// ===== БИЧИХ ТАЛБАР: агуулгадаа тааруулж өндөр нь өсч бүх бичиг харагдана =====
+// Өндрийг агуулгын хэмжээнд тааруулна
+function fitTA(t){ if (!t.isConnected) return; t.style.height = "auto"; t.style.height = (t.scrollHeight + 2) + "px"; }
+// Бичих бүрт томруулна; нэг мөрт талбарт мөр шилжилтийг хоосон зайгаар солино
+document.addEventListener("input", e => { const t = e.target; if (t.tagName !== "TEXTAREA") return;
+  if (t.classList.contains("one") && /\n/.test(t.value)) t.value = t.value.replace(/\s*\n\s*/g, " ");
+  fitTA(t); }, true);
+// Нэг мөрт талбарт Enter дарахад мөр шилжихгүй
+document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.classList && e.target.classList.contains("one")) e.preventDefault(); }, true);
+// Хуудас шинээр зурагдах бүрт бүх талбарын өндрийг тааруулна
+new MutationObserver(() => requestAnimationFrame(() => document.querySelectorAll("textarea").forEach(fitTA))).observe(document.documentElement, { childList: true, subtree: true });
+addEventListener("resize", () => document.querySelectorAll("textarea").forEach(fitTA));
 </script>
 </body>
 </html>

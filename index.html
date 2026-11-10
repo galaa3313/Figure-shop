@@ -1737,10 +1737,10 @@ async function openOrders(){
   $("sheetBody").innerHTML = `<button class="link back" type="button" id="toProf">← Миний бүртгэл</button><div id="myOrders" class="myo"><p class="desc">Уншиж байна…</p></div>`;
   $("toProf").onclick = () => openAcct("profile");
   // Өөрийн захиалгуудыг уншина (RLS: зөвхөн өөрийнхөө). Цуцалсныг харуулахгүй
-  const { data } = await sb.from("orders").select("code,items,total,status,created_at").neq("status", "Цуцлагдсан").order("created_at", { ascending: false }).limit(50);
+  const { data } = await sb.from("orders").select("code,items,total,status,created_at").eq("user_id", me.id).neq("status", "Цуцлагдсан").order("created_at", { ascending: false }).limit(50);
   if (!$("myOrders")) return;
   // Захиалгын текстийн мөр бүрээс барааг олж зурагтай нь харуулна ("1. Нэр (сонголт) [захиалгаар] – 95'000₮")
-  const parse = items => String(items || "").split("\n").map(l => l.trim()).filter(l => /^\d+\./.test(l)).map(l => {
+  const parse = items => String(items || "").split("\n").map(l => l.trim()).filter(l => l && !/^(Нийт|Захиалга)\b/.test(l)).map(l => {
     const t = l.replace(/^\d+\.\s*/, "").replace(/\s*\(\)/g, "");
     const name = t.split(/\s+[–-]\s+/)[0].replace(/\s*\[захиалгаар\]/, "").trim();
     const price = (t.match(/[–-]\s*([\d' ,’]+)₮/) || [])[1] || "";
@@ -1769,7 +1769,7 @@ async function openOrders(){
     try {
       const r = await fetch("/api/cancel-order", { method: "POST", headers: { "Content-Type": "application/json", ...(await authHeader()) }, body: JSON.stringify({ code: card.dataset.code }) });
       const j = await r.json().catch(() => ({}));
-      if (!j.ok) throw new Error(j.error === "not_pending" ? "Төлбөр орсон тул хасах боломжгүй" : "Хасаж чадсангүй");
+      if (!j.ok) throw new Error({ not_pending: "Төлбөр орсон тул хасах боломжгүй", not_found: "Энэ захиалга таны бүртгэлд холбогдоогүй байна", login: "Дахин нэвтэрнэ үү", too_many: "Түр хүлээгээд дахин оролдоно уу" }[j.error] || "Хасаж чадсангүй (" + (j.error || r.status) + ")");
       card.style.transition = "opacity .25s"; card.style.opacity = 0; setTimeout(() => { card.remove(); const n = $("myOrders").querySelectorAll(".mo2").length; if (!n) $("myOrders").innerHTML = `<div class="mo-empty"><span>📦</span><b>Захиалга алга</b><p>Бараа захиалахад энд харагдана.</p></div>`; else $("myOrders").querySelector(".mo-sum").textContent = n + " захиалга"; }, 250);
       toast("Захиалга хасагдлаа");
     } catch (e) { toast(e.message); b.disabled = false; b.textContent = "Тийм, хасах"; }
@@ -2621,7 +2621,7 @@ async function loadMe(){
   const { data } = await sb.auth.getUser();
   if (data && data.user) {
     const r = await sb.from("profiles").select("username,email,phone,role").eq("id", data.user.id).maybeSingle();
-    me = r.data || null;
+    me = r.data ? { ...r.data, id: data.user.id } : null;
   }
   // Дээд цэсний хүний дүрс дээр нэвтэрсэн эсэхийг тэмдэглэнэ
   $("openAcct").classList.toggle("on", !!me);
@@ -2716,7 +2716,7 @@ function acctView(v, email){
     $("logout").onclick = async () => { await sb.auth.signOut(); me = null; $("openAcct").classList.remove("on"); closeAll(); toast("Гарлаа"); };
     $("myOrd").onclick = openOrders;
     // Захиалгын тоог товчин дээр харуулна (цуцалсныг тоолохгүй)
-    sb.from("orders").select("code", { count: "exact", head: true }).neq("status", "Цуцлагдсан").then(({ count }) => { if ($("myOrdN") && count) $("myOrdN").textContent = `(${count})`; });
+    sb.from("orders").select("code", { count: "exact", head: true }).eq("user_id", me.id).neq("status", "Цуцлагдсан").then(({ count }) => { if ($("myOrdN") && count) $("myOrdN").textContent = `(${count})`; });
     return;
   }
   // Холбоос товчнууд (Бүртгүүлэх, Нэвтрэх, Мартсан…)

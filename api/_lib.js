@@ -140,10 +140,13 @@ const hits = new Map();
 function limited(req, max = 6, winMs = 10 * 60 * 1000) {
   // Хэрэглэгчийн IP (Vercel x-forwarded-for-д бичдэг)
   const ip = String((req.headers || {})["x-forwarded-for"] || "").split(",")[0].trim() || "?";
+  // Хаяг бүрийг (нэвтрэх, цуцлах, захиалах …) ТУСАД нь тоолно.
+  // (Өмнө нь бүгд нэг тоолуурт орж, хэд нэвтэрч/цуцалсны дараа захиалга QPay-гүй болдог байсан)
+  const key = String(req.url || "").split("?")[0] + "|" + ip;
   const now = Date.now();
   // Сүүлийн 10 минутын хүсэлтүүдийг үлдээнэ
-  const arr = (hits.get(ip) || []).filter(t => now - t < winMs);
-  arr.push(now); hits.set(ip, arr);
+  const arr = (hits.get(key) || []).filter(t => now - t < winMs);
+  arr.push(now); hits.set(key, arr);
   // Санах ой дүүрэхээс сэргийлж хэт олон бол цэвэрлэнэ
   if (hits.size > 5000) hits.clear();
   // Хязгаар хэтэрсэн бол true

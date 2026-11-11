@@ -10,7 +10,8 @@ module.exports = async (req, res) => {
   // QPay тохируулаагүй бол сайт дансаар шилжүүлэх хувилбар руу шилжинэ
   if (!L.qpayReady()) return res.status(503).json({ ok: false, error: "qpay_not_configured" });
   // Нэг хүнээс богино хугацаанд хэт олон захиалга ирвэл (спам) татгалзана
-  if (L.limited(req)) return res.status(429).json({ ok: false, error: "too_many" });
+  // 10 минутад нэг хаягаас 10 хүртэл захиалга (нэг сүлжээнд олон хүн байж болох тул арай өргөн)
+  if (L.limited(req, 10)) return res.status(429).json({ ok: false, error: "too_many" });
   // Захиалгыг шалгаж, үнийг сервер дээр бодно
   const o = await L.order(L.body(req));
   // Нэвтэрсэн хэрэглэгч бол түүний id-г захиалгад холбоно (зочин бол null)

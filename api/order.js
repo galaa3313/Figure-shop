@@ -9,7 +9,8 @@ module.exports = async (req, res) => {
   // Зөвхөн POST хүсэлт хүлээж авна
   if (req.method !== "POST") return res.status(405).json({ ok: false });
   // Нэг хүнээс богино хугацаанд хэт олон захиалга ирвэл (спам) татгалзана
-  if (L.limited(req)) return res.status(429).json({ ok: false, error: "too_many" });
+  // 10 минутад нэг хаягаас 10 хүртэл захиалга (нэг сүлжээнд олон хүн байж болох тул арай өргөн)
+  if (L.limited(req, 10)) return res.status(429).json({ ok: false, error: "too_many" });
   // Захиалгыг шалгаж, үнийг сервер дээр бодно
   const o = await L.order(L.body(req));
   // Нэвтэрсэн хэрэглэгч бол түүний id-г захиалгад холбоно (зочин бол null)

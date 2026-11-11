@@ -882,13 +882,22 @@ function productForm(p, isNew){
     if (error) return toast("Алдаа: " + error.message);
     toast(images.length ? "Хадгаллаа · сайтад шууд харагдана" : "Хадгаллаа (зураггүй) — Засах дарж зураг нэмнэ үү"); showProducts();
   };
-  // Устгах: санамсаргүй устгахаас сэргийлж 2 удаа дарна
+  // Устгах: асуултаар баталгаажуулж, устгаж байх үед эргэлдэх тэмдэг харуулна
   if ($("pdel")) $("pdel").onclick = async () => {
     const b = $("pdel");
-    if (b.dataset.sure !== "1") { b.dataset.sure = "1"; b.textContent = "Итгэлтэй бол дахин дар"; return setTimeout(() => { if (b.isConnected) { b.dataset.sure = ""; b.textContent = "Устгах"; } }, 3000); }
-    const { error } = await sb.from("products").delete().eq("id", p.id);
-    if (error) return toast("Алдаа: " + error.message);
-    toast("Устгалаа"); showProducts();
+    if (!confirm(`«${p.name}» барааг устгах уу?\n\nБуруу устгавал «Түүх» хэсгээс сэргээж болно.`)) return;
+    // Давхар дарахаас сэргийлж товчийг түгжинэ
+    b.disabled = true; $("psave").disabled = true;
+    b.innerHTML = '<span class="spin"></span>Устгаж байна…';
+    // Устгасан мөрийг буцааж авна — 0 мөр бол эрхгүй/олдоогүй гэсэн үг (алдаагүй мэт харагдахаас сэргийлнэ)
+    const { data, error } = await sb.from("products").delete().eq("id", p.id).select("id");
+    if (error || !data || !data.length) {
+      b.disabled = false; $("psave").disabled = false; b.textContent = "Устгах";
+      return toast(error ? "Алдаа: " + error.message : "Устгагдсангүй — дахин нэвтэрч оролдоно уу");
+    }
+    b.innerHTML = "✓ Устгалаа";
+    toast(`✓ «${p.name}» устгагдлаа`);
+    setTimeout(() => showProducts(), 500);
   };
 }
 

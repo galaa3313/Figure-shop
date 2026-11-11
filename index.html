@@ -2291,7 +2291,8 @@ async function showDone(items, total){
   let q = null;
   if (SHOP.qpayApi) {
     try {
-      const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 12000);
+      // QPay нэхэмжлэх үүсгэхийг 25 секунд хүлээнэ (сүлжээ удаан үед QR-гүй дансны дэлгэц рүү шууд орохгүй)
+      const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 25000);
       const r = await fetch(SHOP.qpayApi + "/qpay-create", { method: "POST", headers: { "Content-Type": "application/json", ...(await authHeader()) }, body: JSON.stringify(orderPayload(code)), signal: ctl.signal });
       clearTimeout(t);
       if (r.ok) q = await r.json();

@@ -1505,6 +1505,8 @@ textarea{resize:none;overflow:hidden;min-height:64px}
 /* Нүүрний зураг тохиргоо ирэх хүртэл нуугдана, ирмэгц зөөлөн гарч ирнэ */
 #heroImg{transition:opacity .35s}
 #heroImg.hwait{opacity:0}
+/* Хэвтээ (өргөн) зургийг тайрахгүй, бүтнээр нь багтааж харуулна (нүдний шил, бүс гэх мэт) */
+.ph img.fitw,.car img.fitw,.sim img.fitw,.drop img.fitw{object-fit:contain;background:#fff}
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -2351,6 +2353,14 @@ function showQpay(items, total, code, q){
 const hov2 = p => { const g = p.gallery ? p.gallery.map(x => x[0]) : []; const s2 = g.find(u => u && u !== p.img) || (p.close && p.close !== p.img ? p.close : ""); return s2 || ""; };
 // Утсанд: хуруу хүрэхэд 2-р зургийг гаргаж, гаргахад буцаана
 document.addEventListener("touchstart", e => { const ph = e.target.closest && e.target.closest(".ph"); document.querySelectorAll(".ph.alt").forEach(x => x !== ph && x.classList.remove("alt")); if (ph && ph.querySelector(".ph2")) ph.classList.add("alt"); }, { passive: true });
+// Барааны зураг ачаалагдахад хэвтээ (өргөн) зураг бол тайрахгүй "багтаах" горимд шилжүүлнэ
+// (карт босоо 3:4 хэлбэртэй тул өргөн зургийн хоёр тал тайрагддаг байсныг засна)
+document.addEventListener("load", e => {
+  const im = e.target;
+  if (im.tagName !== "IMG" || !im.closest(".ph,.car,.sim,.drop")) return;
+  // Өргөн нь өндрөөсөө 5%-иас илүү их бол хэвтээ гэж үзнэ
+  if (im.naturalWidth > im.naturalHeight * 1.05) im.classList.add("fitw");
+}, true);
 document.addEventListener("touchend", () => setTimeout(() => document.querySelectorAll(".ph.alt").forEach(x => x.classList.remove("alt")), 700), { passive: true });
 // ===== ТӨЛӨГДӨӨГҮЙ ЗАХИАЛГУУД (энэ төхөөрөмж дээр, нэвтрээгүй хүнд ч) =====
 // Төлбөрийн цонхыг хаасан ч сагсны цонхноос дахин шалгах, цуцлах боломж өгнө

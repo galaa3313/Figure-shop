@@ -34,9 +34,10 @@ module.exports = async (req, res) => {
       callback_url: `https://${host}/api/qpay-callback?code=${o.code}`
     });
     // Танд Telegram мэдэгдэл, Sheets-д мөр нэмнэ
+    // Telegram, Sheets удаан хариулбал (Google Sheets заримдаа 10+ сек) QR-ыг хүлээлгэхгүй — 5 секундээс илүү хүлээхгүй
     await Promise.allSettled([
-      L.telegram(L.orderText(o, "🕐 Шинэ захиалга (QPay төлбөр хүлээгдэж байна)")),
-      L.sheets({ ...o, status: "QPay хүлээгдэж байна", invoice: inv.invoice_id }),
+      L.within(L.telegram(L.orderText(o, "🕐 Шинэ захиалга (QPay төлбөр хүлээгдэж байна)")), 5000, null),
+      L.within(L.sheets({ ...o, status: "QPay хүлээгдэж байна", invoice: inv.invoice_id }), 5000, null),
       // Supabase-д хадгална
       SB.saveOrder(o, user && user.id, "qpay", "QPay хүлээгдэж байна", inv.invoice_id)
     ]);

@@ -20,7 +20,8 @@ module.exports = async (req, res) => {
   // Telegram болон Sheets руу зэрэг илгээнэ
   const [t, s] = await Promise.allSettled([
     L.telegram(L.orderText(o, "🛒 Шинэ захиалга (дансаар)") + `\n\nХудалдаа хөгжлийн банкны дансаас "${o.code}" утгаар шалгаарай.`),
-    L.sheets({ ...o, status: "Төлбөр шалгах" }),
+    // Google Sheets удаан бол 6 секундээс илүү хүлээхгүй (хүсэлт нь ар талд дуусна)
+    L.within(L.sheets({ ...o, status: "Төлбөр шалгах" }), 6000, { ok: true, slow: true }),
     // Supabase-д хадгална (миний захиалгууд, админд харагдана)
     SB.saveOrder(o, user && user.id, "bank", "Төлбөр шалгах")
   ]);

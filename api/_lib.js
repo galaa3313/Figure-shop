@@ -175,4 +175,8 @@ async function markPaid(code, amount, inv) {
 const cancelToken = code => sign("cancel", code);
 const cancelOk = (ct, code) => sigOk(ct, "cancel", code);
 
-module.exports = { clip, fmt, body, order, orderText, telegram, sheets, qpayReady, qpay, sign, sigOk, limited, isPaid, markPaid, cancelToken, cancelOk };
+// Удаан ажиллах хүсэлтийг (Google Sheets гэх мэт) ms-ээс илүү хүлээхгүй — хариуг хурдан буцаахын тулд.
+// Хүсэлт өөрөө аль хэдийн илгээгдсэн тул ар талд нь дуусна; хугацаа хэтэрвэл fallback утгыг буцаана.
+const within = (p, ms, fallback) => Promise.race([p, new Promise(r => setTimeout(() => r(fallback), ms))]);
+
+module.exports = { within, clip, fmt, body, order, orderText, telegram, sheets, qpayReady, qpay, sign, sigOk, limited, isPaid, markPaid, cancelToken, cancelOk };

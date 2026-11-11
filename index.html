@@ -24,6 +24,9 @@
 <!-- Утасны дэлгэцийн захыг бүрэн ашиглахыг зөвшөөрнө -->
 <meta name="claude:viewport-fit-sides" content="cover">
 <!-- Google Fonts руу урьдчилан холбогдож фонтыг хурдан ачаална -->
+<!-- Барааны зураг, мэдээллийн сан (Supabase) руу холболтыг урьдчилан нээнэ — зураг эрт ачаалж эхэлнэ -->
+<link rel="preconnect" href="https://vrkqcbsdrclrinjggqfl.supabase.co">
+<link rel="preconnect" href="https://vrkqcbsdrclrinjggqfl.supabase.co" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <!-- Гарчгийн (Dela Gothic One), үндсэн текстийн (Golos Text), тооны (JetBrains Mono) фонтууд -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800;900&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
@@ -2976,9 +2979,11 @@ async function loadDbProducts(){
       gallery: imgs.length > 1 ? imgs.map((src, i) => [src, labels[i] || "Зураг " + (i + 1)]) : undefined,
       options: d.options && d.options.length ? d.options : undefined };
   });
-  // Туршилтын барааг (#qpaytest) хадгалж, бусдыг мэдээллийн сангийнхаар солино
-  const test = PRODUCTS.filter(p => p.id === "qpaytest");
-  PRODUCTS.length = 0; PRODUCTS.push(...test, ...list);
+  // Туршилтын бараа (#qpaytest): админ "Туршилт"-ыг асаасан (мэдээллийн санд идэвхтэй) үед л харагдана.
+  // Мэдээллийн сангийн мөрийг энгийн жагсаалтад хэзээ ч харуулахгүй.
+  const dbTest = list.find(p => p.id === "qpaytest");
+  const test = dbTest && location.hash === "#qpaytest" ? PRODUCTS.filter(p => p.id === "qpaytest").map(p => ({ ...p, price: dbTest.price })) : [];
+  PRODUCTS.length = 0; PRODUCTS.push(...test, ...list.filter(p => p.id !== "qpaytest"));
   // Сагсыг дахин сэргээнэ (устсан барааг хасна)
   try { cart = JSON.parse(localStorage.getItem("fb-cart") || "[]").filter(id => PRODUCTS.some(p => p.id === keyId(id))); } catch (e) {}
   renderFilters(); renderGrid(); renderZones(); renderDrops();

@@ -429,20 +429,96 @@ async function showUsers(){
 
 // ===== ЗУРАГ ОРУУЛАХ (бараа, сайтын зураг) =====
 // Зургийг хөтөч дээр 1400px болгож webp рүү шахна (хурдан ачаалагдана)
+// iPhone-ий Safari webp үүсгэж чаддаггүй (оронд нь маш том PNG гаргадаг) тул тэр үед JPEG болгоно
 function shrink(file, max = 1400){
   return new Promise((ok, no) => {
     const img = new Image();
-    img.onload = () => { const s = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement("canvas"); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); c.toBlob(b => b ? ok(b) : no(), "image/webp", .86); URL.revokeObjectURL(img.src); };
-    img.onerror = no; img.src = URL.createObjectURL(file);
+    img.onload = () => {
+      // Хэмжээг багасгах харьцаа (томруулахгүй)
+      const s = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas"); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+      const g = c.getContext("2d");
+      // Тунгалаг PNG-ийн арыг цагаан болгоно (JPEG-д хар болохоос сэргийлнэ)
+      g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+      g.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(img.src);
+      // Эхлээд webp оролдоно; хөтөч webp биш юм буцаавал JPEG-ээр дахин шахна
+      c.toBlob(b => {
+        if (b && b.type === "image/webp") return ok(b);
+        c.toBlob(j => j ? ok(j) : no(new Error("шахаж чадсангүй")), "image/jpeg", .82);
+      }, "image/webp", .82);
+    };
+    img.onerror = () => no(new Error("зураг уншиж чадсангүй")); img.src = URL.createObjectURL(file);
   });
+}
+// Шахсан зургийг Storage-д хадгалах (өргөтгөл, төрлийг жинхэнэ форматаар нь; 1 жил кэшлэнэ)
+async function putImg(blob, folder){
+  const ext = blob.type === "image/webp" ? "webp" : "jpg";
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+  const { error } = await sb.storage.from("products").upload(path, blob, { contentType: blob.type, cacheControl: "31536000" });
+  if (error) throw error;
+  return sb.storage.from("products").getPublicUrl(path).data.publicUrl;
 }
 // Зургийг Supabase Storage-д ("products" сан) хадгалж нийтийн холбоосыг буцаана
 async function upload(file, folder){
-  const blob = await shrink(file, folder === "slides" ? 2000 : 1400);
-  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.webp`;
-  const { error } = await sb.storage.from("products").upload(path, blob, { contentType: "image/webp" });
-  if (error) throw error;
-  return sb.storage.from("products").getPublicUrl(path).data.publicUrl;
+  return putImg(await shrink(file, folder === "slides" ? 2000 : 1400), folder);
+}
+
+// ===== ХУУЧИН ТОМ ЗУРГУУДЫГ ШАХАХ (нэг удаа ажиллуулна) =====
+// Манай Storage-ийн зураг мөн эсэх
+const OUR_IMG = "/storage/v1/object/public/products/";
+// Нэг зургийг шалгаж, том бол шахаад шинэ холбоос буцаана (жижиг бол хуучнаараа)
+async function slimOne(url, folder, max, stat){
+  if (typeof url !== "string" || !url.includes(OUR_IMG)) return url;
+  try {
+    const r = await fetch(url); if (!r.ok) return url;
+    const b = await r.blob(); stat.seen++; stat.before += b.size;
+    // 300KB-аас бага webp/jpeg бол хөндөхгүй
+    if (b.size < 300 * 1024 && b.type !== "image/png") { stat.after += b.size; return url; }
+    const nb = await shrink(b, max);
+    // Шахаад нэг их багасаагүй бол хуучнаар нь үлдээнэ
+    if (nb.size > b.size * .8) { stat.after += b.size; return url; }
+    const nu = await putImg(nb, folder); stat.done++; stat.after += nb.size; return nu;
+  } catch (e) { stat.bad++; return url; }
+}
+// Объект/массив дотор байгаа бүх зургийн холбоосыг шахна (тохиргооны слайд, баннер гэх мэт)
+async function slimDeep(v, stat, max){
+  if (typeof v === "string") return slimOne(v, "site", max, stat);
+  if (Array.isArray(v)) { const o = []; for (const x of v) o.push(await slimDeep(x, stat, max)); return o; }
+  if (v && typeof v === "object") { const o = {}; for (const k of Object.keys(v)) o[k] = await slimDeep(v[k], stat, k === "slides" ? 2000 : max); return o; }
+  return v;
+}
+// Бүх бараа + сайтын тохиргооны зургийг шахна
+async function slimAll(btn){
+  if (!confirm("Бүх барааны болон сайтын том зургуудыг шахаж жижигрүүлэх үү?\n\nКомпьютерын Chrome дээр ажиллуулна уу. Хэдэн минут болно — цонхоо бүү хаагаарай.")) return;
+  const stat = { seen: 0, done: 0, bad: 0, before: 0, after: 0 };
+  btn.disabled = true;
+  const { data: list, error } = await sb.from("products").select("id,images");
+  if (error) { btn.disabled = false; return toast("Алдаа: " + error.message); }
+  for (const [i, p] of list.entries()) {
+    btn.textContent = `Шахаж байна… ${i + 1}/${list.length}`;
+    const imgs = [];
+    for (const u of (p.images || [])) imgs.push(await slimOne(u, p.id, 1400, stat));
+    // Өөрчлөгдсөн бараа л хадгална
+    if (JSON.stringify(imgs) !== JSON.stringify(p.images || [])) {
+      const { error: e2 } = await sb.from("products").update({ images: imgs }).eq("id", p.id);
+      if (e2) stat.bad++;
+    }
+  }
+  // Сайтын тохиргоо (слайд, баннер, нүүр зураг)
+  btn.textContent = "Сайтын зургууд…";
+  const { data: st } = await sb.from("settings").select("data").eq("id", "site").maybeSingle();
+  if (st && st.data) {
+    const nd = await slimDeep(st.data, stat, 1400);
+    if (JSON.stringify(nd) !== JSON.stringify(st.data)) {
+      const { data: u } = await sb.auth.getUser();
+      await sb.from("settings").upsert({ id: "site", data: nd, updated_at: new Date().toISOString(), updated_by: u && u.user ? u.user.id : null });
+    }
+  }
+  btn.disabled = false; btn.textContent = "🗜 Зургуудыг шахах";
+  const mb = n => (n / 1048576).toFixed(1) + "MB";
+  alert(`Дууслаа ✓\n\nШалгасан: ${stat.seen} зураг\nШахсан: ${stat.done}\nАлдаа: ${stat.bad}\nНийт хэмжээ: ${mb(stat.before)} → ${mb(stat.after)}`);
+  showProducts();
 }
 // "Өнгө: Хар, Цагаан" мөрүүдийг [{label, values}] болгоно, эсрэгээр нь
 const parseOpts = t => t.split("\n").map(l => l.split(":")).filter(x => x.length === 2 && x[1].trim()).map(([l, v]) => ({ label: l.trim(), values: v.split(",").map(s => s.trim()).filter(Boolean) }));
@@ -459,12 +535,18 @@ async function showProducts(editId){
   // Өөр таб руу шилжсэн бол зогсоно
   if (my !== VIEW) return;
   if (error) { $("main").innerHTML = `<p class="msg">Алдаа: ${esc(error.message)}</p>`; return; }
+  // QPay туршилтын барааг ердийн жагсаалтаас салгаж, тусдаа товчоор удирдана
+  const testRow = list.find(x => x.id === "qpaytest");
+  for (let i = list.length - 1; i >= 0; i--) if (list[i].id === "qpaytest") list.splice(i, 1);
+  const testOn = !!(testRow && testRow.active);
   // Засах бараа (эсвэл шинэ бараа)
   const editing = editId === "new" ? { id: "", cat: Object.keys(CATS)[0] || "tops", name: "", series: "", line: "", price: "", was: "", badge: "", descr: "", pre: true, options: [], images: [], active: true, sort: (list[0] ? list[0].sort + 1 : 0), extra: {} }
     : editId ? list.find(x => x.id === editId) : null;
   $("main").innerHTML = `
     <div class="bar"><h2>Бараа <small style="color:var(--muted);font-weight:400">(${list.length})</small></h2>
       <input id="pq" placeholder="Нэр, брэндээр хайх" style="max-width:220px">
+      <button class="btn" id="ptest" title="100₮-ийн туршилтын бараа. Асаалттай үед зөвхөн finn.mn/#qpaytest хаягаар харагдана">🧪 Туршилт: ${testOn ? "Асаалттай" : "Унтраалттай"}</button>
+      <button class="btn" id="pslim" title="Хуучин том зургуудыг жижигрүүлж сайтыг хурдасгана">🗜 Зургуудыг шахах</button>
       <button class="btn dark" id="pnew">+ Шинэ бараа</button></div>
     ${!list.length ? `<div class="empty"><p><b>Мэдээллийн санд бараа алга.</b> Сайтад одоо байгаа бүх барааг нэг товчоор оруулбал энд жагсаалтаар харж, зураг, үнийг нь засах боломжтой болно.</p><button class="btn dark" id="seed">Одоогийн барааг оруулах</button></div>` : ""}
     <div id="pform"></div>
@@ -488,6 +570,20 @@ async function showProducts(editId){
   };
   draw(""); $("pq").oninput = e => draw(e.target.value);
   $("pnew").onclick = () => showProducts("new");
+  // Хуучин том зургуудыг шахах товч
+  $("pslim").onclick = e => slimAll(e.currentTarget);
+  // QPay туршилтын барааг асаах / унтраах (унтраалттай үед хэн ч захиалж чадахгүй — сервер татгалзана)
+  $("ptest").onclick = async e => {
+    const on = !testOn;
+    if (!confirm(on ? "100₮-ийн туршилтын барааг асаах уу?\n\nЗөвхөн finn.mn/#qpaytest хаягаар орсон хүнд харагдана. Туршиж дуусаад заавал унтраарай." : "Туршилтын барааг унтраах уу?\n\nУнтраасны дараа хэн ч захиалж чадахгүй.")) return;
+    e.currentTarget.disabled = true;
+    const row = testRow ? { id: "qpaytest", active: on }
+      : { id: "qpaytest", cat: CATS.access ? "access" : (Object.keys(CATS)[0] || "access"), name: "QPay туршилт", series: "Туршилт", line: "100₮-ийн туршилтын төлбөр",
+          price: 100, pre: false, active: on, sort: -9999, images: [], options: [], descr: "QPay холболтыг шалгах туршилтын бараа.", extra: {} };
+    const { error: er } = testRow ? await sb.from("products").update({ active: on }).eq("id", "qpaytest") : await sb.from("products").insert(row);
+    if (er) { e.currentTarget.disabled = false; return toast("Алдаа: " + er.message); }
+    toast(on ? "Туршилт асаалаа · finn.mn/#qpaytest" : "Туршилт унтарлаа"); showProducts();
+  };
   // Одоогийн барааг (products-seed.json) мэдээллийн санд нэг товчоор оруулна
   if ($("seed")) $("seed").onclick = async () => {
     $("seed").disabled = true; $("seed").textContent = "Оруулж байна…";

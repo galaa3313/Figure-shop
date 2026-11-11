@@ -16,7 +16,7 @@
 <meta name="description" content="FINN — A curated world of modern culture, fashion and lifestyle. Солонгос хувцас, аниме фигур, lifestyle бараа.">
 <meta property="og:title" content="FINN — Beyond the ordinary">
 <meta property="og:description" content="A curated world of modern culture, fashion and lifestyle.">
-<meta property="og:image" content="https://figure-shop-gamma.vercel.app/brand/og.jpg">
+<meta property="og:image" content="https://finn.mn/brand/og.jpg">
 <meta name="theme-color" content="#ffffff">
 <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
 <!-- Хөтчийн табын дүрс: хар дөрвөлжин дээр улаан налуу зураас -->
@@ -1499,6 +1499,9 @@ textarea{resize:none;overflow:hidden;min-height:64px}
   .card .price.sale s{font-size:11.5px}
 }
 @media (min-width:1100px) and (max-width:1299px){ .grid{grid-template-columns:repeat(4,minmax(0,1fr))!important} }
+/* Нүүрний зураг тохиргоо ирэх хүртэл нуугдана, ирмэгц зөөлөн гарч ирнэ */
+#heroImg{transition:opacity .35s}
+#heroImg.hwait{opacity:0}
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -1545,7 +1548,12 @@ textarea{resize:none;overflow:hidden;min-height:64px}
   </section>
   <section class="lookbook" id="lookbook">
     <!-- Арын том зураг -->
-    <img src="/img/36acb25200.webp" alt="FINN" fetchpriority="high" id="heroImg">
+    <img alt="FINN" fetchpriority="high" id="heroImg" data-def="/img/36acb25200.webp">
+    <script>
+    // Нүүрний том зураг: өмнө хадгалсан тохиргооны зургийг шууд тавина (хуучин зураг анивчихгүй).
+    // Анх удаа орж байгаа бол тохиргоо ирэх хүртэл зургийг түр нууна.
+    (function(){var h=document.getElementById("heroImg"),u="";try{var s=JSON.parse(localStorage.getItem("finn-settings")||"null");u=s?(s.heroImage||h.getAttribute("data-def")):""}catch(e){}if(u)h.src=u;else h.classList.add("hwait")})();
+    </script>
     <!-- Зураг дээрх текст -->
     <div class="wrap lbtext">
       <!-- Жижиг дээд гарчиг -->
@@ -2745,9 +2753,21 @@ function applySettings(st){
 // Өмнө хадгалсан тохиргоог шууд хэрэглэнэ (хуудас анивчихгүй)
 try { applySettings(JSON.parse(localStorage.getItem("finn-settings") || "null")); } catch (e) {}
 // Supabase-ээс хамгийн сүүлийн тохиргоог уншина
+// Нүүрний зураг тохиргоогоор солигдоогүй бол үндсэн зургийг тавиад харуулна
+function heroDone(){
+  const h = $("heroImg"); if (!h) return;
+  if (!h.getAttribute("src")) h.src = h.dataset.def;
+  // Зураг ачаалагдмагц (эсвэл аль хэдийн ачаалагдсан бол шууд) харуулна
+  if (h.complete) h.classList.remove("hwait"); else h.addEventListener("load", () => h.classList.remove("hwait"), { once: true });
+  h.addEventListener("error", () => h.classList.remove("hwait"), { once: true });
+}
+// Сүлжээ удаан эсвэл алдаатай бол 3 секундын дараа үндсэн зургаар харуулна
+setTimeout(heroDone, 3000);
 async function loadSettings(){
-  const { data } = await sb.from("settings").select("data").eq("id", "site").maybeSingle();
-  if (data && data.data) { applySettings(data.data); try { localStorage.setItem("finn-settings", JSON.stringify(data.data)); } catch (e) {} }
+  try {
+    const { data } = await sb.from("settings").select("data").eq("id", "site").maybeSingle();
+    if (data && data.data) { applySettings(data.data); try { localStorage.setItem("finn-settings", JSON.stringify(data.data)); } catch (e) {} }
+  } finally { heroDone(); }
 }
 
 // =====================================================================
@@ -2761,7 +2781,7 @@ let SB_BASE = "";
 // Аюулгүй байдал: сэтгэгдлийн зургийн холбоос зөвхөн манай "reviews" сангийнх байх ёстой (гадны/хортой холбоос хаана)
 const okPhoto = u => typeof u === "string" && !!SB_BASE && u.startsWith(SB_BASE + "/storage/v1/object/public/reviews/") && !/["'<>\s]/.test(u);
 // Имэйлийн холбоос дарсны дараа буцах үндсэн сайтын хаяг (домэйн солигдоход энд засна)
-let SITE_URL = "https://figure-shop-gamma.vercel.app/";
+let SITE_URL = "https://finn.mn/";
 // Facebook товчны HTML: асаагүй бол хоосон
 const fbBlock = () => FB_ON ? `<div class="asep">эсвэл</div>
       <button class="fbbtn" type="button" id="fbLogin"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.4l-.5 3.5h-2.9v8.4A12 12 0 0 0 24 12Z"/></svg>Facebook-ээр нэвтрэх</button>
@@ -2988,7 +3008,7 @@ async function loadDbProducts(){
     // Хаягийн мөрөөс токенуудыг цэвэрлэнэ
     if (fromOAuth) { toast(oauthErr ? "Facebook нэвтрэлт цуцлагдлаа" : me ? `Тавтай морил, ${me.username} 👋` : "Нэвтэрлээ"); }
     if (fromLink || fromOAuth) history.replaceState(null, "", location.pathname);
-  } catch (e) { /* Бүртгэл ажиллахгүй үед дэлгүүр хэвийн ажиллана */ }
+  } catch (e) { /* Бүртгэл ажиллахгүй үед дэлгүүр хэвийн ажиллана */ heroDone(); }
 })();
 
 // ===== БИЧИХ ТАЛБАР (хаяг, тайлбар, сэтгэгдэл): бичихэд өндөр нь өсч бүх бичиг харагдана =====

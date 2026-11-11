@@ -40,7 +40,9 @@ async function userFrom(req) {
   if (!r.ok) return null;
   const u = await r.json();
   // Профайл (нэр, эрх, хаагдсан эсэх) уншина
-  const rows = await rest(`profiles?id=eq.${encodeURIComponent(u.id)}&select=id,username,email,role,blocked`);
+  // is_super (супер админ) багана байхгүй бол (finn-super.sql ажиллуулаагүй) түүнгүйгээр дахин уншина
+  const base = `profiles?id=eq.${encodeURIComponent(u.id)}&select=id,username,email,role,blocked`;
+  const rows = await rest(base + ",is_super").catch(() => rest(base));
   const p = rows && rows[0];
   // Хаагдсан хэрэглэгч бол нэвтрээгүйтэй адил
   if (!p || p.blocked) return null;

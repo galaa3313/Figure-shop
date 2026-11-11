@@ -119,10 +119,36 @@ module.exports = async (req, res) => {
       const rows = await SB.rest(q);
       return res.json({ ok: true, rows });
     }
-    // ----- Хэрэглэгчдийн жагсаалт -----
+    // ----- Би хэн бэ (супер админ эсэх, хүлээгдэж буй хүсэлтийн тоо) -----
+    if (b.action === "whoami") {
+      let pending = 0;
+      if (me.is_super) { try { pending = ((await SB.rest("admin_requests?status=eq.pending&select=id")) || []).length; } catch (e) {} }
+      return res.json({ ok: true, id: me.id, username: me.username, super: !!me.is_super, pending });
+    }
+    // ----- Хэрэглэгчдийн жагсаалт (+ хүлээгдэж буй админ хүсэлтүүд) -----
     if (b.action === "users") {
-      const rows = await SB.rest("profiles?select=id,username,email,phone,role,blocked,created_at&order=created_at.desc&limit=500");
-      return res.json({ ok: true, rows });
+      const sel = "profiles?select=id,username,email,phone,role,blocked,created_at";
+      const rows = await SB.rest(sel + ",is_super&order=created_at.desc&limit=500").catch(() => SB.rest(sel + "&order=created_at.desc&limit=500"));
+      let reqs = [];
+      try { reqs = await SB.rest("admin_requests?select=*&order=at.desc&limit=50"); } catch (e) {}
+      return res.json({ ok: true, rows, requests: reqs || [], super: !!me.is_super, me: me.id });
+    }
+    // ----- Супер админ: админ эрхийн хүсэлтийг зөвшөөрөх / татгалзах -----
+    if (b.action === "decide") {
+      if (!me.is_super) return res.status(403).json({ ok: false, error: "not_super" });
+      const id = Number(b.id), ok = b.approve === true;
+      const r = await SB.rest(`admin_requests?id=eq.${id}&status=eq.pending&select=*`);
+      const q = r && r[0]; if (!q) return res.status(404).json({ ok: false, error: "not_found" });
+      // Зөвшөөрвөл тухайн хүн хаагдаагүй, бүртгэлтэй хэвээр байгаа эсэхийг шалгаад админ болгоно
+      if (ok) {
+        const t = await SB.rest(`profiles?id=eq.${q.target_id}&select=id,blocked`);
+        if (!t || !t[0]) return res.status(404).json({ ok: false, error: "user_gone" });
+        if (t[0].blocked) return res.status(409).json({ ok: false, error: "blocked" });
+        await SB.rest(`profiles?id=eq.${q.target_id}`, { method: "PATCH", body: { role: "admin" } });
+      }
+      await SB.rest(`admin_requests?id=eq.${id}`, { method: "PATCH", body: { status: ok ? "approved" : "rejected", decided_by: me.username, decided_at: new Date().toISOString() } });
+      await log(me, ok ? "approve" : "reject", "user", q.target_username, { requester: q.requester, role: "admin" });
+      return res.json({ ok: true });
     }
     // ----- Хэрэглэгчийн эрх, хаалт өөрчлөх -----
     if (b.action === "setUser") {
@@ -133,7 +159,29 @@ module.exports = async (req, res) => {
       if (b.role === "user" || b.role === "admin") patch.role = b.role;
       if (typeof b.blocked === "boolean") patch.blocked = b.blocked;
       if (!Object.keys(patch).length) return res.status(400).json({ ok: false });
+      // Тухайн хэрэглэгчийн одоогийн эрх
+      const cur = await SB.rest(`profiles?id=eq.${id}&select=id,username,email,role`).then(r => r && r[0]);
+      if (!cur) return res.status(404).json({ ok: false, error: "not_found" });
+      // Супер админыг хэн ч хааж, эрхийг нь хасаж чадахгүй
+      const tsup = await SB.rest(`profiles?id=eq.${id}&select=is_super`).then(r => !!(r && r[0] && r[0].is_super)).catch(() => false);
+      if (tsup) return res.status(403).json({ ok: false, error: "is_super" });
+      // Өөр админы эрхийг хасах, админыг хаах — зөвхөн супер админ
+      if (cur.role === "admin" && !me.is_super && (patch.role === "user" || patch.blocked === true)) return res.status(403).json({ ok: false, error: "not_super" });
+      // Шинээр админ болгох: супер админ шууд, бусад нь супер админы зөвшөөрөл хүсэх хүсэлт үүсгэнэ
+      if (patch.role === "admin" && cur.role !== "admin" && !me.is_super) {
+        const dup = await SB.rest(`admin_requests?target_id=eq.${id}&status=eq.pending&select=id`).catch(() => null);
+        if (dup === null) return res.status(503).json({ ok: false, error: "no_table" });
+        if (!dup.length) {
+          await SB.rest("admin_requests", { method: "POST", body: { requester_id: me.id, requester: me.username, target_id: id, target_username: cur.username, target_email: cur.email } });
+          await log(me, "request", "user", cur.username, { role: "admin" });
+          // Супер админд Telegram-аар мэдэгдэнэ
+          await L.telegram(`👑 Админ эрхийн хүсэлт\n${me.username} → «${cur.username}»-д админ эрх өгөхийг хүсэж байна.\nАдмин → Хэрэглэгч хэсгээс зөвшөөрнө үү.`).catch(() => {});
+        }
+        return res.json({ ok: true, pending: true });
+      }
       await SB.rest(`profiles?id=eq.${id}`, { method: "PATCH", body: patch });
+      // Супер админ шууд админ болгосон бол тухайн хүний хүлээгдэж буй хүсэлтийг хаана
+      if (patch.role === "admin" && me.is_super) await SB.rest(`admin_requests?target_id=eq.${id}&status=eq.pending`, { method: "PATCH", body: { status: "approved", decided_by: me.username, decided_at: new Date().toISOString() } }).catch(() => {});
       // Хэн хэний эрхийг өөрчилснийг бичнэ
       const u = await SB.rest(`profiles?id=eq.${id}&select=username`);
       await log(me, "user", "user", u && u[0] ? u[0].username : id, patch);

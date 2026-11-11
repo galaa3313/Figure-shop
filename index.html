@@ -1477,6 +1477,28 @@ textarea{resize:none;overflow:hidden;min-height:64px}
 .mo-ask button{padding:3px 8px!important;font-size:11px!important;border-radius:5px!important;line-height:1.3}
 .mo-ask span{font-size:11.5px!important}
 .mo2 .pay-cxbox{margin:-4px 0 0}
+
+/* ----- Карт: 2-р зураг (хулгана очих / хуруу хүрэх) ----- */
+.ph{position:relative}
+.ph .ph2{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s ease;pointer-events:none}
+@media (hover:hover){ .phw:hover .ph2{opacity:1} }
+.ph.alt .ph2{opacity:1}
+
+/* =====================================================================
+   КОМПЬЮТЕР: Nanostudio шиг — толгой ба бараа нэг төвтэй (1480px), бараа хооронд чөлөөтэй зай
+   ===================================================================== */
+@media (min-width:1100px){
+  /* Толгой, бараа, хөл бүгд ижил өргөнтэй, ирмэг нь яг таарна */
+  .wrap{max-width:1680px!important;padding-left:max(24px,3vw)!important;padding-right:max(24px,3vw)!important}
+  /* 5 багана, мөр хооронд 48px, багана хооронд 18px */
+  .grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:48px 18px!important}
+  /* Нэр, үнэ: жижиг, нимгэн (Nanostudio шиг) */
+  .card .info{padding-top:12px}
+  .card .name{font-size:13px;letter-spacing:.02em}
+  .card .price{font-size:13px}
+  .card .price.sale s{font-size:11.5px}
+}
+@media (min-width:1100px) and (max-width:1299px){ .grid{grid-template-columns:repeat(4,minmax(0,1fr))!important} }
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -1844,7 +1866,7 @@ function renderGrid(){
   // Карт бүрийн HTML: тэмдэг, зураг, цуврал, нэр, үлдэгдэл, үнэ, товч
   $("grid").innerHTML = list.length ? list.map(p => `<article class="card">
       ${p.badge ? `<span class="badge ${p.badge === "Онцлох" ? "v" : p.badge === "360°" ? "r" : ""}">${esc(p.badge)}</span>` : ""}
-      <div class="phw"><button type="button" class="ph" data-open="${esc(p.id)}" aria-label="${esc(p.name)} дэлгэрэнгүй"><img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy">${salePct(p) ? `<span class="salepct">-${salePct(p)}%</span>` : ""}</button><button type="button" class="fav" data-fav="${p.id}" aria-pressed="${favs.has(p.id)}" aria-label="Хадгалах"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.3 4.5 6.9 4.5c2 0 3.6 1.1 5.1 3 1.5-1.9 3.1-3 5.1-3 3.6 0 5.5 3.5 4.2 6.8-1.8 4.6-9.3 9.2-9.3 9.2Z"/></svg></button></div>
+      <div class="phw"><button type="button" class="ph" data-open="${esc(p.id)}" aria-label="${esc(p.name)} дэлгэрэнгүй"><img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy">${hov2(p) ? `<img class="ph2" src="${esc(hov2(p))}" alt="" loading="lazy" aria-hidden="true">` : ""}${salePct(p) ? `<span class="salepct">-${salePct(p)}%</span>` : ""}</button><button type="button" class="fav" data-fav="${p.id}" aria-pressed="${favs.has(p.id)}" aria-label="Хадгалах"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.3 4.5 6.9 4.5c2 0 3.6 1.1 5.1 3 1.5-1.9 3.1-3 5.1-3 3.6 0 5.5 3.5 4.2 6.8-1.8 4.6-9.3 9.2-9.3 9.2Z"/></svg></button></div>
       <div class="info">
         <div class="series">${esc(p.series)}</div>
         <div class="name">${esc(p.name)}</div>
@@ -2313,6 +2335,12 @@ function showQpay(items, total, code, q){
   $("qcheck").onclick = () => check(true);
   $("tobank").onclick = () => { done = true; showBank(items, total, code, q); };
 }
+// ===== КАРТ: хулгана очих / хуруугаар дарахад 2-р зураг харагдана (Nanostudio шиг) =====
+// Барааны 2-р зураг (байвал)
+const hov2 = p => { const g = p.gallery ? p.gallery.map(x => x[0]) : []; const s2 = g.find(u => u && u !== p.img) || (p.close && p.close !== p.img ? p.close : ""); return s2 || ""; };
+// Утсанд: хуруу хүрэхэд 2-р зургийг гаргаж, гаргахад буцаана
+document.addEventListener("touchstart", e => { const ph = e.target.closest && e.target.closest(".ph"); document.querySelectorAll(".ph.alt").forEach(x => x !== ph && x.classList.remove("alt")); if (ph && ph.querySelector(".ph2")) ph.classList.add("alt"); }, { passive: true });
+document.addEventListener("touchend", () => setTimeout(() => document.querySelectorAll(".ph.alt").forEach(x => x.classList.remove("alt")), 700), { passive: true });
 // ===== ТӨЛӨГДӨӨГҮЙ ЗАХИАЛГУУД (энэ төхөөрөмж дээр, нэвтрээгүй хүнд ч) =====
 // Төлбөрийн цонхыг хаасан ч сагсны цонхноос дахин шалгах, цуцлах боломж өгнө
 const PEND_KEY = "finn-pending";

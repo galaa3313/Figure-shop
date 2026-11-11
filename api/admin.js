@@ -139,6 +139,40 @@ module.exports = async (req, res) => {
       await log(me, "user", "user", u && u[0] ? u[0].username : id, patch);
       return res.json({ ok: true });
     }
+    // ----- Нэг хэрэглэгчийн дэлгэрэнгүй (захиалга, сэтгэгдэл, сүүлд нэвтэрсэн) -----
+    if (b.action === "userInfo") {
+      const id = L.clip(b.id, 40);
+      if (!/^[0-9a-f-]{36}$/.test(id)) return res.status(400).json({ ok: false });
+      const [pr, orders, revs, favs, au] = await Promise.all([
+        SB.rest(`profiles?id=eq.${id}&select=id,username,email,phone,role,blocked,created_at`),
+        SB.rest(`orders?user_id=eq.${id}&select=code,total,status,created_at&order=created_at.desc&limit=50`).catch(() => []),
+        SB.rest(`reviews?user_id=eq.${id}&select=id`).catch(() => []),
+        SB.rest(`favorites?user_id=eq.${id}&select=product_id`).catch(() => []),
+        // Нэвтрэлтийн мэдээлэл (сүүлд нэвтэрсэн, имэйл баталгаажсан) — зөвхөн сервер уншина
+        fetch(`${SB.URL_()}/auth/v1/admin/users/${id}`, { headers: { apikey: process.env.SUPABASE_SERVICE_KEY, Authorization: "Bearer " + process.env.SUPABASE_SERVICE_KEY } }).then(r => r.ok ? r.json() : null).catch(() => null)
+      ]);
+      const u = pr && pr[0]; if (!u) return res.status(404).json({ ok: false, error: "not_found" });
+      // Төлсөн захиалгын нийт дүн (цуцлагдсан, төлөөгүйг тооцохгүй)
+      const PAID = ["Төлөгдсөн ✅", "Хүргэлтэнд гарсан", "Хүргэгдсэн"];
+      const spent = (orders || []).filter(o => PAID.includes(o.status)).reduce((a, o) => a + Number(o.total || 0), 0);
+      return res.json({ ok: true, user: u, orders: orders || [], spent, reviews: (revs || []).length, favorites: (favs || []).length,
+        lastSignIn: au && au.last_sign_in_at || null, confirmed: !!(au && au.email_confirmed_at), provider: au && au.app_metadata && au.app_metadata.provider || "email" });
+    }
+    // ----- Хэрэглэгчийг бүрмөсөн устгах (захиалгууд нь хадгалагдана) -----
+    if (b.action === "deleteUser") {
+      const id = L.clip(b.id, 40);
+      // Өөрийгөө устгахыг хориглоно
+      if (!/^[0-9a-f-]{36}$/.test(id) || id === me.id) return res.status(400).json({ ok: false, error: "self" });
+      const pr = await SB.rest(`profiles?id=eq.${id}&select=id,username,email,phone,role,blocked,created_at`);
+      const u = pr && pr[0]; if (!u) return res.status(404).json({ ok: false, error: "not_found" });
+      // Админыг шууд устгахгүй — эхлээд энгийн хэрэглэгч болгоно (санамсаргүй устгахаас хамгаална)
+      if (u.role === "admin") return res.status(409).json({ ok: false, error: "is_admin" });
+      // Нэвтрэх бүртгэлийг устгана → профайл, хадгалсан бараа, сэтгэгдэл хамт устна; захиалгууд үлдэнэ (эзэнгүй болно)
+      const r = await fetch(`${SB.URL_()}/auth/v1/admin/users/${id}`, { method: "DELETE", headers: { apikey: process.env.SUPABASE_SERVICE_KEY, Authorization: "Bearer " + process.env.SUPABASE_SERVICE_KEY } });
+      if (!r.ok) return res.status(502).json({ ok: false, error: "server" });
+      await log(me, "delete", "user", u.username, u);
+      return res.json({ ok: true });
+    }
     return res.status(400).json({ ok: false, error: "action" });
   } catch (e) {
     return res.status(502).json({ ok: false, error: "server" });

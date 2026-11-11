@@ -315,6 +315,9 @@ textarea{overflow:hidden}
 .bk td.g{color:#14853b;font-weight:600}
 .bk tr.bad td{background:#fff5f5}
 .bk .sum{font-size:14px;font-weight:600}
+/* Туршилтын холбоос хуулах мөр */
+.tlink{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:1px dashed #b26b00;background:#fff8ec;padding:10px 12px;margin-bottom:14px;font-size:13px}
+.tlink input{flex:1;min-width:180px;padding:7px 9px;border:1px solid var(--line);font:inherit;background:#fff}
 </style>
 </head>
 <body>
@@ -734,6 +737,7 @@ async function showProducts(editId){
       <button class="btn" id="pslim" title="Хуучин том зургуудыг жижигрүүлж сайтыг хурдасгана">🗜 Зургуудыг шахах</button>
       <button class="btn dark" id="pnew">+ Шинэ бараа</button></div>
     ${!list.length ? `<div class="empty"><p><b>Мэдээллийн санд бараа алга.</b> Сайтад одоо байгаа бүх барааг нэг товчоор оруулбал энд жагсаалтаар харж, зураг, үнийг нь засах боломжтой болно.</p><button class="btn dark" id="seed">Одоогийн барааг оруулах</button></div>` : ""}
+    ${testOn ? `<div class="tlink"><span>🧪 Туршилтын холбоос:</span><input id="tlurl" readonly value="${esc(location.origin + "/#qpaytest")}"><button class="btn" id="tlcp" type="button">📋 Хуулах</button></div>` : ""}
     <div id="pform"></div>
     <div class="plist" id="plist"></div>`;
   // Жагсаалт зурах (хайлтаар шүүнэ)
@@ -759,6 +763,14 @@ async function showProducts(editId){
   $("pslim").onclick = e => slimAll(e.currentTarget);
   // Олноор оруулах цонх
   $("pbulk").onclick = () => { showBulk(list); $("pform").scrollIntoView({ behavior: "smooth" }); };
+  // Туршилтын холбоосыг хуулах (утсан дээр clipboard ажиллахгүй бол текстийг сонгож хуулна)
+  if ($("tlcp")) $("tlcp").onclick = async () => {
+    const inp = $("tlurl"), btn = $("tlcp");
+    try { await navigator.clipboard.writeText(inp.value); }
+    catch (e) { inp.focus(); inp.select(); inp.setSelectionRange(0, 999); try { document.execCommand("copy"); } catch (e2) {} }
+    btn.textContent = "✓ Хуулагдлаа"; toast("Холбоос хуулагдлаа");
+    setTimeout(() => { if (btn.isConnected) btn.textContent = "📋 Хуулах"; }, 1800);
+  };
   // QPay туршилтын барааг асаах / унтраах (унтраалттай үед хэн ч захиалж чадахгүй — сервер татгалзана)
   $("ptest").onclick = async e => {
     const on = !testOn;

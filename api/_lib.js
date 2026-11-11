@@ -168,4 +168,8 @@ async function markPaid(code, amount, inv) {
 }
 
 // Бусад файлд ашиглах функцууд
-module.exports = { clip, fmt, body, order, orderText, telegram, sheets, qpayReady, qpay, sign, sigOk, limited, isPaid, markPaid };
+// Захиалга цуцлах эрхийн түлхүүр: нэвтрээгүй (зочин) захиалагч зөвхөн өөрийн захиалгыг цуцлахад
+const cancelToken = code => sign("cancel", code);
+const cancelOk = (ct, code) => sigOk(ct, "cancel", code);
+
+module.exports = { clip, fmt, body, order, orderText, telegram, sheets, qpayReady, qpay, sign, sigOk, limited, isPaid, markPaid, cancelToken, cancelOk };

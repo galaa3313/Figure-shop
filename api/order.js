@@ -25,5 +25,6 @@ module.exports = async (req, res) => {
   ]);
   // Аль нэг нь амжилттай бол OK
   const ok = (t.status === "fulfilled" && t.value) || (s.status === "fulfilled" && s.value && s.value.ok !== false);
-  return res.status(ok ? 200 : 502).json({ ok: !!ok });
+  // ct: зочин захиалагч дараа нь энэ захиалгаа цуцлахад хэрэглэх түлхүүр
+  return res.status(ok ? 200 : 502).json({ ok: !!ok, ct: ok ? L.cancelToken(o.code) : undefined });
 };

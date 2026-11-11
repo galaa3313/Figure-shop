@@ -42,7 +42,9 @@ module.exports = async (req, res) => {
     // Сайтад QR, банкны холбоос, гарын үсэг буцаана
     return res.json({
       ok: true, invoice_id: inv.invoice_id, sig: L.sign(inv.invoice_id, o.code),
-      qr_image: inv.qr_image, urls: inv.urls || [], short: inv.qPay_shortUrl, total: o.total
+      qr_image: inv.qr_image, urls: inv.urls || [], short: inv.qPay_shortUrl, total: o.total,
+      // ct: захиалгыг цуцлах түлхүүр (нэвтрээгүй хүн ч төлөхөөс өмнө цуцалж болно)
+      ct: L.cancelToken(o.code)
     });
   } catch (e) {
     return res.status(502).json({ ok: false, error: "qpay_error" });

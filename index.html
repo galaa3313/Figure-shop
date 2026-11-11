@@ -1431,6 +1431,52 @@ textarea{resize:none;overflow:hidden;min-height:64px}
 .mo-empty span{font-size:36px;display:block;margin-bottom:8px}
 .mo-empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
 .mo-empty p{margin:0;font-size:13px}
+
+/* =====================================================================
+   ӨРГӨН ДЭЛГЭЦ: компьютер дээр хоёр талдаа хоосон зай үлдээхгүй, дэлгэцээ дүүргэнэ
+   (утас, таблет хэвээр). Зай нь дэлгэцийн өргөнөөс хамаарч өөрчлөгдөнө
+   ===================================================================== */
+.wrap{max-width:1920px!important;padding-left:max(16px,env(safe-area-inset-left,0px),3vw)!important;padding-right:max(16px,env(safe-area-inset-right,0px),3vw)!important}
+/* Барааны жагсаалт: дэлгэц томрох тусам багана нэмэгдэнэ */
+@media (min-width:1500px){ .grid{grid-template-columns:repeat(5,minmax(0,1fr))!important} }
+@media (min-width:2200px){ .grid{grid-template-columns:repeat(6,minmax(0,1fr))!important} }
+
+/* ----- ХЯМДРАЛЫН ҮНЭ: шинэ (хямдарсан) үнэ УЛААН, хуучин (зурсан) үнэ ХАР ----- */
+.price.sale{color:#e5172f!important}
+.price.sale s{color:var(--ink)!important;opacity:1}
+.pd-price.sale{color:#e5172f!important}
+.pd-price.sale s{color:var(--ink)!important;opacity:1}
+.pd-price.sale .pct{color:#fff}
+
+/* ----- Төлбөрийн дэлгэц: захиалга цуцлах ----- */
+.pay-cxbox{margin-top:4px;text-align:center}
+.pay-cx{border:0;background:none;color:#e5172f;font-size:13px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:8px}
+.pay-cxbox .mo-ask{text-align:left}
+
+/* ----- Сагс: төлөгдөөгүй захиалга ----- */
+.pend{border:1px solid rgba(214,130,0,.35);background:rgba(214,130,0,.06);padding:12px 14px;margin-bottom:14px;display:flex;flex-direction:column;gap:10px}
+.pend-h{font-size:13px;font-weight:600;color:#b36b00}
+.pend-i+.pend-i{border-top:1px dashed var(--line);padding-top:10px}
+.pend-r{display:flex;justify-content:space-between;font-size:14px}
+.pend-i small{font-size:11.5px;color:var(--muted)}
+.pend-b{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px}
+.pend-b .ghost{padding:8px 12px;font-size:12.5px;width:auto;margin:0}
+.pend-b .pcx{flex:1}
+.pend .pay-cx{padding:4px 0}
+
+/* ----- ЦУЦЛАХ асуулт: бүх газарт жижиг, анхаарал татахгүй (цуцлахыг санал болгохгүй) ----- */
+.mo-ask{display:flex!important;align-items:center;justify-content:flex-end;gap:6px!important;flex-wrap:wrap;padding-top:8px!important;font-size:12px!important;border-top:0!important}
+.mo-ask[hidden]{display:none!important}
+.mo-ask span{flex:1 1 auto!important;font-weight:400!important;color:var(--muted);font-size:12px}
+.mo-ask button{flex:none!important;padding:5px 10px!important;font-size:12px!important;border:1px solid var(--line)!important;background:none!important;color:var(--ink)!important;border-radius:6px!important;font-weight:400!important}
+.mo-ask .yes{color:#e5172f!important;border-color:rgba(229,23,47,.35)!important}
+.pay-cx,.mo-rm{font-size:12px!important;color:var(--muted)!important}
+.pay-cxbox{text-align:right!important}
+
+/* Цуцлах асуултын товч: бүр жижиг */
+.mo-ask button{padding:3px 8px!important;font-size:11px!important;border-radius:5px!important;line-height:1.3}
+.mo-ask span{font-size:11.5px!important}
+.mo2 .pay-cxbox{margin:-4px 0 0}
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -1759,22 +1805,19 @@ async function openOrders(){
       <ul>${(lines.length ? lines : [{ name: o.items || "", opt: "", price: "" }]).map(x => `<li>${x.p ? `<img src="${esc(x.p.img)}" alt="">` : `<span class="ph">📦</span>`}<div><b>${esc(x.name)}</b><small>${[x.opt, x.pre ? "Захиалгаар" : ""].filter(Boolean).map(esc).join(" · ")}</small></div>${x.price ? `<em>${esc(x.price)}₮</em>` : ""}</li>`).join("")}</ul>
       <!-- Доод мөр: дугаар, нийт дүн, хасах -->
       <div class="mof"><span class="no">№ ${esc(o.code)}</span><span class="tot"><small>Нийт</small>${fmt(o.total)}</span></div>
-      ${MY_PENDING.includes(o.status) ? `<button class="mo-rm" type="button" data-x="${esc(o.code)}">Захиалгыг хасах</button>` : ""}
-      <div class="mo-ask" hidden><span>Энэ захиалгыг хасах уу? Дараа нь сэргээх боломжгүй.</span><button type="button" class="no">Үгүй</button><button type="button" class="yes">Тийм, хасах</button></div>
+      <!-- Төлөгдөөгүй бол бусад газрынхтай ижил жижиг "Захиалга цуцлах" -->
+      ${MY_PENDING.includes(o.status) ? `<div class="pay-cxbox mocx"></div>` : ""}
     </article>`; }).join("") : `<div class="mo-empty"><span>📦</span><b>Захиалга алга</b><p>Бараа захиалахад энд харагдана.</p></div>`;
-  // × дарахад асуулт гаргана
-  $("myOrders").querySelectorAll("[data-x]").forEach(b => b.onclick = () => { const card = b.closest(".mo2"); card.querySelector(".mo-ask").hidden = false; b.hidden = true; });
-  $("myOrders").querySelectorAll(".mo-ask .no").forEach(b => b.onclick = () => { const card = b.closest(".mo2"); card.querySelector(".mo-ask").hidden = true; card.querySelector("[data-x]").hidden = false; });
-  // Тийм: сервер дээр цуцлаад жагсаалтаас хасна
-  $("myOrders").querySelectorAll(".mo-ask .yes").forEach(b => b.onclick = async () => {
-    const card = b.closest(".mo2"); b.disabled = true; b.textContent = "Хасаж байна…";
-    try {
-      const r = await fetch("/api/cancel-order", { method: "POST", headers: { "Content-Type": "application/json", ...(await authHeader()) }, body: JSON.stringify({ code: card.dataset.code }) });
-      const j = await r.json().catch(() => ({}));
-      if (!j.ok) throw new Error({ not_pending: "Төлбөр орсон тул хасах боломжгүй", not_found: "Энэ захиалга таны бүртгэлд холбогдоогүй байна", login: "Дахин нэвтэрнэ үү", too_many: "Түр хүлээгээд дахин оролдоно уу" }[j.error] || "Хасаж чадсангүй (" + (j.error || r.status) + ")");
-      card.style.transition = "opacity .25s"; card.style.opacity = 0; setTimeout(() => { card.remove(); const n = $("myOrders").querySelectorAll(".mo2").length; if (!n) $("myOrders").innerHTML = `<div class="mo-empty"><span>📦</span><b>Захиалга алга</b><p>Бараа захиалахад энд харагдана.</p></div>`; else $("myOrders").querySelector(".mo-sum").textContent = n + " захиалга"; }, 250);
-      toast("Захиалга хасагдлаа");
-    } catch (e) { toast(e.message); b.disabled = false; b.textContent = "Тийм, хасах"; }
+  // Цуцлах: төлбөрийн дэлгэц, сагсныхтай яг ижил (нэвтэрсэн тул түлхүүр хэрэггүй)
+  $("myOrders").querySelectorAll(".mocx").forEach(box => {
+    const card = box.closest(".mo2");
+    cancelUI(box, card.dataset.code, "", () => {
+      dropPending(card.dataset.code);
+      // Картыг зөөлөн арилгаж тоог шинэчилнэ
+      card.style.opacity = 0; setTimeout(() => { card.remove(); const n = $("myOrders").querySelectorAll(".mo2").length;
+        if (!n) $("myOrders").innerHTML = `<div class="mo-empty"><span>📦</span><b>Захиалга алга</b><p>Бараа захиалахад энд харагдана.</p></div>`;
+        else $("myOrders").querySelector(".mo-sum").textContent = n + " захиалга"; }, 250);
+    });
   });
 }
 function openFavs(){
@@ -2206,6 +2249,8 @@ function orderPayload(code){
 // Төлбөрийн дэлгэц: эхлээд QPay оролдоно, болохгүй бол дансаар
 async function showDone(items, total){
   const code = newCode();
+  // Өмнөх захиалгын цуцлах түлхүүрийг арилгана
+  window.__lastCt = "";
   $("sheetTitle").textContent = "Төлбөр төлөх";
   $("sheetBody").innerHTML = `<div class="done"><div class="code"><span>Захиалгын дугаар</span><strong>${code}</strong></div><div class="wait"><span class="spin"></span> Төлбөрийн мэдээлэл бэлдэж байна…</div></div>`;
   let q = null;
@@ -2239,8 +2284,13 @@ function showQpay(items, total, code, q){
     </div>
     <button class="primary" id="qcheck" type="button">Төлбөрөө шалгах</button>
     <button class="ghost" id="tobank" type="button">Дансаар шилжүүлэх</button>
+    <div class="pay-cxbox" id="qcx"></div>
   </div>`;
   let done = false;
+  // Энэ төхөөрөмж дээр "төлөгдөөгүй" гэж хадгална (цонхоо хаасан ч сагснаас шалгах, цуцлахад)
+  savePending({ code, ct: q.ct, total: q.total || total, at: Date.now(), qpay: true, inv: q.invoice_id, sig: q.sig });
+  // Төлөхөөс өмнө цуцлах: цуцалбал шалгалтыг зогсоож сагс руу буцна (бараа сагсандаа үлдэнэ)
+  cancelUI($("qcx"), code, q.ct, () => { done = true; dropPending(code); openCart(); });
   const check = async manual => {
     if (done) return;
     try {
@@ -2262,6 +2312,67 @@ function showQpay(items, total, code, q){
   document.addEventListener("visibilitychange", () => { if (!document.hidden) check(false); });
   $("qcheck").onclick = () => check(true);
   $("tobank").onclick = () => { done = true; showBank(items, total, code, q); };
+}
+// ===== ТӨЛӨГДӨӨГҮЙ ЗАХИАЛГУУД (энэ төхөөрөмж дээр, нэвтрээгүй хүнд ч) =====
+// Төлбөрийн цонхыг хаасан ч сагсны цонхноос дахин шалгах, цуцлах боломж өгнө
+const PEND_KEY = "finn-pending";
+// 3 хоногоос хуучныг автоматаар мартана
+const PEND_TTL = 3 * 864e5;
+const getPending = () => { try { return (JSON.parse(localStorage.getItem(PEND_KEY)) || []).filter(x => x && x.code && Date.now() - x.at < PEND_TTL); } catch (e) { return []; } };
+const setPending = l => { try { localStorage.setItem(PEND_KEY, JSON.stringify(l.slice(0, 10))); } catch (e) {} };
+// Шинэ захиалгыг жагсаалтад нэмнэ (ижил дугаартайг шинэчилнэ)
+function savePending(o){ if (!o || !o.code || !o.ct) return; setPending([o, ...getPending().filter(x => x.code !== o.code)]); }
+// Төлөгдсөн эсвэл цуцалсан захиалгыг жагсаалтаас хасна
+function dropPending(code){ setPending(getPending().filter(x => x.code !== code)); }
+// Сагсны цонхны дээд талд "Төлөгдөөгүй захиалга" хэсэг
+function pendingBox(){
+  const list = getPending(); if (!list.length || !$("sheetBody")) return;
+  const box = document.createElement("div"); box.className = "pend";
+  box.innerHTML = `<div class="pend-h">⏳ Төлөгдөөгүй захиалга</div>` + list.map(x => `<div class="pend-i" data-code="${esc(x.code)}">
+      <div class="pend-r"><b class="mono">${esc(x.code)}</b><span>${fmt(x.total)}</span></div>
+      <small>${new Date(x.at).toLocaleString("mn-MN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}${x.qpay ? " · QPay" : " · Дансаар"}</small>
+      <div class="pend-b">${x.qpay ? `<button type="button" class="ghost pchk">Төлбөр шалгах</button>` : ""}<div class="pcx"></div></div>
+    </div>`).join("");
+  $("sheetBody").prepend(box);
+  box.querySelectorAll(".pend-i").forEach(el => {
+    const x = list.find(y => y.code === el.dataset.code);
+    // Цуцлах: амжилттай бол жагсаалтаас хасаж сагсыг дахин зурна
+    cancelUI(el.querySelector(".pcx"), x.code, x.ct, () => { dropPending(x.code); renderCart(); });
+    // QPay төлбөр орсон эсэхийг шалгана
+    const b = el.querySelector(".pchk"); if (b) b.onclick = async () => {
+      b.disabled = true; b.textContent = "Шалгаж байна…";
+      try {
+        const r = await fetch(`${SHOP.qpayApi}/qpay-check?inv=${encodeURIComponent(x.inv)}&code=${x.code}&sig=${encodeURIComponent(x.sig)}&manual=1`);
+        const j = await r.json();
+        if (j.paid) { dropPending(x.code); toast("✓ Төлбөр орсон байна"); renderCart(); return; }
+        toast("Төлбөр хараахан ороогүй байна");
+      } catch (e) { toast("Шалгаж чадсангүй"); }
+      b.disabled = false; b.textContent = "Төлбөр шалгах";
+    };
+  });
+}
+// Сагсыг зурах бүрт дээд талд нь төлөгдөөгүй захиалгуудыг нэмнэ
+const _renderCartBase = renderCart;
+renderCart = function(){ _renderCartBase(); pendingBox(); };
+// ===== ЗАХИАЛГА ЦУЦЛАХ (төлөхөөс өмнө, нэвтрээгүй хүн ч) =====
+// box: товч тавих элемент, ct: серверийн өгсөн цуцлах түлхүүр, onDone: цуцалсны дараа
+function cancelUI(box, code, ct, onDone){
+  // Түлхүүр (зочин) эсвэл нэвтэрсэн хэрэглэгч байх ёстой
+  if (!box || (!ct && !me)) return;
+  box.innerHTML = `<button type="button" class="pay-cx">Захиалга цуцлах</button>
+    <div class="mo-ask" hidden><span>Цуцлах уу?</span><button type="button" class="no">Үгүй</button><button type="button" class="yes">Тийм</button></div>`;
+  const btn = box.querySelector(".pay-cx"), ask = box.querySelector(".mo-ask");
+  btn.onclick = () => { btn.hidden = true; ask.hidden = false; };
+  ask.querySelector(".no").onclick = () => { ask.hidden = true; btn.hidden = false; };
+  ask.querySelector(".yes").onclick = async e => {
+    const y = e.currentTarget; y.disabled = true; y.textContent = "…";
+    try {
+      const r = await fetch("/api/cancel-order", { method: "POST", headers: { "Content-Type": "application/json", ...(await authHeader()) }, body: JSON.stringify(ct ? { code, ct } : { code }) });
+      const j = await r.json().catch(() => ({}));
+      if (!j.ok) throw new Error(j.error === "not_pending" ? "Төлбөр орсон тул цуцлах боломжгүй" : "Цуцалж чадсангүй, дахин оролдоно уу");
+      toast("Захиалга цуцлагдлаа"); onDone && onDone();
+    } catch (err) { toast(err.message); y.disabled = false; y.textContent = "Тийм"; }
+  };
 }
 // Банкны товчны холбоос: утсан дээр QPay апп холбоос, компьютер дээр интернэт банкны сайт (мэдэгдэж байвал)
 function webOf(u, mobile){
@@ -2327,14 +2438,18 @@ function showBank(items, total, code, q){
     </div>
     <button class="primary" id="paid" type="button">Төлбөр төлсөн</button>
     <button class="ghost" id="back" type="button">Буцах</button>
+    <div class="pay-cxbox" id="bcx"></div>
   </div>`;
   $("sheetBody").querySelectorAll(".cp").forEach(copyBtn);
+  // QPay-ээр үүссэн захиалга байвал цуцлах товч
+  let stopCx = false;
+  cancelUI($("bcx"), code, q && q.ct, () => { stopCx = true; dropPending(code); openCart(); });
   // QPay нэхэмжлэх байгаа бол апп-аар төлөгдөх эсэхийг 5 секунд тутам шалгана (Sheets-ээс)
   let stop = false;
   if (q && q.invoice_id) {
     const iv = setInterval(async () => {
       // Дэлгэцээс гарсан бол зогсоно
-      if (stop || !$("paid")) return clearInterval(iv);
+      if (stop || stopCx || !$("paid")) return clearInterval(iv);
       try {
         const r = await fetch(`${SHOP.qpayApi}/qpay-check?inv=${encodeURIComponent(q.invoice_id)}&code=${code}&sig=${encodeURIComponent(q.sig)}`);
         const j = await r.json();
@@ -2360,6 +2475,10 @@ function showBank(items, total, code, q){
         const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 10000);
         const r = await fetch(SHOP.orderApi, { method: "POST", headers: { "Content-Type": "application/json", ...(await authHeader()) }, body: JSON.stringify(orderPayload(code)), signal: ctl.signal });
         clearTimeout(t); sent = r.ok;
+        // Цуцлах түлхүүр (дансаар төлөх захиалга)
+        if (sent) { const j = await r.json().catch(() => ({})); window.__lastCt = j.ct || (q && q.ct) || "";
+          // Дансаар төлөх захиалгыг ч "төлөгдөөгүй" жагсаалтад хадгална
+          savePending({ code, ct: window.__lastCt, total, at: Date.now(), qpay: !!(q && q.invoice_id), inv: q && q.invoice_id, sig: q && q.sig }); }
       } catch (e) {}
     }
     if (!sent && SHOP.orderUrl) { try { fetch(SHOP.orderUrl, { method: "POST", mode: "no-cors", body: new URLSearchParams(data) }).catch(() => {}); } catch (e) {} }
@@ -2368,6 +2487,8 @@ function showBank(items, total, code, q){
 }
 // "Захиалга баталгаажсан / Төлбөр амжилттай" дэлгэц
 function showConfirmed(code, text, sent, paid){
+  // QPay-ээр төлөгдсөн бол "төлөгдөөгүй" жагсаалтаас хасна
+  if (paid) dropPending(code);
   // Сагсыг цэвэрлэхээс өмнө бараануудыг (зураг, тоо, сонголт) авч үлдэнэ
   const its = groupCart(cart).filter(x => x.p);
   cart = []; save(); renderGrid();
@@ -2417,6 +2538,8 @@ function showConfirmed(code, text, sent, paid){
     catch (e) { $("orderText").hidden = false; const r = document.createRange(); r.selectNodeContents($("orderText")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); t.textContent = "Текстийг сонголоо, хуулна уу"; }
   };
   $("closeDone").onclick = closeAll;
+  // Дансаар (төлбөр шалгах) захиалгыг шилжүүлэхээс өмнө цуцлах боломж
+  if (!paid && window.__lastCt) { const bx = document.createElement("div"); bx.className = "pay-cxbox"; $("closeDone").after(bx); cancelUI(bx, code, window.__lastCt, () => { window.__lastCt = ""; dropPending(code); closeAll(); }); }
 }
 
 

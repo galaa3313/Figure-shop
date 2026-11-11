@@ -44,7 +44,7 @@ module.exports = async (req, res) => {
     // Supabase-д бүртгэнэ: тэр өөрөө имэйл рүү 6 оронтой код илгээнэ
     // Баталгаажуулах холбоос дарсны дараа үргэлж үндсэн сайт руу буцаана
     // (Vercel-ийн түр/хамгаалагдсан deployment хаяг руу биш)
-    const site = (process.env.SITE_URL || "https://figure-shop-gamma.vercel.app").replace(/\/$/, "");
+    const site = (process.env.SITE_URL || "https://finn.mn").replace(/\/$/, "");
     const r = await fetch(`${SB.URL_()}/auth/v1/signup?redirect_to=${encodeURIComponent(site + "/")}`, {
       method: "POST", headers: { apikey: SB.ANON(), "Content-Type": "application/json" },
       body: JSON.stringify({ email, password, data: { username, phone } })

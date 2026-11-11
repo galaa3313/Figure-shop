@@ -336,6 +336,19 @@ textarea{overflow:hidden}
 .udx{border:1px solid var(--ink);padding:14px 16px;margin-bottom:14px}
 .ug{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px 16px;margin-top:12px;font-size:13.5px}
 .ug small{display:block;color:var(--muted);font-size:11.5px;margin-bottom:2px}
+/* ----- Супер админ, хүсэлт ----- */
+nav button .rq,.rqbox .rq{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-left:5px;border-radius:999px;background:#e5172f;color:#fff;font-size:11px;font-weight:700;vertical-align:1px}
+nav button .rq[hidden]{display:none}
+.rqban{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#fff4d6;border-bottom:1px solid #f0d58a;padding:10px 16px;font-size:14px}
+.rqban .btn{margin-left:auto;padding:6px 12px}
+.rqbox{border:1px solid #f0d58a;background:#fffbef;padding:12px 14px;margin-bottom:14px}
+.rqbox h3{margin:0 0 8px;font-size:15px}
+.rqi{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;padding:10px 0;border-top:1px solid #f0e2b8;font-size:13.5px}
+.rqa{display:flex;gap:6px;flex-wrap:wrap}
+.rqa .btn{padding:7px 11px;font-size:13px}
+.rqd{margin-top:8px;font-size:12.5px}
+.rqd summary{cursor:pointer;color:var(--muted)}
+.tag.sup{background:#111;color:#ffd84d}
 </style>
 </head>
 <body>
@@ -443,13 +456,42 @@ async function showOrders(status){
 async function showUsers(){
   const my = ++VIEW;
   $("main").innerHTML = `<div class="bar"><h2>Хэрэглэгч <small class="mut" id="ucnt"></small></h2><input id="uq" placeholder="Нэр, имэйл, утсаар хайх" style="max-width:260px"></div>
-    <div class="uf" id="uf"></div><div id="ud"></div><div class="ul" id="ub"><p class="mut">Ачаалж байна…</p></div>`;
+    <div id="ureq"></div><div class="uf" id="uf"></div><div id="ud"></div><div class="ul" id="ub"><p class="mut">Ачаалж байна…</p></div>`;
   let j;
   try { j = await api({ action: "users" }); } catch (e) { $("ub").innerHTML = `<p class="msg">Алдаа: ${esc(e.message)}</p>`; return; }
   // Өөр таб руу шилжсэн бол зогсоно
   if (my !== VIEW) return;
   // Шүүлтүүр: бүгд / админ / хаагдсан
   let filt = "all";
+  const SUP = !!j.super;
+  // Хүлээгдэж буй хүсэлтүүд (хүн бүрийн хувьд)
+  const pendingFor = id => (j.requests || []).find(r => r.target_id === id && r.status === "pending");
+  // ----- Админ эрхийн хүсэлтүүд: супер админд зөвшөөрөх товчтой, бусдад зөвхөн төлөв -----
+  const drawReqs = () => {
+    const pend = (j.requests || []).filter(r => r.status === "pending");
+    const done = (j.requests || []).filter(r => r.status !== "pending").slice(0, 5);
+    if (!pend.length && !done.length) { $("ureq").innerHTML = ""; return; }
+    $("ureq").innerHTML = `<div class="rqbox"><h3>👑 Админ эрхийн хүсэлт ${pend.length ? `<span class="rq">${pend.length}</span>` : ""}</h3>
+      ${pend.map(r => `<div class="rqi"><div><b>${esc(r.target_username)}</b> <span class="mut">${esc(r.target_email || "")}</span><br>
+        <span class="mut">${esc(r.requester)} хүссэн · ${dt(r.at)}</span></div>
+        <div class="rqa"><button class="btn" type="button" data-rinfo="${r.target_id}">👁 Мэдээлэл</button>
+        ${SUP ? `<button class="btn dark" type="button" data-ok="${r.id}">✓ Зөвшөөрөх</button><button class="btn red" type="button" data-no="${r.id}">✕ Татгалзах</button>` : '<span class="tag">⏳ Супер админы зөвшөөрөл хүлээж байна</span>'}</div></div>`).join("") || '<p class="mut">Хүлээгдэж буй хүсэлт алга.</p>'}
+      ${done.length ? `<details class="rqd"><summary>Сүүлийн шийдвэрүүд</summary>${done.map(r => `<div class="mut">${r.status === "approved" ? "✓ Зөвшөөрсөн" : "✕ Татгалзсан"}: <b>${esc(r.target_username)}</b> (${esc(r.requester)} хүссэн) · ${esc(r.decided_by || "")} ${dt(r.decided_at)}</div>`).join("")}</details>` : ""}
+    </div>`;
+    $("ureq").querySelectorAll("[data-rinfo]").forEach(b => b.onclick = () => userInfo(b.dataset.rinfo));
+    // Зөвшөөрөх / татгалзах
+    $("ureq").querySelectorAll("[data-ok],[data-no]").forEach(b => b.onclick = async () => {
+      const ok = !!b.dataset.ok, r = j.requests.find(x => String(x.id) === (b.dataset.ok || b.dataset.no));
+      if (!confirm(ok ? `«${r.target_username}»-д АДМИН эрх олгохыг зөвшөөрөх үү?\n\n(${r.requester} хүссэн)` : `«${r.target_username}»-г админ болгох хүсэлтийг татгалзах уу?`)) return;
+      b.disabled = true; b.innerHTML = `<span class="spin"></span>${ok ? "Зөвшөөрч байна…" : "Татгалзаж байна…"}`;
+      try {
+        await api({ action: "decide", id: r.id, approve: ok });
+        r.status = ok ? "approved" : "rejected"; r.decided_by = "та"; r.decided_at = new Date().toISOString();
+        if (ok) { const u = j.rows.find(x => x.id === r.target_id); if (u) u.role = "admin"; }
+        toast(ok ? `👑 «${r.target_username}» админ боллоо` : "Татгалзлаа"); drawReqs(); draw(); refreshReqBadge();
+      } catch (e) { toast({ blocked: "Хэрэглэгч хаагдсан байна — эхлээд нээнэ үү", user_gone: "Хэрэглэгч устсан байна" }[e.message] || "Алдаа: " + e.message); drawReqs(); }
+    });
+  };
   // Нэвтэрсэн админ өөрөө (өөрийгөө хаах, устгахаас сэргийлж цэснээс хасна; сервер ч давхар хориглоно)
   let myId = "";
   try { const { data } = await sb.auth.getSession(); myId = data && data.session && data.session.user ? data.session.user.id : ""; } catch (e) {}
@@ -462,16 +504,18 @@ async function showUsers(){
       .map(([k, t, n]) => `<button type="button" class="${filt === k ? "on" : ""}" data-f="${k}">${t} <small>${n}</small></button>`).join("");
     $("uf").querySelectorAll("[data-f]").forEach(x => x.onclick = () => { filt = x.dataset.f; draw(); });
     $("ub").innerHTML = rows.map(u => {
-      const self = u.id === myId;
+      const self = u.id === myId, sup = !!u.is_super, pend = pendingFor(u.id);
+      // Супер админ биш хүн өөр админыг хааж, эрхийг нь хасаж чадахгүй; супер админыг хэн ч хөндөхгүй
+      const locked = self || sup || (u.role === "admin" && !SUP);
       return `<div class="uc ${u.blocked ? "off" : ""}">
         <div class="av">${esc((u.username || "?")[0].toUpperCase())}</div>
         <div class="ui"><b>${esc(u.username)}${self ? ' <small class="mut">(та)</small>' : ""}</b><span>${esc(u.email)}${u.phone ? " · " + esc(u.phone) : ""}</span>
           <span class="mut">Бүртгүүлсэн: ${dt(u.created_at)}</span>
-          <span>${u.role === "admin" ? '<span class="tag adm">👑 Админ</span>' : ""}${u.blocked ? '<span class="tag no">🔒 Түр хаагдсан</span>' : '<span class="tag ok">Идэвхтэй</span>'}</span></div>
+          <span>${sup ? '<span class="tag sup">⭐ Супер админ</span>' : u.role === "admin" ? '<span class="tag adm">👑 Админ</span>' : ""}${pend ? '<span class="tag">⏳ Админ хүсэлт</span>' : ""}${u.blocked ? '<span class="tag no">🔒 Түр хаагдсан</span>' : '<span class="tag ok">Идэвхтэй</span>'}</span></div>
         <details class="more"><summary aria-label="Үйлдэл">⋯</summary><div class="menu">
           <button type="button" data-info="${u.id}">👁 Дэлгэрэнгүй харах</button>
-          ${self ? "" : `<button type="button" data-blk="${u.id}" data-v="${u.blocked ? 0 : 1}">${u.blocked ? "🔓 Буцааж нээх" : "🔒 Түр хаах"}</button>
-          <button type="button" data-role="${u.id}" data-v="${u.role === "admin" ? "user" : "admin"}">${u.role === "admin" ? "👤 Энгийн хэрэглэгч болгох" : "👑 Админ болгох"}</button>
+          ${locked ? "" : `<button type="button" data-blk="${u.id}" data-v="${u.blocked ? 0 : 1}">${u.blocked ? "🔓 Буцааж нээх" : "🔒 Түр хаах"}</button>
+          ${pend && u.role !== "admin" ? "" : `<button type="button" data-role="${u.id}" data-v="${u.role === "admin" ? "user" : "admin"}">${u.role === "admin" ? "👤 Энгийн хэрэглэгч болгох" : SUP ? "👑 Админ болгох" : "👑 Админ болгох хүсэлт илгээх"}</button>`}
           <button type="button" class="del" data-udel="${u.id}">🗑 Бүрмөсөн устгах</button>`}
         </div></details></div>`;
     }).join("") || `<p class="mut">Хэрэглэгч олдсонгүй.</p>`;
@@ -488,15 +532,20 @@ async function showUsers(){
       if (!confirm(on ? `«${u.username}»-г түр хаах уу?\n\nХаагдсан хэрэглэгч нэвтэрч, захиалга өгч, сэтгэгдэл бичиж чадахгүй. Мэдээлэл нь устахгүй, хүссэн үедээ буцааж нээнэ.` : `«${u.username}»-г буцааж нээх үү?`)) return;
       busy(b, on ? "Хааж байна…" : "Нээж байна…");
       try { await api({ action: "setUser", id: u.id, blocked: on }); u.blocked = on; toast(on ? "🔒 Түр хаалаа" : "🔓 Нээлээ"); draw(); }
-      catch (e) { toast("Алдаа: " + e.message); draw(); }
+      catch (e) { toast({ not_super: "Админыг зөвхөн супер админ хаана", is_super: "Супер админыг хаах боломжгүй" }[e.message] || "Алдаа: " + e.message); draw(); }
     });
     // Эрх солих
     $("ub").querySelectorAll("[data-role]").forEach(b => b.onclick = async () => {
       const u = byId(b.dataset.role), to = b.dataset.v;
-      if (!confirm(to === "admin" ? `«${u.username}»-д АДМИН эрх өгөх үү?\n\nАдмин бүх захиалга, хэрэглэгчийн мэдээллийг харж, бараа, тохиргоог өөрчилж чадна. Зөвхөн итгэлтэй хүнд өгнө үү.` : `«${u.username}»-ийн админ эрхийг хасах уу?`)) return;
+      if (!confirm(to === "admin" ? (SUP ? `«${u.username}»-д АДМИН эрх өгөх үү?\n\nАдмин бүх захиалга, хэрэглэгчийн мэдээллийг харж, бараа, тохиргоог өөрчилж чадна. Зөвхөн итгэлтэй хүнд өгнө үү.`
+        : `«${u.username}»-г админ болгох хүсэлт илгээх үү?\n\nСупер админ мэдээллийг нь шалгаж зөвшөөрсний дараа админ болно.`) : `«${u.username}»-ийн админ эрхийг хасах уу?`)) return;
       busy(b, "Хадгалж байна…");
-      try { await api({ action: "setUser", id: u.id, role: to }); u.role = to; toast("Эрх солигдлоо"); draw(); }
-      catch (e) { toast("Алдаа: " + e.message); draw(); }
+      try {
+        const r = await api({ action: "setUser", id: u.id, role: to });
+        if (r.pending) { toast("📨 Хүсэлт илгээлээ · супер админ зөвшөөрнө"); return showUsers(); }
+        u.role = to; toast("Эрх солигдлоо"); draw();
+      }
+      catch (e) { toast({ not_super: "Зөвхөн супер админ хийнэ", is_super: "Супер админыг өөрчлөх боломжгүй", no_table: "finn-super.sql ажиллуулаагүй байна" }[e.message] || "Алдаа: " + e.message); draw(); }
     });
     // Бүрмөсөн устгах: нэрийг нь бичиж баталгаажуулна (санамсаргүй устгахаас хамгаална)
     $("ub").querySelectorAll("[data-udel]").forEach(b => b.onclick = async () => {
@@ -510,7 +559,7 @@ async function showUsers(){
       catch (e) { toast(e.message === "is_admin" ? "Админыг устгах боломжгүй — эхлээд эрхийг нь хасна уу" : "Алдаа: " + e.message); draw(); }
     });
   };
-  draw(); $("uq").oninput = draw;
+  drawReqs(); draw(); $("uq").oninput = draw;
 }
 // Хэрэглэгчийн дэлгэрэнгүй мэдээлэл (захиалга, нийт худалдан авалт, сүүлд нэвтэрсэн)
 async function userInfo(id){
@@ -1344,7 +1393,7 @@ async function showReviews(){
 
 // ===== ТҮҮХ: хэн, хэзээ, юу хийсэн =====
 // Үйлдэл, төрлийн монгол нэр
-const ACT = { delete: "Устгасан", hide: "Нуусан", unhide: "Харуулсан", restore: "Сэргээсэн", status: "Төлөв сольсон", insert: "Нэмсэн", update: "Засварласан", user: "Эрх өөрчилсөн", cancel: "Хэрэглэгч цуцалсан" };
+const ACT = { request: "Админ эрх хүссэн", approve: "Админ эрх зөвшөөрсөн", reject: "Админ хүсэлт татгалзсан", delete: "Устгасан", hide: "Нуусан", unhide: "Харуулсан", restore: "Сэргээсэн", status: "Төлөв сольсон", insert: "Нэмсэн", update: "Засварласан", user: "Эрх өөрчилсөн", cancel: "Хэрэглэгч цуцалсан" };
 const ENT = { order: "Захиалга", product: "Бараа", review: "Сэтгэгдэл", settings: "Тохиргоо", user: "Хэрэглэгч" };
 // Тохиргоо, барааны талбаруудын монгол нэр (юу өөрчлөгдсөнийг харуулахад)
 const KEYN = { notice: "Дээд мэдээ", slides: "Слайд", promos: "Постер", heroEyebrow: "Нүүр", heroTitle: "Нүүр", heroText: "Нүүр", heroButton: "Нүүр", heroImage: "Нүүрний зураг",
@@ -1418,6 +1467,27 @@ async function showHistory(f){
   });
 }
 
+// ===== СУПЕР АДМИН: админ эрхийн хүсэлтийн мэдэгдэл =====
+let ME_SUPER = false;
+async function refreshReqBadge(){
+  try {
+    const w = await api({ action: "whoami" });
+    ME_SUPER = w.super;
+    if (w.super) $("whoami").textContent = "⭐ " + w.username;
+    // "Хэрэглэгч" таб дээр улаан тоо
+    const tab = document.querySelector('[data-t="users"]');
+    let dot = tab.querySelector(".rq"); if (!dot) { dot = document.createElement("b"); dot.className = "rq"; tab.appendChild(dot); }
+    dot.textContent = w.pending || ""; dot.hidden = !w.pending;
+    // Дээд талын анхааруулах тууз
+    let bn = $("rqban");
+    if (w.pending) {
+      if (!bn) { bn = document.createElement("div"); bn.id = "rqban"; bn.className = "rqban"; document.querySelector("main, #main").before(bn); }
+      bn.innerHTML = `🔔 Танд <b>${w.pending}</b> админ эрхийн хүсэлт зөвшөөрөл хүлээж байна <button class="btn dark" type="button">Харах</button>`;
+      bn.querySelector("button").onclick = () => tab.click();
+    } else if (bn) bn.remove();
+  } catch (e) {}
+}
+
 // Таб солих
 const TABS = { orders: () => showOrders(""), users: showUsers, products: () => showProducts(), settings: showSettings, reviews: showReviews, history: () => showHistory() };
 $("tabs").addEventListener("click", e => { const b = e.target.closest("[data-t]"); if (!b) return; $("tabs").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); const my = VIEW + 1; TABS[b.dataset.t]().catch(err => { if (VIEW === my) $("main").innerHTML = `<p class="msg">Алдаа: ${esc(err.message)}</p>`; }); });
@@ -1434,6 +1504,8 @@ $("tabs").addEventListener("click", e => { const b = e.target.closest("[data-t]"
     const { data: p } = await sb.from("profiles").select("username,role").eq("id", data.user.id).maybeSingle();
     if (!p || p.role !== "admin") { $("main").innerHTML = `<p class="msg">Танд админ эрх байхгүй байна.</p>`; return; }
     $("whoami").textContent = p.username; $("tabs").hidden = false;
+    // Супер админ бол хүлээгдэж буй админ хүсэлтийг шалгаж мэдэгдэнэ (1 минут тутам шинэчилнэ)
+    refreshReqBadge(); setInterval(refreshReqBadge, 60000);
     const first = VIEW + 1;
     await showOrders("").catch(e => { if (VIEW === first) $("main").innerHTML = `<p class="msg">Алдаа: ${esc(e.message)}</p>`; });
   } catch (e) { $("main").innerHTML = `<p class="msg">${esc(e.message)}</p>`; }

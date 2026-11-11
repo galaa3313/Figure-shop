@@ -318,6 +318,24 @@ textarea{overflow:hidden}
 /* Туршилтын холбоос хуулах мөр */
 .tlink{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:1px dashed #b26b00;background:#fff8ec;padding:10px 12px;margin-bottom:14px;font-size:13px}
 .tlink input{flex:1;min-width:180px;padding:7px 9px;border:1px solid var(--line);font:inherit;background:#fff}
+/* ----- Хэрэглэгчийн карт ----- */
+.uf{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.uf button{border:1px solid var(--line);background:#fff;padding:7px 13px;font-size:13px;border-radius:999px}
+.uf button.on{background:#111;color:#fff;border-color:#111}
+.uf small{opacity:.6;margin-left:3px}
+.ul{border:1px solid var(--line)}
+.uc{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;position:relative}
+.uc+.uc{border-top:1px solid var(--line)}
+.uc.off{background:#fff7f7}
+.uc .av{width:40px;height:40px;flex:none;border-radius:50%;background:var(--bg2);display:grid;place-items:center;font-weight:600}
+.uc .ui{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;font-size:13px;overflow-wrap:anywhere}
+.uc .ui b{font-size:14.5px}
+.uc .tag{margin-right:6px}
+.tag.adm{background:#fff4d6;color:#8a5a00}
+.uc .more .menu{top:46px;right:0;min-width:230px}
+.udx{border:1px solid var(--ink);padding:14px 16px;margin-bottom:14px}
+.ug{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px 16px;margin-top:12px;font-size:13.5px}
+.ug small{display:block;color:var(--muted);font-size:11.5px;margin-bottom:2px}
 </style>
 </head>
 <body>
@@ -424,21 +442,101 @@ async function showOrders(status){
 // ===== ХЭРЭГЛЭГЧ =====
 async function showUsers(){
   const my = ++VIEW;
-  $("main").innerHTML = `<div class="bar"><h2>Хэрэглэгч</h2><input id="uq" placeholder="Нэр, имэйлээр хайх" style="max-width:260px"></div><div class="tbl"><table><thead><tr><th>Нэр</th><th>Имэйл / утас</th><th>Бүртгүүлсэн</th><th>Эрх</th><th>Төлөв</th></tr></thead><tbody id="ub"></tbody></table></div>`;
-  const j = await api({ action: "users" });
+  $("main").innerHTML = `<div class="bar"><h2>Хэрэглэгч <small class="mut" id="ucnt"></small></h2><input id="uq" placeholder="Нэр, имэйл, утсаар хайх" style="max-width:260px"></div>
+    <div class="uf" id="uf"></div><div id="ud"></div><div class="ul" id="ub"><p class="mut">Ачаалж байна…</p></div>`;
+  let j;
+  try { j = await api({ action: "users" }); } catch (e) { $("ub").innerHTML = `<p class="msg">Алдаа: ${esc(e.message)}</p>`; return; }
   // Өөр таб руу шилжсэн бол зогсоно
   if (my !== VIEW) return;
-  const draw = q => {
-    const rows = j.rows.filter(u => !q || (u.username + " " + u.email).includes(q.toLowerCase()));
-    $("ub").innerHTML = rows.map(u => `<tr><td><b>${esc(u.username)}</b></td><td>${esc(u.email)}<small>${esc(u.phone || "")}</small></td><td>${dt(u.created_at)}</td>
-      <td><select data-id="${u.id}" data-k="role"><option value="user" ${u.role === "user" ? "selected" : ""}>Хэрэглэгч</option><option value="admin" ${u.role === "admin" ? "selected" : ""}>Админ</option></select></td>
-      <td><button class="btn ${u.blocked ? "" : "red"}" data-id="${u.id}" data-b="${u.blocked ? 0 : 1}">${u.blocked ? "Нээх" : "Хаах"}</button> ${u.blocked ? '<span class="tag no">Хаагдсан</span>' : '<span class="tag ok">Идэвхтэй</span>'}</td></tr>`).join("") || `<tr><td colspan="5">Хэрэглэгч алга.</td></tr>`;
+  // Шүүлтүүр: бүгд / админ / хаагдсан
+  let filt = "all";
+  // Нэвтэрсэн админ өөрөө (өөрийгөө хаах, устгахаас сэргийлж цэснээс хасна; сервер ч давхар хориглоно)
+  let myId = "";
+  try { const { data } = await sb.auth.getSession(); myId = data && data.session && data.session.user ? data.session.user.id : ""; } catch (e) {}
+  const draw = () => {
+    const q = ($("uq").value || "").trim().toLowerCase();
+    const rows = j.rows.filter(u => (filt === "all" || (filt === "admin" ? u.role === "admin" : u.blocked))
+      && (!q || `${u.username} ${u.email} ${u.phone || ""}`.toLowerCase().includes(q)));
+    $("ucnt").textContent = `(${j.rows.length})`;
+    $("uf").innerHTML = [["all", "Бүгд", j.rows.length], ["admin", "👑 Админ", j.rows.filter(u => u.role === "admin").length], ["blocked", "🔒 Хаагдсан", j.rows.filter(u => u.blocked).length]]
+      .map(([k, t, n]) => `<button type="button" class="${filt === k ? "on" : ""}" data-f="${k}">${t} <small>${n}</small></button>`).join("");
+    $("uf").querySelectorAll("[data-f]").forEach(x => x.onclick = () => { filt = x.dataset.f; draw(); });
+    $("ub").innerHTML = rows.map(u => {
+      const self = u.id === myId;
+      return `<div class="uc ${u.blocked ? "off" : ""}">
+        <div class="av">${esc((u.username || "?")[0].toUpperCase())}</div>
+        <div class="ui"><b>${esc(u.username)}${self ? ' <small class="mut">(та)</small>' : ""}</b><span>${esc(u.email)}${u.phone ? " · " + esc(u.phone) : ""}</span>
+          <span class="mut">Бүртгүүлсэн: ${dt(u.created_at)}</span>
+          <span>${u.role === "admin" ? '<span class="tag adm">👑 Админ</span>' : ""}${u.blocked ? '<span class="tag no">🔒 Түр хаагдсан</span>' : '<span class="tag ok">Идэвхтэй</span>'}</span></div>
+        <details class="more"><summary aria-label="Үйлдэл">⋯</summary><div class="menu">
+          <button type="button" data-info="${u.id}">👁 Дэлгэрэнгүй харах</button>
+          ${self ? "" : `<button type="button" data-blk="${u.id}" data-v="${u.blocked ? 0 : 1}">${u.blocked ? "🔓 Буцааж нээх" : "🔒 Түр хаах"}</button>
+          <button type="button" data-role="${u.id}" data-v="${u.role === "admin" ? "user" : "admin"}">${u.role === "admin" ? "👤 Энгийн хэрэглэгч болгох" : "👑 Админ болгох"}</button>
+          <button type="button" class="del" data-udel="${u.id}">🗑 Бүрмөсөн устгах</button>`}
+        </div></details></div>`;
+    }).join("") || `<p class="mut">Хэрэглэгч олдсонгүй.</p>`;
+    // Нэг цэс нээгдэхэд бусдыг хаана
+    $("ub").querySelectorAll("details.more").forEach(d => d.ontoggle = () => { if (d.open) $("ub").querySelectorAll("details.more[open]").forEach(x => x !== d && (x.open = false)); });
+    const byId = id => j.rows.find(u => u.id === id);
+    // Товч дарсны дараа эргэлдэх тэмдэг харуулж, давхар дарахаас сэргийлнэ
+    const busy = (b, t) => { b.disabled = true; b.innerHTML = `<span class="spin"></span>${t}`; };
+    // Дэлгэрэнгүй
+    $("ub").querySelectorAll("[data-info]").forEach(b => b.onclick = () => { b.closest("details").open = false; userInfo(b.dataset.info); });
+    // Түр хаах / нээх
+    $("ub").querySelectorAll("[data-blk]").forEach(b => b.onclick = async () => {
+      const u = byId(b.dataset.blk), on = b.dataset.v === "1";
+      if (!confirm(on ? `«${u.username}»-г түр хаах уу?\n\nХаагдсан хэрэглэгч нэвтэрч, захиалга өгч, сэтгэгдэл бичиж чадахгүй. Мэдээлэл нь устахгүй, хүссэн үедээ буцааж нээнэ.` : `«${u.username}»-г буцааж нээх үү?`)) return;
+      busy(b, on ? "Хааж байна…" : "Нээж байна…");
+      try { await api({ action: "setUser", id: u.id, blocked: on }); u.blocked = on; toast(on ? "🔒 Түр хаалаа" : "🔓 Нээлээ"); draw(); }
+      catch (e) { toast("Алдаа: " + e.message); draw(); }
+    });
     // Эрх солих
-    $("ub").querySelectorAll("select").forEach(s => s.onchange = async () => { try { await api({ action: "setUser", id: s.dataset.id, role: s.value }); toast("Хадгаллаа"); } catch (e) { toast("Алдаа"); } });
-    // Хаах / нээх
-    $("ub").querySelectorAll("button[data-b]").forEach(b => b.onclick = async () => { try { await api({ action: "setUser", id: b.dataset.id, blocked: b.dataset.b === "1" }); showUsers(); } catch (e) { toast("Алдаа"); } });
+    $("ub").querySelectorAll("[data-role]").forEach(b => b.onclick = async () => {
+      const u = byId(b.dataset.role), to = b.dataset.v;
+      if (!confirm(to === "admin" ? `«${u.username}»-д АДМИН эрх өгөх үү?\n\nАдмин бүх захиалга, хэрэглэгчийн мэдээллийг харж, бараа, тохиргоог өөрчилж чадна. Зөвхөн итгэлтэй хүнд өгнө үү.` : `«${u.username}»-ийн админ эрхийг хасах уу?`)) return;
+      busy(b, "Хадгалж байна…");
+      try { await api({ action: "setUser", id: u.id, role: to }); u.role = to; toast("Эрх солигдлоо"); draw(); }
+      catch (e) { toast("Алдаа: " + e.message); draw(); }
+    });
+    // Бүрмөсөн устгах: нэрийг нь бичиж баталгаажуулна (санамсаргүй устгахаас хамгаална)
+    $("ub").querySelectorAll("[data-udel]").forEach(b => b.onclick = async () => {
+      const u = byId(b.dataset.udel);
+      if (u.role === "admin") return toast("Эхлээд «Энгийн хэрэглэгч болгох»-оор эрхийг нь хасна уу");
+      const typed = prompt(`«${u.username}»-ийг БҮРМӨСӨН устгах уу?\n\n• Нэвтрэх эрх, хадгалсан бараа, сэтгэгдэл нь устна — СЭРГЭЭХ БОЛОМЖГҮЙ\n• Захиалгууд нь хадгалагдана\n• Түр хориглох бол «Түр хаах»-ыг ашиглана уу\n\nБаталгаажуулахын тулд нэвтрэх нэрийг нь бичнэ үү:`);
+      if (typed === null) return;
+      if (typed.trim().toLowerCase() !== String(u.username).toLowerCase()) return toast("Нэр таарсангүй — устгасангүй");
+      busy(b, "Устгаж байна…");
+      try { await api({ action: "deleteUser", id: u.id }); j.rows = j.rows.filter(x => x.id !== u.id); $("ud").innerHTML = ""; toast(`🗑 «${u.username}» устгагдлаа`); draw(); }
+      catch (e) { toast(e.message === "is_admin" ? "Админыг устгах боломжгүй — эхлээд эрхийг нь хасна уу" : "Алдаа: " + e.message); draw(); }
+    });
   };
-  draw(""); $("uq").oninput = e => draw(e.target.value);
+  draw(); $("uq").oninput = draw;
+}
+// Хэрэглэгчийн дэлгэрэнгүй мэдээлэл (захиалга, нийт худалдан авалт, сүүлд нэвтэрсэн)
+async function userInfo(id){
+  const box = $("ud");
+  box.innerHTML = `<div class="udx"><p class="mut"><span class="spin"></span>Ачаалж байна…</p></div>`;
+  box.scrollIntoView({ behavior: "smooth", block: "start" });
+  try {
+    const r = await api({ action: "userInfo", id }), u = r.user;
+    const PROV = { email: "Имэйл", facebook: "Facebook" };
+    box.innerHTML = `<div class="udx">
+      <div class="bar" style="margin:0"><h3 style="margin:0 auto 0 0">${esc(u.username)}</h3><button class="btn" type="button" id="udx">Хаах ✕</button></div>
+      <div class="ug">
+        <div><small>Имэйл</small>${esc(u.email)} ${r.confirmed ? "✓" : '<span class="tag no">баталгаажаагүй</span>'}</div>
+        <div><small>Утас</small>${esc(u.phone || "—")}</div>
+        <div><small>Бүртгүүлсэн</small>${dt(u.created_at)} · ${esc(PROV[r.provider] || r.provider)}</div>
+        <div><small>Сүүлд нэвтэрсэн</small>${r.lastSignIn ? dt(r.lastSignIn) : "—"}</div>
+        <div><small>Эрх / төлөв</small>${u.role === "admin" ? "👑 Админ" : "Хэрэглэгч"} · ${u.blocked ? "🔒 Хаагдсан" : "Идэвхтэй"}</div>
+        <div><small>Нийт худалдан авалт</small><b>${fmt(r.spent)}</b></div>
+        <div><small>Захиалга</small>${r.orders.length}</div>
+        <div><small>Сэтгэгдэл · Хадгалсан</small>${r.reviews} · ${r.favorites}</div>
+      </div>
+      ${r.orders.length ? `<div class="tbl" style="margin-top:12px"><table style="min-width:0"><thead><tr><th>Дугаар</th><th>Огноо</th><th>Дүн</th><th>Төлөв</th></tr></thead><tbody>
+        ${r.orders.map(o => `<tr><td><code>${esc(o.code)}</code></td><td>${dt(o.created_at)}</td><td>${fmt(o.total)}</td><td>${esc(o.status)}</td></tr>`).join("")}</tbody></table></div>` : '<p class="mut">Захиалга өгөөгүй.</p>'}
+    </div>`;
+    $("udx").onclick = () => { box.innerHTML = ""; };
+  } catch (e) { box.innerHTML = `<div class="udx"><p class="msg">Алдаа: ${esc(e.message)}</p></div>`; }
 }
 
 // ===== ЗУРАГ ОРУУЛАХ (бараа, сайтын зураг) =====

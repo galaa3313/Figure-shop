@@ -1,0 +1,12 @@
+# FINN — Cloudflare Pages тохиргоо
+# Энэ файл байвал Cloudflare эндээс уншина (самбар дээрх тохиргооноос түрүүлж).
+# Нууц утгууд (SUPABASE_SERVICE_KEY гэх мэт) ЭНД БИШ — Cloudflare самбарт Secret хэвээр үлдэнэ.
+
+# Төслийн нэр (Cloudflare дээрхтэй ижил)
+name = "figure-shop"
+# Сайтын файлууд repo-гийн үндсэн хавтаст байгаа
+pages_build_output_dir = "."
+# Ажиллах орчны огноо
+compatibility_date = "2024-09-23"
+# Node.js-ийн crypto зэрэг модулийг ашиглах зөвшөөрөл (api/_lib.js-д хэрэгтэй)
+compatibility_flags = ["nodejs_compat"]

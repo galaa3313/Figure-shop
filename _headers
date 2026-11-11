@@ -1,0 +1,15 @@
+# Cloudflare Pages: бүх хуудасны аюулгүй байдлын толгой (vercel.json-тай ижил)
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Strict-Transport-Security: max-age=63072000; includeSubDomains
+
+# Зургууд: 1 жил хадгална
+/img/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Серверийн код болон SQL-ийг гаднаас нээлттэй харуулахгүй (зөвхөн /api/* функцээр)
+/api/_*
+  X-Robots-Tag: noindex

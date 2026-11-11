@@ -2842,7 +2842,7 @@ function acctView(v, email){
   };
   // ----- 6 оронтой код оруулах -----
   if (v === "verify" || v === "reset") B.innerHTML = `<form class="acct" id="af">
-      <p class="desc"><b>${esc(email)}</b> хаяг руу имэйл илгээлээ. Spam хавтсаа ч шалгаарай. Имэйлд <b>6 оронтой код</b> ирсэн бол доор оруулна, <b>холбоос</b> ирсэн бол түүн дээр дарахад шууд нэвтэрнэ.</p>
+      <p class="desc"><b>${esc(email)}</b> хаяг руу имэйл илгээлээ. Spam хавтсаа ч шалгаарай. Имэйлд <b>баталгаажуулах код</b> ирсэн бол доор оруулна, <b>холбоос</b> ирсэн бол түүн дээр дарахад шууд нэвтэрнэ.</p>
       <label>Баталгаажуулах код<input id="a-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" pattern="\\d{6,8}" class="codein" required></label>
       ${v === "reset" ? `<label>Шинэ нууц үг<input id="a-pw" type="password" autocomplete="new-password" placeholder="8+ тэмдэгт, үсэг ба тоо" required></label>` : ""}
       <p class="aerr" id="aerr"></p>

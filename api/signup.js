@@ -28,7 +28,18 @@ module.exports = async (req, res) => {
   if (password.length < 8 || password.length > 72 || !/[a-zA-Z]/.test(password) || !/\d/.test(password)) return res.status(400).json({ ok: false, error: "password" });
   try {
     // Нэр эсвэл имэйл аль хэдийн бүртгэлтэй эсэхийг шалгана
-    const taken = await SB.rest(`profiles?or=(username.eq.${encodeURIComponent(username)},email.eq.${encodeURIComponent(email)})&select=username,email`);
+    let taken = await SB.rest(`profiles?or=(username.eq.${encodeURIComponent(username)},email.eq.${encodeURIComponent(email)})&select=id,username,email`);
+    // Энэ имэйлээр өмнө бүртгүүлээд кодоо оруулаагүй (баталгаажаагүй) бол хуучин бүртгэлийг устгаж дахин бүртгүүлэх боломж өгнө
+    const mine = (taken || []).find(t => t.email === email);
+    if (mine) {
+      const ar = await fetch(`${SB.URL_()}/auth/v1/admin/users/${encodeURIComponent(mine.id)}`, { headers: { apikey: process.env.SUPABASE_SERVICE_KEY, Authorization: "Bearer " + process.env.SUPABASE_SERVICE_KEY } });
+      const au = ar.ok ? await ar.json().catch(() => ({})) : {};
+      if (ar.ok && !au.email_confirmed_at && !au.confirmed_at) {
+        // Баталгаажаагүй хуучин бүртгэл: устгана (профайл нь хамт устна)
+        await fetch(`${SB.URL_()}/auth/v1/admin/users/${encodeURIComponent(mine.id)}`, { method: "DELETE", headers: { apikey: process.env.SUPABASE_SERVICE_KEY, Authorization: "Bearer " + process.env.SUPABASE_SERVICE_KEY } });
+        taken = taken.filter(t => t.id !== mine.id);
+      }
+    }
     if (taken && taken.length) return res.status(409).json({ ok: false, error: taken.some(t => t.username === username) ? "username_taken" : "email_taken" });
     // Supabase-д бүртгэнэ: тэр өөрөө имэйл рүү 6 оронтой код илгээнэ
     // Баталгаажуулах холбоос дарсны дараа үргэлж үндсэн сайт руу буцаана

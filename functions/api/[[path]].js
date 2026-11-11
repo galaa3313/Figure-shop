@@ -39,8 +39,13 @@ export async function onRequest(ctx) {
   headers["x-forwarded-for"] = request.headers.get("cf-connecting-ip") || headers["x-forwarded-for"] || "";
   let body = {};
   if (request.method !== "GET" && request.method !== "HEAD") {
+    // Хэт том хүсэлтийг (64KB-аас их) шууд татгалзана — манай API-д ийм том өгөгдөл хэрэггүй
+    const MAX = 64 * 1024;
+    if (Number(headers["content-length"] || 0) > MAX) return new Response(JSON.stringify({ ok: false, error: "too_large" }), { status: 413, headers: { "Content-Type": "application/json" } });
     const ct = headers["content-type"] || "";
     const text = await request.text();
+    // Content-length бичээгүй ч бодит хэмжээг дахин шалгана
+    if (text.length > MAX) return new Response(JSON.stringify({ ok: false, error: "too_large" }), { status: 413, headers: { "Content-Type": "application/json" } });
     if (ct.includes("application/json")) { try { body = JSON.parse(text || "{}"); } catch (e) { body = {}; } }
     else if (ct.includes("application/x-www-form-urlencoded")) body = Object.fromEntries(new URLSearchParams(text));
     else body = text;

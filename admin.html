@@ -304,6 +304,17 @@ textarea{overflow:hidden}
   /* Хүснэгт (захиалга, хэрэглэгч) */
   table{font-size:14.5px}
 }
+/* ===== Олноор оруулах ===== */
+.bk{border:1px solid var(--line);padding:16px;margin-bottom:20px;display:grid;gap:14px}
+.bk h3{margin:0;font-size:16px}
+.bk ol{margin:0;padding-left:18px;font-size:13px;line-height:1.7;color:var(--muted)}
+.bk .pick{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.bk .pick label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted)}
+.bk td.e{color:#e5172f;font-weight:600}
+.bk td.w{color:#b26b00}
+.bk td.g{color:#14853b;font-weight:600}
+.bk tr.bad td{background:#fff5f5}
+.bk .sum{font-size:14px;font-weight:600}
 </style>
 </head>
 <body>
@@ -464,6 +475,179 @@ async function upload(file, folder){
   return putImg(await shrink(file, folder === "slides" ? 2000 : 1400), folder);
 }
 
+// ===== БАРААГ ОЛНООР ОРУУЛАХ (Excel / CSV + зургууд) =====
+// Загварын баганууд (Excel-ийн эхний мөр). * тэмдэгтэй нь заавал бөглөнө.
+const BK_COLS = ["Нэр*", "Ангилал*", "Үнэ*", "Хуучин үнэ", "Брэнд", "Нэмэлт мөр", "Тайлбар", "Сонголт", "Захиалгаар", "Тэмдэг", "Зураг", "Харуулах"];
+// Загвар файл татах (Excel-д кирилл зөв харагдахаар UTF-8 BOM-тэй CSV)
+function bkTemplate(){
+  const cats = Object.values(CATS);
+  const rows = [BK_COLS,
+    ["ЖИШЭЭ: Oversize цамц", cats[0] || "Цамц", "89000", "120000", "Asaky Prezaky", "Солонгос брэнд", "Хөвөн даавуу, чөлөөт загвар", "Өнгө: Хар, Цагаан | Хэмжээ: S, M, L", "тийм", "Шинэ", "tsamts1.jpg, tsamts2.jpg", "тийм"],
+    ["ЖИШЭЭ: Зоро фигур", cats[cats.length - 1] || "Фигур", "150000", "", "One Piece", "Banpresto", "25 см өндөр", "", "үгүй", "", "zoro.jpg", "тийм"]];
+  // Нэг нүдэнд таслал, хашилт байвал хашилтад хийнэ
+  const cell = v => /[",\n;]/.test(v) ? `"${String(v).replace(/"/g, '""')}"` : v;
+  const csv = "﻿" + rows.map(r => r.map(cell).join(",")).join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  a.download = "finn-baraa-zagvar.csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+// CSV текстийг мөр, баганад задална (хашилт доторх таслал, шинэ мөрийг зөв ойлгоно; "," эсвэл ";" тусгаарлагч)
+function bkCsv(t){
+  t = t.replace(/^﻿/, "");
+  const first = t.split(/\r?\n/)[0] || "";
+  const sep = (first.match(/;/g) || []).length > (first.match(/,/g) || []).length ? ";" : ",";
+  const rows = []; let row = [], cur = "", q = false;
+  for (let i = 0; i < t.length; i++) {
+    const c = t[i];
+    if (q) { if (c === '"' && t[i + 1] === '"') { cur += '"'; i++; } else if (c === '"') q = false; else cur += c; }
+    else if (c === '"') q = true;
+    else if (c === sep) { row.push(cur); cur = ""; }
+    else if (c === "\n" || c === "\r") { if (c === "\r" && t[i + 1] === "\n") i++; row.push(cur); rows.push(row); row = []; cur = ""; }
+    else cur += c;
+  }
+  if (cur !== "" || row.length) { row.push(cur); rows.push(row); }
+  return rows;
+}
+// Excel (.xlsx) файлыг уншихын тулд SheetJS санг хэрэгтэй үед л ачаална
+function bkXlsxLib(){
+  if (window.XLSX) return Promise.resolve(window.XLSX);
+  return new Promise((ok, no) => {
+    const sc = document.createElement("script");
+    sc.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+    sc.onload = () => ok(window.XLSX); sc.onerror = () => no(new Error("Excel уншигч ачаалсангүй — CSV-ээр хадгалаад оролдоно уу"));
+    document.head.appendChild(sc);
+  });
+}
+// Файлыг (CSV эсвэл Excel) мөрүүдийн массив болгоно
+async function bkRead(file){
+  if (/\.xlsx?$/i.test(file.name)) {
+    const X = await bkXlsxLib();
+    const wb = X.read(await file.arrayBuffer(), { type: "array" });
+    return X.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false, defval: "" });
+  }
+  return bkCsv(await file.text());
+}
+// "тийм / yes / 1 / x" → true
+const bkYes = (v, def) => { v = String(v || "").trim().toLowerCase(); if (!v) return def; return /^(тийм|тиим|tiim|yes|y|1|x|✓|true|за)$/.test(v); };
+// "89'000₮", "89 000", "89,000" → 89000
+const bkNum = v => { const n = Number(String(v || "").replace(/[\s'’,₮]/g, "").replace(/төг.*$/i, "")); return isFinite(n) ? Math.round(n) : NaN; };
+// Мөр бүрийг шалгаж барааны мэдээлэл болгоно (алдаа, анхааруулгатай)
+function bkCheck(rows, files, existing){
+  // Эхний мөр гарчиг: баганын байрлалыг нэрээр нь олно (дараалал өөр байсан ч болно)
+  const head = (rows[0] || []).map(h => String(h).replace(/\*/g, "").trim().toLowerCase());
+  const col = name => head.indexOf(name.replace("*", "").toLowerCase());
+  const C = Object.fromEntries(BK_COLS.map(n => [n.replace("*", ""), col(n)]));
+  if (C["Нэр"] < 0 || C["Ангилал"] < 0 || C["Үнэ"] < 0) return { fatal: "Эхний мөрөнд «Нэр», «Ангилал», «Үнэ» баганууд олдсонгүй. Загвар файлыг ашиглана уу." };
+  // Сонгосон зургийн файлуудыг нэрээр нь (жижиг үсгээр) олно
+  const fmap = new Map([...files].map(f => [f.name.trim().toLowerCase(), f]));
+  // Ангиллыг нэр эсвэл ID-аар таниулна
+  const catOf = v => { v = String(v || "").trim().toLowerCase(); return Object.keys(CATS).find(k => k === v || String(CATS[k]).toLowerCase() === v); };
+  const names = new Set(existing.map(x => String(x.name).trim().toLowerCase()));
+  const out = [];
+  rows.slice(1).forEach((r, i) => {
+    const g = k => C[k] >= 0 ? String(r[C[k]] ?? "").trim() : "";
+    // Хоосон мөр болон жишээ мөрийг алгасна
+    if (!r.some(v => String(v).trim())) return;
+    if (/^жишээ/i.test(g("Нэр"))) return;
+    const e = [], w = [];
+    const name = g("Нэр"); if (!name) e.push("нэр хоосон");
+    const cat = catOf(g("Ангилал")); if (!cat) e.push(`ангилал «${g("Ангилал")}» буруу`);
+    const price = bkNum(g("Үнэ")); if (!(price > 0)) e.push("үнэ буруу");
+    let was = g("Хуучин үнэ") ? bkNum(g("Хуучин үнэ")) : null;
+    if (was !== null && !(was > 0)) { w.push("хуучин үнэ буруу тул хаслаа"); was = null; }
+    if (was && was <= price) { w.push("хуучин үнэ шинэ үнээс бага тул хаслаа"); was = null; }
+    let badge = g("Тэмдэг"); if (badge && !["Шинэ", "Хит", "Хямдрал", "Онцлох"].includes(badge)) { w.push(`тэмдэг «${badge}» танигдсангүй`); badge = ""; }
+    // Сонголт: "Өнгө: Хар, Цагаан | Хэмжээ: S, M" → мөр мөрөөр
+    const options = parseOpts(g("Сонголт").split(/\s*[|\n]\s*/).join("\n"));
+    if (g("Сонголт") && !options.length) w.push("сонголтын бичлэг буруу (жишээ: Өнгө: Хар, Цагаан)");
+    // Зураг: файлын нэр эсвэл https:// холбоос
+    const imgs = [];
+    for (const n of g("Зураг").split(/[,;\n]/).map(x => x.trim()).filter(Boolean)) {
+      if (/^https:\/\//i.test(n)) imgs.push({ url: n });
+      else if (fmap.has(n.toLowerCase())) imgs.push({ file: fmap.get(n.toLowerCase()) });
+      else e.push(`зураг «${n}» сонгогдоогүй`);
+    }
+    if (!imgs.length && !e.length) w.push("зураггүй");
+    if (name && names.has(name.toLowerCase())) w.push("ижил нэртэй бараа аль хэдийн байна");
+    names.add(name.toLowerCase());
+    out.push({ line: i + 2, e, w, imgs, row: { cat, name, series: g("Брэнд"), line: g("Нэмэлт мөр"), price, was, badge: badge || null,
+      descr: g("Тайлбар"), options, pre: bkYes(g("Захиалгаар"), true), active: bkYes(g("Харуулах"), true), extra: {} } });
+  });
+  return { list: out };
+}
+// Олноор оруулах цонх
+function showBulk(existing){
+  let files = [], checked = null, rows = null;
+  $("pform").innerHTML = `<div class="bk">
+    <div class="bar" style="margin:0"><h3>📥 Барааг олноор оруулах</h3><button class="btn" id="bkx" type="button">Хаах</button></div>
+    <ol>
+      <li><a href="#" id="bkt">⬇ Загвар файл татах</a> → Excel эсвэл Google Sheets-ээр нээж бөглөнө (1 мөр = 1 бараа). «ЖИШЭЭ» мөрүүдийг алгасна.</li>
+      <li><b>Ангилал</b>: ${Object.values(CATS).map(esc).join(", ")}. <b>Сонголт</b>: <code>Өнгө: Хар, Цагаан | Хэмжээ: S, M</code>. <b>Захиалгаар / Харуулах</b>: тийм / үгүй.</li>
+      <li><b>Зураг</b> баганад зургийн файлын нэрийг (жишээ <code>tsamts1.jpg, tsamts2.jpg</code>) бичээд, доор тэр зургуудыг бүгдийг нь нэг дор сонгоно.</li>
+      <li>Шалгаж үзээд «Оруулах» дарна. Алдаатай мөрийг оруулахгүй.</li>
+    </ol>
+    <div class="pick">
+      <label>Excel / CSV файл<input type="file" id="bkf" accept=".csv,.xlsx,.xls,text/csv"></label>
+      <label>Зургууд (олныг зэрэг сонгоно)<input type="file" id="bki" accept="image/*" multiple></label>
+    </div>
+    <div id="bkres"></div>
+  </div>`;
+  $("bkx").onclick = () => { $("pform").innerHTML = ""; };
+  $("bkt").onclick = e => { e.preventDefault(); bkTemplate(); };
+  // Файл эсвэл зураг сонгох бүрт дахин шалгана
+  const run = () => {
+    if (!rows) return;
+    checked = bkCheck(rows, files, existing);
+    if (checked.fatal) { $("bkres").innerHTML = `<p class="mut" style="color:#e5172f">${esc(checked.fatal)}</p>`; return; }
+    const L = checked.list, good = L.filter(x => !x.e.length);
+    $("bkres").innerHTML = !L.length ? `<p class="mut">Бөглөсөн мөр алга.</p>` : `
+      <p class="sum">${L.length} мөрөөс <span style="color:#14853b">${good.length} бэлэн</span>${L.length - good.length ? ` · <span style="color:#e5172f">${L.length - good.length} алдаатай</span>` : ""}</p>
+      <div class="tbl"><table><thead><tr><th>Мөр</th><th>Нэр</th><th>Ангилал</th><th>Үнэ</th><th>Зураг</th><th>Төлөв</th></tr></thead><tbody>
+      ${L.map(x => `<tr class="${x.e.length ? "bad" : ""}"><td>${x.line}</td><td>${esc(x.row.name)}<small>${esc(x.row.series || "")}</small></td><td>${esc(CATS[x.row.cat] || "—")}</td>
+        <td>${x.row.price > 0 ? x.row.price.toLocaleString() + "₮" : "—"}</td><td>${x.imgs.length}</td>
+        <td class="${x.e.length ? "e" : x.w.length ? "w" : "g"}">${x.e.length ? "✕ " + esc(x.e.join("; ")) : x.w.length ? "⚠ " + esc(x.w.join("; ")) : "✓ Бэлэн"}</td></tr>`).join("")}
+      </tbody></table></div>
+      <div class="upbar" id="bkbar" hidden><b></b></div>
+      <div class="bar" style="margin:0"><span class="mut" id="bkmsg" style="margin-right:auto"></span>
+        <button class="btn dark" id="bkgo" type="button" ${good.length ? "" : "disabled"}>✓ ${good.length} бараа оруулах</button></div>`;
+    if ($("bkgo")) $("bkgo").onclick = () => bkImport(good, existing);
+  };
+  $("bkf").onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    $("bkres").innerHTML = `<p class="mut">Уншиж байна…</p>`;
+    try { rows = await bkRead(f); run(); } catch (err) { rows = null; $("bkres").innerHTML = `<p class="mut" style="color:#e5172f">Файл уншиж чадсангүй: ${esc(err.message || err)}</p>`; }
+  };
+  $("bki").onchange = e => { files = [...e.target.files]; run(); if (!rows) $("bkres").innerHTML = `<p class="mut">${files.length} зураг сонголоо. Одоо Excel/CSV файлаа сонгоно уу.</p>`; };
+}
+// Шалгалт давсан мөрүүдийг зурагтай нь хамт мэдээллийн санд оруулна
+async function bkImport(good, existing){
+  if (!confirm(`${good.length} бараа оруулах уу?`)) return;
+  const go = $("bkgo"); go.disabled = true; $("bkx").disabled = true;
+  const bar = $("bkbar"); bar.hidden = false;
+  // ID-г нэрнээс үүсгэнэ (кирилл → латин), давхардвал ард нь тэмдэгт нэмнэ
+  const TR = { а:"a",б:"b",в:"v",г:"g",д:"d",е:"e",ё:"yo",ж:"j",з:"z",и:"i",й:"i",к:"k",л:"l",м:"m",н:"n",о:"o",ө:"u",п:"p",р:"r",с:"s",т:"t",у:"u",ү:"u",ф:"f",х:"h",ц:"ts",ч:"ch",ш:"sh",щ:"sh",ъ:"",ы:"y",ь:"",э:"e",ю:"yu",я:"ya" };
+  const used = new Set(existing.map(x => x.id));
+  const mkId = n => { let v = String(n).toLowerCase().split("").map(c => TR[c] ?? c).join("").replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").replace(/-{2,}/g, "-").slice(0, 34) || "item";
+    while (used.has(v)) v = v.slice(0, 34) + "-" + Math.random().toString(36).slice(2, 6); used.add(v); return v; };
+  // Шинэ барааг жагсаалтын хамгийн дээр, Excel-ийн дарааллаар байрлуулна
+  let top = Math.max(0, ...existing.map(x => Number(x.sort) || 0)) + good.length;
+  let ok = 0, bad = 0; const fails = [];
+  for (const [n, x] of good.entries()) {
+    $("bkmsg").textContent = `Оруулж байна… ${n + 1}/${good.length} · ${x.row.name}`;
+    try {
+      const id = mkId(x.row.name), images = [];
+      // Зургийг шахаж хадгална (холбоос бол шууд)
+      for (const im of x.imgs) images.push(im.url || await upload(im.file, id));
+      const { error } = await sb.from("products").insert({ ...x.row, id, images, sort: top-- });
+      if (error) throw error;
+      ok++;
+    } catch (err) { bad++; fails.push(`${x.line}-р мөр (${x.row.name}): ${err.message || err}`); }
+    bar.firstElementChild.style.width = Math.round((n + 1) / good.length * 100) + "%";
+  }
+  alert(`Дууслаа ✓\n\nОрсон: ${ok} бараа${bad ? `\nАлдаа: ${bad}\n\n${fails.slice(0, 8).join("\n")}` : ""}`);
+  showProducts();
+}
+
 // ===== ХУУЧИН ТОМ ЗУРГУУДЫГ ШАХАХ (нэг удаа ажиллуулна) =====
 // Манай Storage-ийн зураг мөн эсэх
 const OUR_IMG = "/storage/v1/object/public/products/";
@@ -545,6 +729,7 @@ async function showProducts(editId){
   $("main").innerHTML = `
     <div class="bar"><h2>Бараа <small style="color:var(--muted);font-weight:400">(${list.length})</small></h2>
       <input id="pq" placeholder="Нэр, брэндээр хайх" style="max-width:220px">
+      <button class="btn" id="pbulk" title="Excel / CSV файлаас олон барааг зурагтай нь нэг дор оруулна">📥 Олноор оруулах</button>
       <button class="btn" id="ptest" title="100₮-ийн туршилтын бараа. Асаалттай үед зөвхөн finn.mn/#qpaytest хаягаар харагдана">🧪 Туршилт: ${testOn ? "Асаалттай" : "Унтраалттай"}</button>
       <button class="btn" id="pslim" title="Хуучин том зургуудыг жижигрүүлж сайтыг хурдасгана">🗜 Зургуудыг шахах</button>
       <button class="btn dark" id="pnew">+ Шинэ бараа</button></div>
@@ -572,6 +757,8 @@ async function showProducts(editId){
   $("pnew").onclick = () => showProducts("new");
   // Хуучин том зургуудыг шахах товч
   $("pslim").onclick = e => slimAll(e.currentTarget);
+  // Олноор оруулах цонх
+  $("pbulk").onclick = () => { showBulk(list); $("pform").scrollIntoView({ behavior: "smooth" }); };
   // QPay туршилтын барааг асаах / унтраах (унтраалттай үед хэн ч захиалж чадахгүй — сервер татгалзана)
   $("ptest").onclick = async e => {
     const on = !testOn;

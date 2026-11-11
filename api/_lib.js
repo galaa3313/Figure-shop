@@ -1,6 +1,6 @@
 // FINN серверийн туслах функцууд (Vercel энэ файлыг хаяг болгож нээхгүй, учир нь "_"-ээр эхэлдэг).
-// Нууц гарын үсэг (HMAC) үүсгэх Node-ийн сан
-const crypto = require("crypto");
+// Нууц гарын үсэг (HMAC) үүсгэх Node-ийн сан ("node:" угтвар — Vercel болон Cloudflare хоёуланд ажиллана)
+const crypto = require("node:crypto");
 // Бараа, үнийн жагсаалт (_products.js)
 const PRODUCTS = require("./_products.js");
 // Supabase туслах (админы нэмсэн бараа, захиалгын хүснэгт)

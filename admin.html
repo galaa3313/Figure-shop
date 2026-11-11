@@ -278,6 +278,32 @@ textarea{overflow:hidden}
 .btn.done{background:#14853b!important;border-color:#14853b!important;color:#fff!important}
 .he.flash{animation:flash 2s ease-out}
 @keyframes flash{0%{background:#e6f4ea}100%{background:transparent}}
+
+/* ===== КОМПЬЮТЕР: админ дэлгэцийг дүүргэж, толгойтой нэг шугамд ===== */
+@media (min-width:1100px){
+  /* Толгой ба агуулга ижил өргөн (1680px хүртэл), ирмэг нь таарна */
+  header{padding-left:max(24px,3vw)!important;padding-right:max(24px,3vw)!important}
+  header>*:first-child{margin-left:max(0px,calc((100vw - 1680px)/2))}
+  header>*:last-child{margin-right:max(0px,calc((100vw - 1680px)/2))}
+  main,main:has(.slay){max-width:1680px!important;padding-left:max(24px,3vw)!important;padding-right:max(24px,3vw)!important;box-sizing:border-box}
+  /* Үсэг томруулна */
+  body{font-size:15px}
+  nav button{font-size:15px}
+  main h2{font-size:24px}
+  /* Тохиргоо: зүүн цэс өргөн, карт томсгосон */
+  .slay{grid-template-columns:240px minmax(0,1fr)!important;gap:32px!important}
+  .slay .snav a{font-size:15px!important;padding:11px 14px!important}
+  .scard{padding:28px 32px!important}
+  .shead h3{font-size:19px!important}
+  .shead .where{font-size:13.5px!important}
+  .scard label{font-size:13.5px!important}
+  .scard input:not([type=checkbox]):not([type=color]):not([type=file]),.scard select,.scard textarea{font-size:15px!important;padding:12px 14px!important}
+  .scard .mut,.sintro{font-size:13.5px}
+  /* Хадгалах мөр: агуулгатай ижил өргөн */
+  .savebar{margin-left:calc(-1 * max(24px,3vw))!important;margin-right:calc(-1 * max(24px,3vw))!important}
+  /* Хүснэгт (захиалга, хэрэглэгч) */
+  table{font-size:14.5px}
+}
 </style>
 </head>
 <body>

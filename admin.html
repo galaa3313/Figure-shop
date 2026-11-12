@@ -349,6 +349,22 @@ nav button .rq[hidden]{display:none}
 .rqd{margin-top:8px;font-size:12.5px}
 .rqd summary{cursor:pointer;color:var(--muted)}
 .tag.sup{background:#111;color:#ffd84d}
+/* ===== Зураг тайрах цонх ===== */
+.crop{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:12px}
+.cbox{background:#fff;width:100%;max-width:560px;max-height:100%;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.chd{display:flex;flex-direction:column;gap:2px}.chd .mut{font-size:12px}
+.cstage{position:relative;height:min(60vh,460px);background:#1b1b1b;overflow:hidden;touch-action:none;cursor:grab;user-select:none}
+.cstage:active{cursor:grabbing}
+.cstage img{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;pointer-events:none}
+.cframe{position:absolute;box-shadow:0 0 0 9999px rgba(0,0,0,.55);outline:2px solid #fff;pointer-events:none;
+  background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 33.33% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 66.66% 0/1px 100% no-repeat,
+  linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 0 33.33%/100% 1px no-repeat,linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 0 66.66%/100% 1px no-repeat}
+.crat{display:flex;gap:6px;flex-wrap:wrap}
+.crat button{height:36px;padding:0 12px;border:1px solid var(--line);background:#fff;font-size:13px}
+.crat button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.czoom{display:flex;align-items:center;gap:10px;font-size:13px}.czoom input{flex:1}
+.cbtns{display:flex;gap:8px;flex-wrap:wrap}.cbtns .btn{flex:1;min-width:110px}
+.thumbs .tb button.cr{flex:1.2}
 </style>
 </head>
 <body>
@@ -620,6 +636,93 @@ async function putImg(blob, folder){
   if (error) throw error;
   return sb.storage.from("products").getPublicUrl(path).data.publicUrl;
 }
+// ===== ЗУРАГ ТАЙРАХ (бараа оруулахад) =====
+// Сүүлд сонгосон харьцааг санана (дараагийн зурагт ижлээр нь)
+let CROP_RATIO = "3:4";
+// Харьцаанууд: нэр → өргөн/өндөр (null = анхны хэлбэрээр, тайрахгүй)
+const CROP_RATIOS = [["3:4", 3 / 4, "Карт 3:4"], ["1:1", 1, "1:1"], ["4:5", 4 / 5, "4:5"], ["16:9", 16 / 9, "16:9"]];
+// src: File/Blob эсвэл зургийн холбоос. Буцаах утга: тайрсан Blob, "orig" (тайралгүй), "origAll" (үлдсэнийг тайралгүй), null (болих)
+function cropImage(src, label = "", multi = false){
+  return new Promise(async resolve => {
+    // Зургийг ачаална (холбоос бол татаж авна — canvas-д ашиглахын тулд)
+    let url;
+    try { url = typeof src === "string" ? URL.createObjectURL(await (await fetch(src)).blob()) : URL.createObjectURL(src); }
+    catch (e) { toast("Зургийг уншиж чадсангүй"); return resolve(null); }
+    const img = new Image();
+    img.onerror = () => { URL.revokeObjectURL(url); toast("Зургийг уншиж чадсангүй"); resolve(null); };
+    img.onload = () => {
+      const iw = img.naturalWidth, ih = img.naturalHeight;
+      // Цонхны HTML
+      const box = document.createElement("div"); box.className = "crop";
+      box.innerHTML = `<div class="cbox" role="dialog" aria-modal="true" aria-label="Зураг тайрах">
+        <div class="chd"><b>Зураг тайрах ${esc(label)}</b><span class="mut">Чирж байрлуулна · томруулна</span></div>
+        <div class="cstage" id="cstage"><img id="cimg" alt="" draggable="false"><div class="cframe" id="cframe"></div></div>
+        <div class="crat">${CROP_RATIOS.map(([k, , t]) => `<button type="button" data-cr="${k}" class="${k === CROP_RATIO ? "on" : ""}">${t}</button>`).join("")}</div>
+        <label class="czoom"><span>Томруулах</span><input type="range" id="czoom" min="1" max="4" step="0.01" value="1"></label>
+        <div class="cbtns"><button type="button" class="btn" id="cskip">Болих</button>
+          <button type="button" class="btn" id="corig">Тайралгүй</button>${multi ? '<button type="button" class="btn" id="corigall">Үлдсэнийг тайралгүй</button>' : ""}
+          <button type="button" class="btn dark" id="cok">✂ Тайрах</button></div></div>`;
+      document.body.appendChild(box);
+      const stage = box.querySelector("#cstage"), cim = box.querySelector("#cimg"), frame = box.querySelector("#cframe"), zoom = box.querySelector("#czoom");
+      cim.src = url;
+      // Байдал: frame (тайрах хүрээ), s (харуулах масштаб), x,y (зургийн зүүн дээд булан)
+      let W, H, fx, fy, fw, fh, s0, s, x, y;
+      const ratio = () => (CROP_RATIOS.find(r => r[0] === CROP_RATIO) || CROP_RATIOS[0])[1];
+      // Зураг хүрээг бүрэн бүрхсэн байхаар хязгаарлана (хоосон зай гарахгүй)
+      const clamp = () => { x = Math.min(fx, Math.max(fx + fw - iw * s, x)); y = Math.min(fy, Math.max(fy + fh - ih * s, y)); };
+      const paint = () => { cim.style.width = iw * s + "px"; cim.style.height = ih * s + "px"; cim.style.transform = `translate(${x}px,${y}px)`;
+        frame.style.left = fx + "px"; frame.style.top = fy + "px"; frame.style.width = fw + "px"; frame.style.height = fh + "px"; };
+      // Харьцаа солих/эхлэх: хүрээг төвд байрлуулж, зургийг хүрээнд таарч бүрхэхээр тохируулна
+      const layout = () => {
+        W = stage.clientWidth; H = stage.clientHeight;
+        const r = ratio(), pad = 16;
+        fw = Math.min(W - pad * 2, (H - pad * 2) * r); fh = fw / r;
+        fx = (W - fw) / 2; fy = (H - fh) / 2;
+        s0 = Math.max(fw / iw, fh / ih); s = s0 * Number(zoom.value);
+        x = fx + (fw - iw * s) / 2; y = fy + (fh - ih * s) / 2; clamp(); paint();
+      };
+      // Хүрээний төвийг тогтоож томруулна
+      const setZoom = z => {
+        z = Math.min(4, Math.max(1, z)); const cx = fx + fw / 2, cy = fy + fh / 2;
+        const ns = s0 * z; x = cx - (cx - x) * ns / s; y = cy - (cy - y) * ns / s; s = ns; zoom.value = z; clamp(); paint();
+      };
+      layout();
+      zoom.oninput = () => setZoom(Number(zoom.value));
+      // Хулганы дугуйгаар томруулах
+      stage.addEventListener("wheel", e => { e.preventDefault(); setZoom(Number(zoom.value) * (e.deltaY < 0 ? 1.08 : 1 / 1.08)); }, { passive: false });
+      // Чирэх (нэг хуруу/хулгана) ба хоёр хуруугаар томруулах
+      const pts = new Map(); let last = null, pinch = null;
+      stage.addEventListener("pointerdown", e => { stage.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); last = { x: e.clientX, y: e.clientY };
+        if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), z: Number(zoom.value) }; } });
+      stage.addEventListener("pointermove", e => {
+        if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (pts.size === 2 && pinch) { const [a, b] = [...pts.values()]; setZoom(pinch.z * Math.hypot(a.x - b.x, a.y - b.y) / pinch.d); return; }
+        if (pts.size === 1 && last) { x += e.clientX - last.x; y += e.clientY - last.y; last = { x: e.clientX, y: e.clientY }; clamp(); paint(); }
+      });
+      const up = e => { pts.delete(e.pointerId); if (pts.size < 2) pinch = null; last = pts.size === 1 ? [...pts.values()][0] : null; };
+      stage.addEventListener("pointerup", up); stage.addEventListener("pointercancel", up);
+      // Харьцааны товч
+      box.querySelectorAll("[data-cr]").forEach(b => b.onclick = () => { CROP_RATIO = b.dataset.cr; box.querySelectorAll("[data-cr]").forEach(x => x.classList.toggle("on", x === b)); zoom.value = 1; layout(); });
+      // Цонх хэмжээ өөрчлөгдвөл дахин байрлуулна
+      const onResize = () => layout(); addEventListener("resize", onResize);
+      const done = v => { removeEventListener("resize", onResize); box.remove(); URL.revokeObjectURL(url); resolve(v); };
+      box.querySelector("#cskip").onclick = () => done(null);
+      box.querySelector("#corig").onclick = () => done("orig");
+      if (box.querySelector("#corigall")) box.querySelector("#corigall").onclick = () => done("origAll");
+      // Тайрах: хүрээн доторх хэсгийг анхны нягтралаар нь зурж авна (дээд тал нь 2400px)
+      box.querySelector("#cok").onclick = () => {
+        const sx = (fx - x) / s, sy = (fy - y) / s, sw = fw / s, sh = fh / s;
+        const k = Math.min(1, 2400 / Math.max(sw, sh));
+        const c = document.createElement("canvas"); c.width = Math.round(sw * k); c.height = Math.round(sh * k);
+        const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+        g.imageSmoothingQuality = "high"; g.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
+        c.toBlob(b => b ? done(b) : (toast("Тайрч чадсангүй"), done("orig")), "image/jpeg", .95);
+      };
+    };
+    img.src = url;
+  });
+}
+
 // Зургийг Supabase Storage-д ("products" сан) хадгалж нийтийн холбоосыг буцаана
 async function upload(file, folder){
   return putImg(await shrink(file, folder === "slides" ? 2000 : 1400), folder);
@@ -973,10 +1076,19 @@ function productForm(p, isNew){
   // Оруулж байгаа зургуудын төлөв: "up" = орж байна, "bad" = алдаа
   let pending = [];
   const drawThumbs = () => {
-    $("thumbs").innerHTML = (images.map((u, i) => `<figure ${i === 0 ? 'class="main"' : ""}><img src="${esc(u)}" alt=""><div class="tb"><button type="button" data-l="${i}" ${i === 0 ? "disabled" : ""}>←</button><button type="button" data-r="${i}" ${i === images.length - 1 ? "disabled" : ""}>→</button><button type="button" data-x="${i}">×</button></div>${i === 0 ? "<em>Гол</em>" : ""}</figure>`).join("") || (pending.length ? "" : '<p class="mut">Зураг алга.</p>')) + pending.map(x => `<figure class="up ${x === "bad" ? "bad" : ""}">${x === "bad" ? "⚠ Алдаа" : "<i></i>Оруулж байна"}</figure>`).join("");
+    $("thumbs").innerHTML = (images.map((u, i) => `<figure ${i === 0 ? 'class="main"' : ""}><img src="${esc(u)}" alt=""><div class="tb"><button type="button" data-l="${i}" ${i === 0 ? "disabled" : ""}>←</button><button type="button" data-r="${i}" ${i === images.length - 1 ? "disabled" : ""}>→</button><button type="button" class="cr" data-c="${i}" title="Тайрах">✂</button><button type="button" data-x="${i}">×</button></div>${i === 0 ? "<em>Гол</em>" : ""}</figure>`).join("") || (pending.length ? "" : '<p class="mut">Зураг алга.</p>')) + pending.map(x => `<figure class="up ${x === "bad" ? "bad" : ""}">${x === "bad" ? "⚠ Алдаа" : "<i></i>Оруулж байна"}</figure>`).join("");
     $("thumbs").querySelectorAll("[data-l]").forEach(b => b.onclick = () => { const i = +b.dataset.l; [images[i - 1], images[i]] = [images[i], images[i - 1]]; drawThumbs(); });
     $("thumbs").querySelectorAll("[data-r]").forEach(b => b.onclick = () => { const i = +b.dataset.r; [images[i + 1], images[i]] = [images[i], images[i + 1]]; drawThumbs(); });
     $("thumbs").querySelectorAll("[data-x]").forEach(b => b.onclick = () => { images.splice(+b.dataset.x, 1); drawThumbs(); });
+    // ✂ Оруулсан зургийг дахин тайрч, шинэ зургаар сольно
+    $("thumbs").querySelectorAll("[data-c]").forEach(b => b.onclick = async () => {
+      const i = +b.dataset.c, r = await cropImage(images[i]);
+      if (!r || r === "orig") return;
+      busy(+1); $("pmsg").className = "mut"; $("pmsg").textContent = "Тайрсан зургийг оруулж байна…";
+      try { images[i] = await upload(r, $("p-id").value || "new"); drawThumbs(); $("pmsg").className = "ok"; $("pmsg").textContent = "✓ Зураг тайрагдлаа"; }
+      catch (err) { $("pmsg").className = "err"; $("pmsg").textContent = "⚠ Алдаа: " + (err.message || err); }
+      busy(-1);
+    });
   };
   drawThumbs();
   // ID-г зөв хэлбэрт оруулна: жижиг латин үсэг, тоо, "-" (утас том үсгээр эхлүүлэх, кирилл бичихийг засна)
@@ -997,7 +1109,17 @@ function productForm(p, isNew){
   let uploading = 0;
   const busy = d => { uploading += d; $("psave").disabled = uploading > 0; $("psave").textContent = uploading > 0 ? "Зураг оруулж байна…" : "Хадгалах"; };
   $("pfiles").onchange = async e => {
-    const files = [...e.target.files]; e.target.value = "";
+    const picked = [...e.target.files]; e.target.value = "";
+    if (!picked.length) return;
+    // Зураг бүрийг эхлээд тайрах цонхонд харуулна (тайрах / тайралгүй / болих)
+    const files = []; let skipCrop = false;
+    for (const [n, f] of picked.entries()) {
+      if (skipCrop) { files.push(f); continue; }
+      const r = await cropImage(f, picked.length > 1 ? `(${n + 1}/${picked.length})` : "", picked.length > 1 && n < picked.length - 1);
+      if (r === null) continue;
+      if (r === "origAll") { skipCrop = true; files.push(f); continue; }
+      files.push(r === "orig" ? f : r);
+    }
     if (!files.length) return;
     // Нэр бичээгүй байсан ч зургийг "new" хавтсанд оруулна
     const folder = $("p-id").value || (isNew && $("p-name").value.trim() ? makeId() : "") || "new";

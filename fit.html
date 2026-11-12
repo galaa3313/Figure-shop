@@ -187,18 +187,162 @@ main{padding:18px 0 40px;min-height:60vh}
 .sw a[aria-current=page]{background:var(--ink);color:#fff}
 .sw a:not([aria-current]):hover{background:var(--bg2)}
 @media (max-width:420px){ .sw a{min-width:36px;padding:0 8px;font-size:10px} .logo{font-size:19px} .acct{padding:0 10px;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} }
+
+/* =====================================================================
+   ДЭЛГҮҮРТЭЙ ИЖИЛ ХЭВ МАЯГ: өргөн хуудас, төвд лого, том гарчиг, хөдөлгөөн
+   ===================================================================== */
+body{line-height:1.55;overflow-x:clip}
+/* Хуудасны өргөн дэлгүүртэй адил (1400px, 2.5vw зай) */
+.wrap{max-width:1400px;padding-left:max(16px,env(safe-area-inset-left,0px),2.5vw);padding-right:max(16px,env(safe-area-inset-right,0px),2.5vw)}
+/* Унших хуудсууд (хичээл, хоол, нийгэмлэг…) хэт өргөн болохгүй */
+#main[data-w="0"]{max-width:920px}
+/* Дээд мөр: зүүн — цэс, төв — лого + шилжүүлэгч, баруун — админ, бүртгэл */
+.top{background:rgba(255,255,255,.94);backdrop-filter:blur(10px)}
+.top .bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;height:auto;padding-block:14px}
+.hnav{display:flex;gap:22px;align-items:center}
+.hnav a{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--ink);padding:6px 0;border-bottom:1px solid transparent;transition:border-color .2s,color .2s}
+.hnav a:hover{color:var(--muted)}
+.hnav a[aria-current=page]{border-bottom-color:var(--ink)}
+.brandsw{justify-self:center;display:flex;align-items:center;gap:14px}
+.logo{color:var(--ink)}
+.logo svg.lg{height:22px;width:auto;display:block}
+.hright{justify-self:end;display:flex;align-items:center;gap:8px}
+/* hidden шинжтэй элемент үргэлж нуугдана (админ товч энгийн хэрэглэгчид харагдахгүй) */
+[hidden]{display:none!important}
+.adm{height:40px;padding:0 14px;border:1px solid var(--red);color:var(--red);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:background .2s,color .2s}
+.adm:hover{background:var(--red);color:#fff}
+.acct{transition:background .2s,color .2s}
+.acct:hover{background:#fff;color:var(--ink)}
+.acct.on:hover{background:var(--ink);color:#fff}
+/* Компьютер дээр доод цэсийг нууна (дээд мөрөнд цэс байгаа) */
+@media (min-width:900px){ .tabs{display:none} }
+@media (max-width:899px){
+  .hnav{display:none}
+  .top .bar{grid-template-columns:auto 1fr;padding-block:10px}
+  .brandsw{justify-self:start;gap:10px}
+  .logo svg.lg{height:17px}
+}
+@media (max-width:420px){ .adm{padding:0 9px;font-size:11px} .hright{gap:6px} }
+/* Хэсгийн гарчиг: дэлгүүр шиг ТОМ ҮСЭГ, зайтай */
+.sec{margin-top:clamp(36px,5vw,64px)}
+.sechd{margin-bottom:18px;align-items:center}
+.sechd h2{font-size:clamp(16px,1.8vw,20px);font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.sechd a{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:2px}
+/* Товчнууд: хөдөлгөөнтэй */
+.btn{transition:background .2s,color .2s,transform .2s}
+.btn:hover{background:#fff;color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:#fff}
+.btn:active{transform:scale(.98)}
+/* ----- НҮҮРНИЙ ТОМ ЗУРАГ (дэлгэцийн бүтэн өргөнөөр) ----- */
+.lb{position:relative;margin-inline:calc(50% - 50vw);margin-top:-18px;min-height:clamp(440px,74vh,760px);display:grid;place-items:center;text-align:center;color:#fff;overflow:hidden;background:#0d0d0d}
+.lb .bgi{position:absolute;inset:0;background:center/cover no-repeat;transform:scale(1.06);animation:kb 18s ease-out forwards}
+.lb .bgg{position:absolute;inset:-20%;background:radial-gradient(40% 50% at 25% 35%,rgba(229,23,47,.35),transparent 70%),radial-gradient(45% 55% at 75% 65%,rgba(255,255,255,.12),transparent 70%);animation:drift 14s ease-in-out infinite alternate}
+.lb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.55))}
+.lb .in{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:16px;padding:60px 20px;max-width:980px}
+.lb .eb{font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;opacity:.9}
+.lb h1{font-size:clamp(36px,6.4vw,88px);font-weight:800;line-height:.98;letter-spacing:-.035em;max-width:14ch;text-wrap:balance}
+.lb p{margin:0;font-size:clamp(15px,1.4vw,18px);opacity:.88;max-width:52ch}
+.lb .cta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.lb .btn{background:#fff;color:var(--ink);border-color:#fff}
+.lb .btn:hover{background:transparent;color:#fff}
+.lb .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.7)}
+.lb .btn.ghost:hover{background:#fff;color:var(--ink)}
+.lb .stat3{border-color:rgba(255,255,255,.3);background:rgba(0,0,0,.25);backdrop-filter:blur(6px);min-width:min(420px,90vw)}
+.lb .stat3>div+div{border-color:rgba(255,255,255,.3)}.lb .stat3 span{color:rgba(255,255,255,.75)}
+@keyframes kb{to{transform:scale(1)}}
+@keyframes drift{to{transform:translate(4%,-3%) rotate(4deg)}}
+/* Гишүүдэд зориулсан мэдэгдэл (зургийн дээр) */
+.ntc{position:relative;z-index:2;margin-inline:calc(50% - 50vw);margin-top:-18px;background:var(--red);color:#fff;text-align:center;padding:10px 16px;font-size:13.5px;font-weight:600}
+.ntc + .lb{margin-top:0}
+/* ----- ГҮЙДЭГ МӨР (дэлгүүр шиг) ----- */
+.mq{margin-inline:calc(50% - 50vw);border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap}
+.mq .tr{display:inline-flex;gap:44px;padding-block:12px;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;animation:mq 30s linear infinite}
+.mq .tr span::after{content:"✦";margin-left:44px;color:var(--red)}
+@keyframes mq{to{transform:translateX(-50%)}}
+/* ----- ХӨТӨЛБӨРИЙН КАРТ: хүрээгүй, зураг томрох хөдөлгөөн ----- */
+.grid2{gap:clamp(12px,1.6vw,22px)}
+.pgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,1.6vw,22px)}
+@media (max-width:1024px){ .pgrid{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:700px){ .pgrid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.card.prog{border:0;background:none}
+.prog .cv{aspect-ratio:4/5;overflow:hidden;background-color:#151515;transition:transform .5s}
+.prog .cv::before{content:"";position:absolute;inset:0;background:inherit;background-size:cover;background-position:center;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.prog:hover .cv::before{transform:scale(1.05)}
+.prog .cv .tag{z-index:1}
+.prog .bd{padding:12px 2px 6px}
+.prog b{font-size:15px;font-weight:600}
+/* Хөтөлбөрийн дэлгэрэнгүй хуудсанд зураг хэвтээ */
+.card.prog.wide .cv{aspect-ratio:21/9}
+@media (max-width:700px){ .card.prog.wide .cv{aspect-ratio:16/9} }
+/* ----- ОНЦЛОХ 4 ХЭСЭГ (01, 02 … дугаартай) ----- */
+.feat{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,1.6vw,22px)}
+@media (max-width:900px){ .feat{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.feat a{display:flex;flex-direction:column;gap:8px;padding:22px 20px;background:var(--bg2);text-decoration:none;min-height:170px;transition:background .25s,color .25s}
+.feat a:hover{background:var(--ink);color:#fff}
+.feat a:hover .mut{color:#bdbdbd}
+.feat i{font-style:normal;font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--red)}
+.feat b{font-size:17px;font-weight:700;margin-top:auto}
+/* ----- МЭДЭЭ ----- */
+.ngrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.6vw,22px)}
+@media (max-width:900px){ .ngrid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:560px){ .ngrid{grid-template-columns:1fr} }
+.news{display:flex;flex-direction:column;gap:8px;text-decoration:none}
+.news .im{aspect-ratio:16/10;overflow:hidden;background:var(--bg2);display:grid;place-items:center;color:var(--muted);font-size:12px;letter-spacing:.14em}
+.news .im img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.news:hover .im img{transform:scale(1.04)}
+.news .d{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.news b{font-size:17px;font-weight:700;line-height:1.3}
+.news p{margin:0;font-size:14px;color:#555;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pin{color:var(--red);font-weight:700}
+.article .im{margin:16px 0;aspect-ratio:auto}
+.article .im img{width:100%;max-height:560px;object-fit:cover}
+.article h1{font-size:clamp(26px,4vw,44px);font-weight:800;letter-spacing:-.025em;line-height:1.08}
+.article .body{font-size:16px;line-height:1.7;color:#222}
+/* ----- ГИШҮҮНЧЛЭЛИЙН ХАР ТУУЗ ----- */
+.band{margin-inline:calc(50% - 50vw);margin-top:clamp(40px,6vw,80px);background:var(--ink);color:#fff;padding:clamp(40px,6vw,72px) 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+.band .eb{font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--red)}
+.band h2{font-size:clamp(26px,4vw,48px);font-weight:800;letter-spacing:-.03em;line-height:1.05;max-width:18ch;text-wrap:balance}
+.band p{margin:0;color:#bdbdbd;max-width:50ch}
+.band .btn{background:#fff;color:var(--ink);border-color:#fff;margin-top:6px}
+.band .btn:hover{background:transparent;color:#fff}
+/* ----- ХӨЛ (дэлгүүр шиг) ----- */
+.foot{border-top:1px solid var(--line);padding:44px 0 28px;margin-top:40px}
+.foot .wrap{display:flex;flex-wrap:wrap;gap:24px 48px;align-items:flex-start;justify-content:space-between}
+.foot .logo svg.lg{height:20px}
+.foot nav{display:flex;flex-wrap:wrap;gap:12px 28px}
+.foot nav a{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none}
+.foot nav a:hover{color:var(--muted)}
+.foot small{width:100%;color:var(--muted);font-size:12px}
+/* ----- ГҮЙЛГЭХЭД ГАРЧ ИРЭХ ХӨДӨЛГӨӨН ----- */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+.lb .in>*{animation:up .9s cubic-bezier(.2,.7,.2,1) both}
+.lb .in>*:nth-child(2){animation-delay:.08s}.lb .in>*:nth-child(3){animation-delay:.16s}.lb .in>*:nth-child(4){animation-delay:.24s}.lb .in>*:nth-child(5){animation-delay:.32s}
+@keyframes up{from{opacity:0;transform:translateY(26px)}}
+/* Хөдөлгөөн багасгахыг хүссэн хэрэглэгчид */
+@media (prefers-reduced-motion:reduce){ .rv{opacity:1;transform:none;transition:none} .lb .bgi,.lb .bgg,.mq .tr,.lb .in>*{animation:none} }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
 <!-- ===== ДЭЭД МӨР: лого, дэлгүүр рүү, нэвтрэх ===== -->
-<header class="top"><div class="wrap">
-  <!-- Лого ба SHOP / FIT шилжүүлэгч (FIT идэвхтэй; SHOP дарвал дэлгүүр рүү) -->
-  <a class="logo" href="#home" aria-label="FINN Fit нүүр">FINN</a>
-  <nav class="sw" aria-label="FINN хэсэг солих"><a href="/">SHOP</a><a href="#home" aria-current="page">FIT</a></nav>
-  <span class="sp"></span>
-  <a class="acct" id="acct" href="/#login">Нэвтрэх</a>
+<header class="top"><div class="wrap bar">
+  <!-- Зүүн: Fit-ийн цэс (компьютер дээр) -->
+  <nav class="hnav" aria-label="FINN Fit цэс">
+    <a href="#home" data-r="home">Нүүр</a><a href="#programs" data-r="programs">Хөтөлбөр</a><a href="#news" data-r="news">Мэдээ</a>
+    <a href="#community" data-r="community">Нийгэмлэг</a><a href="#challenge" data-r="challenge">Сорилт</a>
+  </nav>
+  <!-- Төв: лого ба SHOP / FIT шилжүүлэгч (FIT идэвхтэй; SHOP дарвал дэлгүүр рүү) -->
+  <div class="brandsw">
+    <a class="logo" href="#home" aria-label="FINN Fit нүүр"><svg class="lg" viewBox="0 -4 503 108" fill="currentColor" aria-hidden="true"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/></svg></a>
+    <nav class="sw" aria-label="FINN хэсэг солих"><a href="/">SHOP</a><a href="#home" aria-current="page">FIT</a></nav>
+  </div>
+  <!-- Баруун: админ (зөвхөн админд харагдана), нэвтрэх / миний нэр -->
+  <div class="hright">
+    <a class="adm" id="adm" href="/admin.html#fit" hidden title="Fit-ийн удирдлага">⚙ Админ</a>
+    <a class="acct" id="acct" href="/#login">Нэвтрэх</a>
+  </div>
 </div></header>
 
 <!-- ===== ҮНДСЭН ЦЭС ===== -->
@@ -211,6 +355,13 @@ main{padding:18px 0 40px;min-height:60vh}
 </nav>
 
 <main><div class="wrap" id="main"><div class="load"><span class="spin"></span>Ачаалж байна…</div></div></main>
+
+<!-- ===== ХӨЛ ===== -->
+<footer class="foot"><div class="wrap">
+  <a class="logo" href="#home" aria-label="FINN Fit"><svg class="lg" viewBox="0 -4 503 108" fill="currentColor" aria-hidden="true"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/></svg></a>
+  <nav aria-label="Хөлийн цэс"><a href="#programs">Хөтөлбөр</a><a href="#news">Мэдээ</a><a href="#meals">Хоол</a><a href="#community">Нийгэмлэг</a><a href="#join">Гишүүнчлэл</a><a href="/">FINN дэлгүүр</a></nav>
+  <small>© <span id="yr"></span> FINN · Биеэ хөгжүүлэх аялал</small>
+</div></footer>
 
 <!-- ===== ТӨЛБӨР, МЭДЭЭЛЛИЙН ЦОНХ ===== -->
 <div class="modal" id="modal" hidden><div class="sheet" role="dialog" aria-modal="true"><button class="x" id="mx" type="button" aria-label="Хаах">✕</button><div id="mbody"></div></div></div>
@@ -277,6 +428,8 @@ async function loadMe(){
   const a = $("acct");
   if (me) { a.textContent = me.username; a.href = "#me"; a.classList.add("on"); }
   else { a.textContent = "Нэвтрэх"; a.href = "/#login"; a.classList.remove("on"); }
+  // Админ бүртгэлээр орсон бол л "Админ" товч харагдана (эрхийг сервер/RLS дахин шалгадаг)
+  $("adm").hidden = !isAdmin();
 }
 // Нэвтрэх шаардлагатай үйлдэл дээр: нэвтрээгүй бол дэлгүүрийн нэвтрэх цонх руу илгээнэ
 function needLogin(){
@@ -291,20 +444,27 @@ async function authHeader(){
 }
 
 // ===== ХУУДАС СОЛИХ (хаягийн # хэсгээр) =====
-const ROUTES = { home: vHome, programs: vPrograms, program: vProgram, lesson: vLesson, meals: vMeals, community: vCommunity, levels: vLevels, challenge: vChallenge, join: vJoin, me: vMe };
+const ROUTES = { news: vNews, home: vHome, programs: vPrograms, program: vProgram, lesson: vLesson, meals: vMeals, community: vCommunity, levels: vLevels, challenge: vChallenge, join: vJoin, me: vMe };
 function route(){
   // "#lesson/12" → ["lesson", "12"]
   const [name, arg] = (location.hash.slice(1) || "home").split("/");
   const fn = ROUTES[name] || vHome;
   // Доод цэсний идэвхтэй товч
   const tabOf = { program: "programs", lesson: "programs", meals: "home", levels: "me", join: "me" }[name] || name;
-  document.querySelectorAll("#tabs a").forEach(a => { if (a.dataset.r === tabOf) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+  // Өргөн хуудсууд (нүүр, хөтөлбөр, мэдээний жагсаалт); бусад нь уншихад тохиромжтой нарийн
+  $("main").dataset.w = (["home", "programs", "program"].includes(name) || !ROUTES[name] || (name === "news" && !arg)) ? "1" : "0";
+  document.querySelectorAll("#tabs a, .hnav a").forEach(a => { if (a.dataset.r === tabOf) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
   const my = ++VIEW;
   $("main").innerHTML = `<div class="load"><span class="spin"></span>Ачаалж байна…</div>`;
   scrollTo(0, 0);
   fn(arg, my).catch(e => { if (my === VIEW) $("main").innerHTML = `<div class="empty">Алдаа гарлаа. Хуудсаа шинэчилнэ үү.<br><span class="sm">${esc(e && e.message || e)}</span></div>`; });
 }
 addEventListener("hashchange", route);
+// ----- Гүйлгэхэд хэсгүүд зөөлөн гарч ирнэ (.rv → .in) -----
+const RVO = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); RVO.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" }) : null;
+function reveal(){ document.querySelectorAll("#main .rv:not(.in)").forEach(el => RVO ? RVO.observe(el) : el.classList.add("in")); }
+// Хуудасны агуулга солигдох бүрт шинэ хэсгүүдийг ажиглана
+new MutationObserver(reveal).observe(document.getElementById("main"), { childList: true });
 // Хуучирсан (өөр хуудас руу шилжсэн) эсэх
 const stale = my => my !== VIEW;
 
@@ -319,9 +479,9 @@ async function vHome(_, my){
   // Миний хамгийн сүүлд дасгал хийсэн хөтөлбөр → дараагийн хичээл
   let next = null;
   if (me) {
-    const { data: last } = await sb.from("fit_progress").select("lesson_id,done_at").eq("user_id", me.id).order("done_at", { ascending: false }).limit(1);
-    if (last && last[0]) {
-      const { data: l } = await sb.from("fit_lessons").select("program_id").eq("id", last[0].lesson_id).maybeSingle();
+    const { data: pg } = await sb.from("fit_progress").select("lesson_id,done_at").eq("user_id", me.id).order("done_at", { ascending: false }).limit(1);
+    if (pg && pg[0]) {
+      const { data: l } = await sb.from("fit_lessons").select("program_id").eq("id", pg[0].lesson_id).maybeSingle();
       if (l) {
         const { data: idx } = await sb.rpc("fit_lesson_index", { p: l.program_id });
         const n = (idx || []).find(x => !x.done);
@@ -329,36 +489,76 @@ async function vHome(_, my){
       }
     }
   }
-  const { data: progs } = await sb.from("fit_programs").select("id,title,level,place,cover,premium").order("sort", { ascending: false }).limit(4);
+  // Хөтөлбөрүүд ба сүүлийн мэдээ (мэдээний хүснэгт хараахан үүсээгүй бол хоосон)
+  const [{ data: progs }, nw] = await Promise.all([
+    sb.from("fit_programs").select("id,title,level,place,cover,premium").order("sort", { ascending: false }).limit(8),
+    sb.from("fit_news").select("id,title,body,image,pinned,created_at").order("pinned", { ascending: false }).order("created_at", { ascending: false }).limit(3)
+  ]);
   if (stale(my)) return;
+  const news = (nw && nw.data) || [];
+  const hero = okImg(tx("heroImg", ""));
+  // Гүйдэг мөрийн үгс (давхар бичиж тасралтгүй гүйлгэнэ)
+  const words = tx("marquee", "Хөтөлбөр · Видео хичээл · Хоолны төлөвлөгөө · 30 хоногийн сорилт · Нийгэмлэг · FINN оноо").split("·").map(x => x.trim()).filter(Boolean);
   $("main").innerHTML = `
-    ${tx("notice", "") ? `<div class="card" style="padding:12px 14px;margin-bottom:14px;border-color:var(--ink);font-size:14px">📣 ${esc(tx("notice", ""))}</div>` : ""}
-    <section class="hero">
-      <span class="eb">${esc(tx("eb", "FINN FIT · СУРГАЛТ"))}</span>
-      <h1>${esc(tx("title", "Биеэ хөгжүүлэх аялал эндээс эхэлнэ"))}</h1>
-      <p>${esc(tx("sub", "Хөтөлбөр, хичээл, хоолны төлөвлөгөө, 30 хоногийн сорилт — нэг дор."))}</p>
-      ${me ? `<div class="stat3" style="margin-top:6px"><div><span>Түвшин</span><b>${FIT.level}</b></div><div><span>Оноо</span><b>${FIT.points}</b></div><div><span>Дараалсан өдөр</span><b>${FIT.streak}</b></div></div>` : ""}
-      <a class="btn" href="#programs">${esc(tx("btn", "Хөтөлбөр сонгох →"))}</a>
+    ${tx("notice", "") ? `<div class="ntc">📣 ${esc(tx("notice", ""))}</div>` : ""}
+    <section class="lb">
+      ${hero ? `<div class="bgi" style="background-image:url('${esc(hero)}')"></div>` : `<div class="bgg"></div>`}
+      <div class="in">
+        <span class="eb">${esc(tx("eb", "FINN FIT · СУРГАЛТ"))}</span>
+        <h1>${esc(tx("title", "Биеэ хөгжүүлэх аялал эндээс эхэлнэ"))}</h1>
+        <p>${esc(tx("sub", "Хөтөлбөр, хичээл, хоолны төлөвлөгөө, 30 хоногийн сорилт — нэг дор."))}</p>
+        ${me ? `<div class="stat3"><div><span>Түвшин</span><b>${FIT.level}</b></div><div><span>Оноо</span><b>${FIT.points}</b></div><div><span>Дараалсан өдөр</span><b>${FIT.streak}</b></div></div>` : ""}
+        <div class="cta"><a class="btn" href="#programs">${esc(tx("btn", "Хөтөлбөр сонгох →"))}</a>${isMember() ? "" : `<a class="btn ghost" href="#join">Гишүүн болох</a>`}</div>
+      </div>
     </section>
-    ${next ? `<section class="sec"><div class="sechd"><h2>Дараагийн хичээл</h2><a href="#program/${esc(next.program_id)}">Хөтөлбөр</a></div>
-      <a class="card" href="#lesson/${next.id}" style="display:flex;gap:14px;padding:14px;align-items:center;text-decoration:none">
+    <div class="mq" aria-hidden="true"><div class="tr">${[...words, ...words].map(w => `<span>${esc(w)}</span>`).join("")}</div></div>
+    ${next ? `<section class="sec rv"><div class="sechd"><h2>Дараагийн хичээл</h2><a href="#program/${esc(next.program_id)}">Хөтөлбөр</a></div>
+      <a class="card" href="#lesson/${next.id}" style="display:flex;gap:14px;padding:16px;align-items:center;text-decoration:none">
         <div class="lrow" style="border:0;padding:0"><div class="num">${next.n}</div></div>
         <div style="flex:1;display:flex;flex-direction:column;gap:6px"><b>${esc(next.title)}</b><span class="sm mut">${next.minutes} мин · ${next.doneN}/${next.total} дууссан</span>
         <div class="bar4"><b style="width:${Math.round(next.doneN / next.total * 100)}%"></b></div></div></a></section>` : ""}
-    <section class="sec grid2">
-      <a class="card" href="#meals" style="padding:16px;text-decoration:none;display:flex;flex-direction:column;gap:6px"><b>Хоолны төлөвлөгөө</b><span class="sm mut">7 хоногийн цэс, жор</span></a>
-      <a class="card" href="#levels" style="padding:16px;text-decoration:none;display:flex;flex-direction:column;gap:6px"><b>Түвшин ба тэргүүлэгчид</b><span class="sm mut">Оноо цуглуулж түвшин ахи</span></a>
-    </section>
-    <section class="sec"><div class="sechd"><h2>Хөтөлбөрүүд</h2><a href="#programs">Бүгд</a></div>
-      ${(progs || []).length ? `<div class="grid2">${progs.map(progCard).join("")}</div>` : `<div class="empty">Удахгүй хөтөлбөрүүд нэмэгдэнэ.</div>`}</section>
-    ${!isMember() ? `<section class="sec card" style="padding:18px;display:flex;flex-direction:column;gap:8px;border-color:var(--ink)">
-      <span class="tag red" style="align-self:flex-start">ГИШҮҮНЧЛЭЛ</span><b style="font-size:16px">${esc(tx("joinTitle", "Бүх хөтөлбөр, хоолны төлөвлөгөө, нийгэмлэг"))}</b>
-      <span class="sm mut">${esc(tx("joinSub", "QPay-ээр төлнө · дэлгүүрт гишүүний хөнгөлөлт"))}</span><a class="btn" href="#join" style="align-self:flex-start;margin-top:4px">Багц үзэх</a></section>` : ""}`;
+    <section class="sec rv"><div class="sechd"><h2>Хөтөлбөрүүд</h2><a href="#programs">Бүгдийг үзэх</a></div>
+      ${(progs || []).length ? `<div class="pgrid">${progs.map(progCard).join("")}</div>` : `<div class="empty">Удахгүй хөтөлбөрүүд нэмэгдэнэ.</div>`}</section>
+    <section class="sec rv"><div class="feat">
+      <a href="#meals"><i>01</i><b>Хоолны төлөвлөгөө</b><span class="sm mut">7 хоногийн цэс, жор</span></a>
+      <a href="#challenge"><i>02</i><b>30 хоногийн сорилт</b><span class="sm mut">Бүгдээрээ нэг өдөр эхэлнэ</span></a>
+      <a href="#community"><i>03</i><b>Нийгэмлэг</b><span class="sm mut">Ахиц, асуулт, дасгалжуулагч</span></a>
+      <a href="#levels"><i>04</i><b>Түвшин ба тэргүүлэгчид</b><span class="sm mut">Оноо цуглуулж түвшин ахи</span></a>
+    </div></section>
+    ${news.length ? `<section class="sec rv"><div class="sechd"><h2>Мэдээ</h2><a href="#news">Бүх мэдээ</a></div><div class="ngrid">${news.map(newsCard).join("")}</div></section>` : ""}
+    ${!isMember() ? `<section class="band rv"><span class="eb">Гишүүнчлэл</span><h2>${esc(tx("joinTitle", "Бүх хөтөлбөр, хоолны төлөвлөгөө, нийгэмлэг"))}</h2>
+      <p>${esc(tx("joinSub", "QPay-ээр төлнө · дэлгүүрт гишүүний хөнгөлөлт"))}</p><a class="btn" href="#join">Багц үзэх</a></section>` : ""}`;
 }
 // Хөтөлбөрийн карт
 const progCard = p => `<a class="card prog" href="#program/${esc(p.id)}">
   <div class="cv" ${okImg(p.cover) ? `style="background-image:url('${esc(okImg(p.cover))}')"` : ""}>${okImg(p.cover) ? "" : "FINN FIT"}<span class="tag">${esc(p.level)}</span>${p.premium ? `<span class="tag red">ГИШҮҮН</span>` : `<span class="tag red" style="background:var(--green)">ҮНЭГҮЙ</span>`}</div>
   <div class="bd"><b>${esc(p.title)}</b><span class="sm mut">${esc(p.place)}</span></div></a>`;
+
+// ===== МЭДЭЭ =====
+// Мэдээний карт (нүүр болон жагсаалтад)
+const newsCard = n => `<a class="news" href="#news/${n.id}">
+  <div class="im">${okImg(n.image) ? `<img src="${esc(okImg(n.image))}" alt="" loading="lazy">` : "FINN FIT"}</div>
+  <span class="d">${n.pinned ? `<span class="pin">● Онцлох</span> · ` : ""}${dt(n.created_at)}</span>
+  <b>${esc(n.title)}</b>${n.body ? `<p>${esc(n.body)}</p>` : ""}</a>`;
+// #news — бүх мэдээ, #news/5 — нэг мэдээ
+async function vNews(id, my){
+  if (id) {
+    const { data: n } = await sb.from("fit_news").select("*").eq("id", Number(id)).maybeSingle();
+    if (stale(my)) return;
+    if (!n) { $("main").innerHTML = `<div class="empty">Мэдээ олдсонгүй. <a href="#news">Бүх мэдээ</a></div>`; return; }
+    $("main").innerHTML = `<article class="article"><a href="#news" class="sm">← Бүх мэдээ</a>
+      <p class="sm mut" style="margin:14px 0 6px;letter-spacing:.12em;text-transform:uppercase">${dt(n.created_at)}</p>
+      <h1>${esc(n.title)}</h1>
+      ${okImg(n.image) ? `<div class="im"><img src="${esc(okImg(n.image))}" alt=""></div>` : ""}
+      <p class="body" style="margin-top:14px">${esc(n.body)}</p></article>`;
+    return;
+  }
+  const { data } = await sb.from("fit_news").select("id,title,body,image,pinned,created_at").order("pinned", { ascending: false }).order("created_at", { ascending: false }).limit(60);
+  if (stale(my)) return;
+  const L = data || [];
+  $("main").innerHTML = `<div class="sechd" style="margin-top:8px"><h2>Мэдээ, мэдээлэл</h2></div>
+    ${L.length ? `<div class="ngrid">${L.map(n => `<div class="rv">${newsCard(n)}</div>`).join("")}</div>` : `<div class="empty">Одоогоор мэдээ алга.</div>`}`;
+}
 
 // ===== 2. ХӨТӨЛБӨРҮҮД =====
 async function vPrograms(_, my){
@@ -371,7 +571,7 @@ async function vPrograms(_, my){
     const list = all.filter(p => f === "Бүгд" || p.level === f || p.place === f || (f === "Үнэгүй" && !p.premium) || (p.level === "Бүх түвшин" && ["Эхлэгч", "Дунд", "Ахисан"].includes(f)));
     $("main").innerHTML = `<h1 style="font-size:24px;font-weight:900;margin-bottom:14px">Хөтөлбөрүүд</h1>
       <div class="chips">${F.map(x => `<button class="chip" type="button" data-f="${x}" aria-pressed="${x === f}">${x}</button>`).join("")}</div>
-      ${list.length ? `<div class="grid2">${list.map(progCard).join("")}</div>` : `<div class="empty">Энэ шүүлтүүрт хөтөлбөр алга.</div>`}`;
+      ${list.length ? `<div class="pgrid">${list.map(progCard).join("")}</div>` : `<div class="empty">Энэ шүүлтүүрт хөтөлбөр алга.</div>`}`;
     document.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { f = b.dataset.f; draw(); });
   };
   draw();
@@ -388,7 +588,7 @@ async function vProgram(id, my){
   const L = idx || [], doneN = L.filter(x => x.done).length, locked = L.some(x => x.locked);
   $("main").innerHTML = `
     <a href="#programs" class="sm">← Хөтөлбөрүүд</a>
-    <div class="card prog" style="margin-top:10px"><div class="cv" ${okImg(p.cover) ? `style="background-image:url('${esc(okImg(p.cover))}')"` : ""}>${okImg(p.cover) ? "" : "FINN FIT"}<span class="tag">${esc(p.level)}</span></div>
+    <div class="card prog wide" style="margin-top:10px"><div class="cv" ${okImg(p.cover) ? `style="background-image:url('${esc(okImg(p.cover))}')"` : ""}>${okImg(p.cover) ? "" : "FINN FIT"}<span class="tag">${esc(p.level)}</span></div>
       <div class="bd"><h1 style="font-size:22px;font-weight:900">${esc(p.title)}</h1><span class="sm mut">${esc(p.place)} · ${L.length} хичээл</span>
       ${p.descr ? `<p class="body" style="margin:6px 0 0">${esc(p.descr)}</p>` : ""}
       ${me && L.length ? `<div style="margin-top:8px;display:flex;flex-direction:column;gap:6px"><span class="sm">${doneN}/${L.length} дууссан</span><div class="bar4"><b style="width:${Math.round(doneN / L.length * 100)}%"></b></div></div>` : ""}</div></div>
@@ -789,6 +989,8 @@ async function vMe(_, my){
   $("logout").onclick = async () => { await sb.auth.signOut(); await loadMe(); location.hash = "#home"; route(); };
 }
 
+// Хөлд оныг бичнэ
+$("yr").textContent = new Date().getFullYear();
 // ===== ЭХЛҮҮЛЭХ =====
 (async () => {
   try {

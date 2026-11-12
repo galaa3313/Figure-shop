@@ -417,6 +417,7 @@ nav button .rq[hidden]{display:none}
     <button type="button" data-g="fit" data-t="f-mem" aria-pressed="false" hidden>Гишүүд</button>
     <button type="button" data-g="fit" data-t="f-meals" aria-pressed="false" hidden>Хоол</button>
     <button type="button" data-g="fit" data-t="f-chal" aria-pressed="false" hidden>Сорилт</button>
+    <button type="button" data-g="fit" data-t="f-news" aria-pressed="false" hidden>Мэдээ</button>
     <button type="button" data-g="fit" data-t="f-comm" aria-pressed="false" hidden>Нийгэмлэг</button>
     <button type="button" data-g="fit" data-t="f-conf" aria-pressed="false" hidden>Fit тохиргоо</button>
   </nav>
@@ -1706,7 +1707,7 @@ async function showHistory(f){
 // ===== FINN FIT (сургалтын хэсэг): хөтөлбөр, хичээл, үнэ, гишүүд, хоол, сорилт =====
 // =====================================================================
 // Нүдний доорх цэс (Fit табын дотор)
-const FIT_SUB = [["prog", "Хөтөлбөр"], ["less", "Хичээл"], ["plans", "Үнэ"], ["mem", "Гишүүд"], ["meals", "Хоол"], ["chal", "Сорилт"], ["comm", "Нийгэмлэг"], ["conf", "Fit тохиргоо"]];
+const FIT_SUB = [["prog", "Хөтөлбөр"], ["less", "Хичээл"], ["plans", "Үнэ"], ["mem", "Гишүүд"], ["meals", "Хоол"], ["chal", "Сорилт"], ["news", "Мэдээ"], ["comm", "Нийгэмлэг"], ["conf", "Fit тохиргоо"]];
 let FIT_CUR = "prog";
 async function showFit(sub){
   if (sub) FIT_CUR = sub;
@@ -1717,7 +1718,7 @@ async function showFit(sub){
   const name = (FIT_SUB.find(x => x[0] === FIT_CUR) || [, ""])[1];
   $("main").innerHTML = `<div class="bar"><h2>FINN Fit · ${esc(name)}</h2><a class="btn" href="/fit" target="_blank" rel="noopener">Fit хуудсыг нээх ↗</a></div>
     <div id="fform"></div><div id="fbody"><p class="msg">Ачаалж байна…</p></div>`;
-  try { await ({ prog: fitPrograms, less: fitLessons, plans: fitPlans, mem: fitMembers, meals: fitMeals, chal: fitChallenges, comm: fitCommunity, conf: fitTexts })[FIT_CUR](my); }
+  try { await ({ prog: fitPrograms, less: fitLessons, plans: fitPlans, mem: fitMembers, meals: fitMeals, chal: fitChallenges, news: fitNews, comm: fitCommunity, conf: fitTexts })[FIT_CUR](my); }
   catch (e) {
     if (my !== VIEW) return;
     // Хүснэгт байхгүй бол (SQL ажиллуулаагүй) ойлгомжтой бичиг
@@ -1973,6 +1974,51 @@ async function fitMembers(my){
   });
 }
 
+// ----- 6б) МЭДЭЭ: Fit нүүр болон "Мэдээ" хуудсанд гарна -----
+async function fitNews(my){
+  const list = must(await sb.from("fit_news").select("*").order("pinned", { ascending: false }).order("created_at", { ascending: false }).limit(200));
+  if (my !== VIEW) return;
+  $("fbody").innerHTML = `<div class="bar"><span class="mut">${list.length} мэдээ</span><button class="btn dark" id="fnwnew" style="margin-left:auto">+ Шинэ мэдээ</button></div>
+    <div class="tbl"><table><thead><tr><th>Гарчиг</th><th>Огноо</th><th>Төлөв</th><th></th></tr></thead><tbody>
+    ${list.map(n => `<tr><td><b>${esc(n.title)}</b>${n.pinned ? '<small style="color:var(--red)">● Онцлох (дээр нь)</small>' : ""}</td><td>${dt(n.created_at)}</td>
+      <td>${n.published ? '<span class="tag ok">Нийтлэгдсэн</span>' : '<span class="tag no">Ноорог</span>'}</td><td><button class="btn" data-fnwe="${n.id}">Засах</button></td></tr>`).join("") || '<tr><td colspan="4">Мэдээ алга. "+ Шинэ мэдээ" дарна уу.</td></tr>'}</tbody></table></div>`;
+  $("fnwnew").onclick = () => fitNewsForm(null);
+  $("fbody").querySelectorAll("[data-fnwe]").forEach(b => b.onclick = () => fitNewsForm(list.find(x => String(x.id) === b.dataset.fnwe)));
+}
+function fitNewsForm(n){
+  const isNew = !n; n = n || { title: "", body: "", image: "", pinned: false, published: true };
+  $("fform").innerHTML = `<form class="form" id="fnwf"><h3 class="full" style="margin:0">${isNew ? "Шинэ мэдээ" : "Мэдээ засах"}</h3>
+    <label class="full">Гарчиг *<input id="fnw-t" required maxlength="160" value="${esc(n.title)}"></label>
+    ${ff("fnw-b", "Агуулга", n.body, "textarea", 'maxlength="8000" rows="8"')}
+    <label>Зураг<input type="file" id="fnw-file" accept="image/*"></label>
+    <div class="row"><img id="fnw-img" src="${esc(n.image || "")}" alt="" style="max-width:220px;${n.image ? "" : "display:none"}"><button type="button" class="btn" id="fnw-clr" ${n.image ? "" : "hidden"}>Зураг хасах</button></div>
+    <div class="full row">${ff("fnw-pin", "Онцлох (хамгийн дээр нь гарна)", n.pinned, "check")}${ff("fnw-pub", "Нийтлэх (арилгавал ноорог болж нуугдана)", n.published, "check")}</div>
+    <div class="full row"><button class="btn dark" type="submit" id="fnwsave">Хадгалах</button><button class="btn" type="button" id="fnwx">Болих</button>
+      ${isNew ? "" : `<a class="btn" href="/fit#news/${n.id}" target="_blank" rel="noopener">Сайтад харах ↗</a><button class="btn red" type="button" id="fnwdel" style="margin-left:auto">Устгах</button>`}</div></form>`;
+  let image = n.image || "";
+  // Зургийг шахаж хадгална
+  $("fnw-file").onchange = async e => { const f = e.target.files[0]; if (!f) return; toast("Зураг оруулж байна…");
+    try { image = await upload(f, "fit"); $("fnw-img").src = image; $("fnw-img").style.display = ""; $("fnw-clr").hidden = false; toast("Зураг орлоо"); } catch (err) { toast("Алдаа: " + err.message); } };
+  $("fnw-clr").onclick = () => { image = ""; $("fnw-img").style.display = "none"; $("fnw-clr").hidden = true; };
+  $("fnwx").onclick = () => { $("fform").innerHTML = ""; };
+  $("fnwf").onsubmit = async e => {
+    e.preventDefault();
+    const row = { title: fv("fnw-t"), body: $("fnw-b").value.trim(), image: image || null, pinned: $("fnw-pin").checked, published: $("fnw-pub").checked, updated_at: new Date().toISOString() };
+    const b = $("fnwsave"); fbusy(b, true);
+    try {
+      must(isNew ? await sb.from("fit_news").insert(row).select("id") : await sb.from("fit_news").update(row).eq("id", n.id).select("id"));
+      toast("Хадгаллаа"); $("fform").innerHTML = ""; showFit("news");
+    } catch (err) { fbusy(b, false); toast("Алдаа: " + err.message + (/fit_news|relation|schema/i.test(err.message) ? " — finn-fit-news.sql ажиллуулсан уу?" : "")); }
+  };
+  if ($("fnwdel")) $("fnwdel").onclick = async () => {
+    if (!confirm(`«${n.title}» мэдээг устгах уу? Буцаах боломжгүй.\n\nТүр нуух бол "Нийтлэх"-ийг арилгана уу.`)) return;
+    const r = await sb.from("fit_news").delete().eq("id", n.id).select("id");
+    if (r.error || !r.data || !r.data.length) return toast("Устгагдсангүй" + (r.error ? ": " + r.error.message : ""));
+    toast("Устгалаа"); $("fform").innerHTML = ""; showFit("news");
+  };
+  $("fform").scrollIntoView({ behavior: "smooth" });
+}
+
 // ----- 7) НИЙГЭМЛЭГ: мэдэгдэл бичих, нийтлэл/сэтгэгдэл нуух, устгах -----
 const FCAT = { "Ахиц": "", "Асуулт": "", "Мэдэгдэл": "ok" };
 async function fitCommunity(my){
@@ -2032,7 +2078,8 @@ const FTXT = [
   ["sub", "Тайлбар", "Хөтөлбөр, хичээл, хоолны төлөвлөгөө, 30 хоногийн сорилт — нэг дор.", true],
   ["btn", "Товчны бичиг", "Хөтөлбөр сонгох →"],
   ["joinTitle", "Гишүүнчлэлийн хайрцаг — гарчиг", "Бүх хөтөлбөр, хоолны төлөвлөгөө, нийгэмлэг"],
-  ["joinSub", "Гишүүнчлэлийн хайрцаг — жижиг бичиг", "QPay-ээр төлнө · дэлгүүрт гишүүний хөнгөлөлт"]
+  ["joinSub", "Гишүүнчлэлийн хайрцаг — жижиг бичиг", "QPay-ээр төлнө · дэлгүүрт гишүүний хөнгөлөлт"],
+  ["marquee", "Гүйдэг мөр (үгсийг · тэмдгээр тусгаарлана)", "Хөтөлбөр · Видео хичээл · Хоолны төлөвлөгөө · 30 хоногийн сорилт · Нийгэмлэг · FINN оноо", true]
 ];
 async function fitTexts(my){
   const C = must(await sb.from("fit_config").select("*").eq("id", 1).maybeSingle()) || {};
@@ -2045,13 +2092,24 @@ async function fitTexts(my){
     ${FTXT.map(([k, label, d, long]) => long
       ? `<label class="full">${label}<textarea id="ft-${k}" rows="2" maxlength="400" placeholder="${esc(d)}">${esc(T[k] || "")}</textarea></label>`
       : `<label class="full">${label}<input id="ft-${k}" maxlength="120" placeholder="${esc(d)}" value="${esc(T[k] || "")}"></label>`).join("")}
+    <div class="full"><b style="font-size:13px">Нүүрний том зураг</b> <small class="mut">(хоосон бол хар өнгө хөдөлгөөнтэй)</small>
+      <div class="row" style="margin-top:6px"><img id="ft-himg" class="prev" src="${esc(T.heroImg || "")}" alt="" style="max-width:260px;${T.heroImg ? "" : "display:none"}">
+      <label class="btn" style="flex-direction:row;color:var(--ink)">Зураг сонгох<input type="file" id="ft-hfile" accept="image/*" hidden></label>
+      <button type="button" class="btn" id="ft-hclr" ${T.heroImg ? "" : "hidden"}>Зураггүй болгох</button></div></div>
     <div class="full row"><button class="btn dark" type="submit" id="ftsave">Хадгалах</button><a class="btn" href="/fit" target="_blank" rel="noopener">Үр дүнг харах ↗</a></div></form>`;
+  // Нүүрний зураг: шахаж "products" санд хадгална (2000px хүртэл)
+  let heroImg = T.heroImg || "";
+  $("ft-hfile").onchange = async e => { const f = e.target.files[0]; if (!f) return; toast("Зураг оруулж байна…");
+    try { heroImg = await putImg(await shrink(f, 2000), "fit"); $("ft-himg").src = heroImg; $("ft-himg").style.display = ""; $("ft-hclr").hidden = false; toast("Зураг орлоо — Хадгалах дарна уу"); }
+    catch (err) { toast("Алдаа: " + err.message); } };
+  $("ft-hclr").onclick = () => { heroImg = ""; $("ft-himg").style.display = "none"; $("ft-hclr").hidden = true; };
   $("ftf").onsubmit = async e => {
     e.preventDefault();
     const b = $("ftsave"); fbusy(b, true);
     try {
       // Зөвхөн бөглөсөн талбаруудыг хадгална
       const out = {}; FTXT.forEach(([k]) => { const v = fv("ft-" + k); if (v) out[k] = v; });
+      if (heroImg) out.heroImg = heroImg;
       must(await sb.from("fit_config").update({ texts: out }).eq("id", 1).select("id"));
       toast("Хадгаллаа"); showFit("conf");
     } catch (err) { fbusy(b, false); toast("Алдаа: " + err.message); }
@@ -2180,6 +2238,8 @@ $("tabs").addEventListener("click", e => { const b = e.target.closest("[data-t]"
 let MODE = "shop";
 // Сүүлд сонгосон горимыг санана (дараа нээхэд тэр хэсэг нь гарна)
 try { if (localStorage.getItem("finn-admin-mode") === "fit") MODE = "fit"; } catch (e) {}
+// Хаяг нь admin.html#fit эсвэл #shop бол түүнийг дагана
+if (location.hash === "#fit") MODE = "fit"; else if (location.hash === "#shop") MODE = "shop";
 // m: "shop" | "fit"; go=true бол тухайн хэсгийн эхний табыг нээнэ
 function setMode(m, go = true){
   MODE = m === "fit" ? "fit" : "shop";

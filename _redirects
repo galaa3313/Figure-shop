@@ -3,3 +3,8 @@
 /api/_sb.js /404 404
 /api/_products.js /404 404
 /api/_fit.js /404 404
+/api/_fit-pay.js /404 404
+/api/_fit-check.js /404 404
+/api/_fit-callback.js /404 404
+/api/_fit-video.js /404 404
+/api/_fit-upload.js /404 404

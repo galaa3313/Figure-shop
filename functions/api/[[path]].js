@@ -16,12 +16,12 @@ import qpayCheck from "../../api/qpay-check.js";
 import qpayCreate from "../../api/qpay-create.js";
 import signup from "../../api/signup.js";
 // FINN Fit: гишүүнчлэл, сорилтын төлбөр
-import fitPay from "../../api/fit-pay.js";
-import fitCheck from "../../api/fit-check.js";
-import fitCallback from "../../api/fit-callback.js";
+import fitPay from "../../api/_fit-pay.js";
+import fitCheck from "../../api/_fit-check.js";
+import fitCallback from "../../api/_fit-callback.js";
 // FINN Fit: Bunny видео
-import fitVideo from "../../api/fit-video.js";
-import fitUpload from "../../api/fit-upload.js";
+import fitVideo from "../../api/_fit-video.js";
+import fitUpload from "../../api/_fit-upload.js";
 
 // Хаягийн нэр → функц
 const H = {

@@ -45,6 +45,26 @@
     {
       "source": "/fit",
       "destination": "/fit.html"
+    },
+    {
+      "source": "/api/fit-pay",
+      "destination": "/api/fit?op=pay"
+    },
+    {
+      "source": "/api/fit-check",
+      "destination": "/api/fit?op=check"
+    },
+    {
+      "source": "/api/fit-callback",
+      "destination": "/api/fit?op=callback"
+    },
+    {
+      "source": "/api/fit-video",
+      "destination": "/api/fit?op=video"
+    },
+    {
+      "source": "/api/fit-upload",
+      "destination": "/api/fit?op=upload"
     }
   ]
 }

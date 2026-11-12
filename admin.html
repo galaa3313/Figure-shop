@@ -391,6 +391,42 @@ nav button .rq[hidden]{display:none}
 .cbtns{display:flex;gap:8px;flex-wrap:wrap}.cbtns .btn{flex:1;min-width:110px}
 /* Тайрсан зургийг буцаах товч (зураг дээр) */
 .thumbs .undo{position:absolute;left:3px;top:3px;width:auto;height:22px;padding:0 6px;font-size:11px;background:#1e6fff;color:#fff;border:0;z-index:2}
+
+/* ===== Барааны дэлгэрэнгүй (урт зураг + төвд бичвэр) ===== */
+.rd{max-width:760px;margin:0 auto;text-align:center}
+.rd-imgs img{display:block;width:100%;height:auto;margin:0 auto}
+.rd-txt{padding:22px 6px 6px;font-size:14px;line-height:1.85;color:#555}
+.rd-txt p{margin:0}
+.rd-txt b{color:#111}
+.rd-txt .rd-red{color:#e5172f}
+.rd-txt h5{margin:6px 0;font-size:17px;font-weight:700;color:#111}
+.rd-txt hr{border:0;border-top:1px solid #e2e2e2;margin:18px auto;width:60%}
+.rd-gap{height:14px}
+.rd-tw{overflow-x:auto;margin:8px 0}
+.rd-tbl{border-collapse:collapse;margin:0 auto;font-size:13px}
+.rd-tbl th,.rd-tbl td{border:1px solid #e2e2e2;padding:7px 12px;white-space:nowrap}
+.rd-tbl th{background:#f4f4f4;color:#111;font-weight:600}
+
+/* Админ: дэлгэрэнгүй засварлагч */
+.rdbox{border:1px solid #e2e2e2;padding:12px;display:flex;flex-direction:column;gap:8px}
+.rdtools{display:flex;gap:6px;flex-wrap:wrap}
+.rdtools .btn{height:32px;padding:0 10px;font-size:12.5px}
+.rdgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:760px){ .rdgrid{grid-template-columns:1fr} }
+.rdgrid textarea{min-height:200px;font-family:ui-monospace,Menlo,monospace;font-size:13px}
+.rdprev{border:1px dashed #d0d0d0;padding:10px;max-height:420px;overflow:auto;text-align:center}
+.rdprev .rd-txt{padding-top:6px}
+/* Админы ерөнхий хүснэгтийн хэв маягийг дарж сайттай ижил харагдуулна */
+.rdprev .rd-tbl{width:auto;min-width:0;margin:0 auto}
+.rdprev .rd-tbl th,.rdprev .rd-tbl td{padding:6px 10px;font-size:12.5px;text-align:center;white-space:nowrap}
+.dthumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.dth{position:relative;width:96px;border:1px solid #e2e2e2;background:#fafafa}
+.dth img{width:100%;height:120px;object-fit:cover;object-position:top;display:block}
+.dth span{position:absolute;top:4px;left:4px;background:#111;color:#fff;font-size:11px;padding:1px 6px}
+.dth div{display:flex}
+.dth button{flex:1;height:28px;border:0;border-top:1px solid #e2e2e2;background:#fff;font-size:14px}
+.dth button[data-dx]{color:#e5172f}
+.dth button:disabled{opacity:.3}
 </style>
 </head>
 <body>
@@ -645,6 +681,48 @@ async function userInfo(id){
     </div>`;
     $("udx").onclick = () => { box.innerHTML = ""; };
   } catch (e) { box.innerHTML = `<div class="udx"><p class="msg">Алдаа: ${esc(e.message)}</p></div>`; }
+}
+
+// ===== БАРААНЫ ДЭЛГЭРЭНГҮЙ БИЧВЭР (Солонгос дэлгүүр шиг төвд, өнгөтэй) =====
+// Энгийн тэмдэглэгээг HTML болгоно (эхлээд бүгдийг escape хийнэ — аюулгүй):
+//   **тод**   → тод бичиг
+//   !!улаан!! → улаан тод бичиг
+//   # Гарчиг  → дэд гарчиг
+//   ---       → хэвтээ зураас
+//   | M | 64.5 | 60 |  → хүснэгт (эхний мөр нь толгой)
+//   хоосон мөр → зай
+function richDesc(t){
+  const out = []; let tbl = null;
+  // Мөр доторх тэмдэглэгээ
+  const inl = s => esc(s).replace(/!!(.+?)!!/g, '<b class="rd-red">$1</b>').replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+  // Цуглуулсан хүснэгтийн мөрүүдийг хүснэгт болгоно
+  const flush = () => { if (!tbl) return;
+    out.push(`<div class="rd-tw"><table class="rd-tbl">${tbl.map((r, i) => `<tr>${r.map(c => i ? `<td>${inl(c)}</td>` : `<th>${inl(c)}</th>`).join("")}</tr>`).join("")}</table></div>`); tbl = null; };
+  for (const raw of String(t || "").split(/\r?\n/)) {
+    const l = raw.trim();
+    if (l.startsWith("|")) { (tbl = tbl || []).push(l.replace(/^\|/, "").replace(/\|$/, "").split("|").map(c => c.trim())); continue; }
+    flush();
+    if (!l) out.push('<div class="rd-gap"></div>');
+    else if (l === "---") out.push("<hr>");
+    else if (l.startsWith("# ")) out.push(`<h5>${inl(l.slice(2))}</h5>`);
+    else out.push(`<p>${inl(l)}</p>`);
+  }
+  flush(); return out.join("");
+}
+// Дэлгэрэнгүйн урт зургийг ӨРГӨНӨӨР нь багасгана (урт зураг жижгэрч уншигдахгүй болохоос сэргийлнэ)
+function shrinkW(file, maxW = 1000){
+  return new Promise((ok, no) => {
+    const img = new Image();
+    img.onload = () => {
+      // Өргөн 1000px хүртэл; утасны хөтчийн хязгаараас хэтрэхгүйн тулд өндрийг 14000px-ээр хязгаарлана
+      const s = Math.min(1, maxW / img.width, 14000 / img.height);
+      const c = document.createElement("canvas"); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+      const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(img.src);
+      c.toBlob(b => { if (b && b.type === "image/webp") return ok(b); c.toBlob(j => j ? ok(j) : no(new Error("шахаж чадсангүй")), "image/jpeg", .85); }, "image/webp", .85);
+    };
+    img.onerror = () => no(new Error("зураг уншиж чадсангүй")); img.src = URL.createObjectURL(file);
+  });
 }
 
 // ===== ЗУРАГ ОРУУЛАХ (бараа, сайтын зураг) =====
@@ -1166,7 +1244,27 @@ function productForm(p, isNew){
     <label>Хямдралын өмнөх үнэ (заавал биш)<input id="p-was" type="number" min="0" value="${esc(p.was || "")}"></label>
     <label>Тэмдэг<select id="p-badge">${["", "Шинэ", "Хит", "Хямдрал", "Онцлох"].map(b => `<option ${b === (p.badge || "") ? "selected" : ""}>${b}</option>`).join("")}</select></label>
     <label>Эрэмбэ (их нь эхэнд)<input id="p-sort" type="number" value="${esc(p.sort || 0)}"></label>
-    <label class="full">Тайлбар<textarea id="p-descr" rows="4">${esc(p.descr || "")}</textarea></label>
+    <!-- Барааны дэлгэрэнгүй: хэрэгслийн мөр + бичих талбар + сайтад харагдах байдал -->
+    <div class="full rdbox"><b>Барааны дэлгэрэнгүй</b> <small class="mut">(сайтад зургийн доор, голлуулж харагдана)</small>
+      <div class="rdtools">
+        <button type="button" class="btn" data-rw="**">Тод</button>
+        <button type="button" class="btn" data-rw="!!" style="color:#e5172f;font-weight:700">Улаан</button>
+        <button type="button" class="btn" data-rl="# ">Гарчиг</button>
+        <button type="button" class="btn" data-rl="---">Зураас</button>
+        <button type="button" class="btn" data-rt="1">Хэмжээний хүснэгт</button>
+      </div>
+      <div class="rdgrid"><textarea id="p-descr" rows="10" placeholder="Жишээ:
+# Барааны онцлог
+!!100% хөвөн!! даавуу, **Солонгосын үйлдвэр**
+---
+| Хэмжээ | Урт | Цээж | Ханцуй |
+| M | 64.5 | 60 | 54.5 |">${esc(p.descr || "")}</textarea>
+        <div class="rdprev"><small class="mut">Сайтад ингэж харагдана:</small><div class="rd-txt" id="p-rdprev"></div></div></div>
+      <!-- Урт дэлгэрэнгүй зургууд (Солонгос дэлгүүрийн шиг доор доороо) -->
+      <div style="margin-top:10px"><b style="font-size:13px">Дэлгэрэнгүй зургууд</b> <small class="mut">(урт зураг байж болно; дарааллаараа доор доороо гарна)</small>
+        <div class="dthumbs" id="p-dthumbs"></div>
+        <label class="btn" style="flex-direction:row;color:var(--ink);margin-top:6px">+ Зураг нэмэх<input type="file" id="p-dfiles" accept="image/*" multiple hidden></label> <span id="p-dmsg" class="mut" style="font-size:12.5px"></span></div>
+    </div>
     <label class="full">Сонголтууд (мөр бүрт нэг: <b>Өнгө: Хар, Цагаан</b> / <b>Хэмжээ: S, M, L, XL</b>)<textarea id="p-opts" rows="2">${esc(optsText(p.options))}</textarea></label>
     <div class="full row"><label class="row" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="p-pre" ${p.pre ? "checked" : ""} style="width:auto"> Захиалгаар (Солонгосоос)</label>
       <label class="row" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="p-active" ${p.active ? "checked" : ""} style="width:auto"> Сайтад харагдана</label></div>
@@ -1257,17 +1355,51 @@ function productForm(p, isNew){
     else if (ok) { $("pmsg").className = "err"; $("pmsg").textContent = `✓ ${ok} орлоо · ⚠ ${bad} алдаатай — дахин оролдоно уу`; }
     else { $("pmsg").className = "err"; $("pmsg").textContent = "⚠ Зураг орсонгүй — дахин оролдоно уу"; }
   };
+  // ----- Барааны дэлгэрэнгүй: хэрэгсэл, урьдчилан харах, урт зургууд -----
+  const ta = $("p-descr");
+  const prev = () => { $("p-rdprev").innerHTML = richDesc(ta.value) || '<p class="mut">—</p>'; };
+  ta.addEventListener("input", prev); prev();
+  // Сонгосон бичгийг хоёр талаас нь тэмдэглэнэ (Тод / Улаан)
+  $("pf").querySelectorAll("[data-rw]").forEach(b => b.onclick = () => {
+    const m = b.dataset.rw, a = ta.selectionStart, z = ta.selectionEnd, sel = ta.value.slice(a, z) || "бичвэр";
+    ta.setRangeText(m + sel + m, a, z, "select"); ta.focus(); prev(); });
+  // Мөрийн эхэнд нэмнэ (Гарчиг / Зураас)
+  $("pf").querySelectorAll("[data-rl]").forEach(b => b.onclick = () => {
+    const a = ta.selectionStart, st = ta.value.lastIndexOf("\n", a - 1) + 1;
+    if (b.dataset.rl === "---") ta.setRangeText((st === a ? "" : "\n") + "---\n", a, a, "end"); else ta.setRangeText("# ", st, st, "end");
+    ta.focus(); prev(); });
+  // Хэмжээний хүснэгтийн загвар оруулна
+  $("pf").querySelector("[data-rt]").onclick = () => { // Одоогийн мөрийн төгсгөлд оруулна (бичсэнийг таслахгүй)
+    let a = ta.value.indexOf("\n", ta.selectionEnd); if (a < 0) a = ta.value.length;
+    ta.setRangeText("\n| Хэмжээ | Урт | Цээж | Ханцуй | Мөр |\n| M | 64.5 | 60 | 54.5 | 58 |\n| L | 67.5 | 62 | 56 | 59.5 |\n| XL | 70.5 | 64 | 57.5 | 61 |\n", a, a, "end"); ta.focus(); prev(); };
+  // Урт зургууд: extra.detail
+  let detail = Array.isArray((p.extra || {}).detail) ? [...p.extra.detail] : [], dUp = 0;
+  const drawD = () => { $("p-dthumbs").innerHTML = detail.map((u, i) => `<div class="dth"><img src="${esc(u)}" alt=""><span>${i + 1}</span>
+      <div><button type="button" data-du="${i}" ${i ? "" : "disabled"} title="Дээш">↑</button><button type="button" data-dd="${i}" ${i < detail.length - 1 ? "" : "disabled"} title="Доош">↓</button><button type="button" data-dx="${i}" title="Хасах">×</button></div></div>`).join("");
+    $("p-dthumbs").querySelectorAll("[data-du]").forEach(b => b.onclick = () => { const i = +b.dataset.du; [detail[i - 1], detail[i]] = [detail[i], detail[i - 1]]; drawD(); });
+    $("p-dthumbs").querySelectorAll("[data-dd]").forEach(b => b.onclick = () => { const i = +b.dataset.dd; [detail[i + 1], detail[i]] = [detail[i], detail[i + 1]]; drawD(); });
+    $("p-dthumbs").querySelectorAll("[data-dx]").forEach(b => b.onclick = () => { detail.splice(+b.dataset.dx, 1); drawD(); }); };
+  drawD();
+  $("p-dfiles").onchange = async e => {
+    const files = [...e.target.files]; e.target.value = ""; if (!files.length) return;
+    dUp++; let n = 0;
+    for (const f of files) { $("p-dmsg").textContent = `Оруулж байна… ${++n}/${files.length}`;
+      try { detail.push(await putImg(await shrinkW(f), "detail")); drawD(); } catch (err) { toast("Алдаа: " + err.message); } }
+    dUp--; $("p-dmsg").textContent = "✓ Орлоо";
+  };
   // Холбоосоор зураг нэмэх
   $("paddurl").onclick = () => { const u = $("purl").value.trim(); if (!/^(https:\/\/|\/)/.test(u)) return toast("https:// эсвэл /-ээр эхэлсэн холбоос"); images.push(u); $("purl").value = ""; drawThumbs(); };
   // Хадгалах
   $("pf").onsubmit = async e => {
     e.preventDefault();
     // Зураг оруулж дуусаагүй бол хүлээнэ
-    if (uploading > 0) return toast("Зураг оруулж дуустал түр хүлээнэ үү");
+    if (uploading > 0 || dUp > 0) return toast("Зураг оруулж дуустал түр хүлээнэ үү");
     if (!$("p-name").value.trim()) return toast("Барааны нэрээ бичнэ үү");
     $("psave").disabled = true;
     // Зураг өөрчлөгдсөн бол галерейн хуучин нэрсийг (labels) хасна
     const extra = { ...(p.extra || {}) }; if (JSON.stringify(images) !== origImages) delete extra.labels;
+    // Дэлгэрэнгүйн урт зургууд
+    if (detail.length) extra.detail = detail; else delete extra.detail;
     if (!$("p-id").value) $("p-id").value = makeId();
     const row = { id: $("p-id").value, cat: $("p-cat").value, name: $("p-name").value.trim(), series: $("p-series").value.trim(), line: $("p-line").value.trim(),
       price: Number($("p-price").value), was: Number($("p-was").value) || null, badge: $("p-badge").value || null, descr: $("p-descr").value.trim(),

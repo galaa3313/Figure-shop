@@ -1525,6 +1525,21 @@ textarea{resize:none;overflow:hidden;min-height:64px}
   header.top .menubtn svg,header.top .iconbtn svg{width:22px;height:22px}
   header.top .cartbtn svg{width:23px;height:23px}
 }
+
+/* ===== Барааны дэлгэрэнгүй (урт зураг + төвд бичвэр) ===== */
+.rd{max-width:760px;margin:0 auto;text-align:center}
+.rd-imgs img{display:block;width:100%;height:auto;margin:0 auto}
+.rd-txt{padding:22px 6px 6px;font-size:14px;line-height:1.85;color:var(--muted)}
+.rd-txt p{margin:0}
+.rd-txt b{color:var(--ink)}
+.rd-txt .rd-red{color:#e5172f}
+.rd-txt h5{margin:6px 0;font-size:17px;font-weight:700;color:var(--ink)}
+.rd-txt hr{border:0;border-top:1px solid var(--line);margin:18px auto;width:60%}
+.rd-gap{height:14px}
+.rd-tw{overflow-x:auto;margin:8px 0}
+.rd-tbl{border-collapse:collapse;margin:0 auto;font-size:13px}
+.rd-tbl th,.rd-tbl td{border:1px solid var(--line);padding:7px 12px;white-space:nowrap}
+.rd-tbl th{background:var(--bg2);color:var(--ink);font-weight:600}
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -1998,6 +2013,33 @@ $("grid").addEventListener("click", e => {
 // ===== БАРААНЫ ДЭЛГЭРЭНГҮЙ ЦОНХ =====
 /* detail modal */
 // Барааны дэлгэрэнгүй цонх нээх: зураг/360°, тайлбар, хэмжээ, сонголт, үнэ
+// ===== БАРААНЫ ДЭЛГЭРЭНГҮЙ БИЧВЭР (Солонгос дэлгүүр шиг төвд, өнгөтэй) =====
+// Энгийн тэмдэглэгээг HTML болгоно (эхлээд бүгдийг escape хийнэ — аюулгүй):
+//   **тод**   → тод бичиг
+//   !!улаан!! → улаан тод бичиг
+//   # Гарчиг  → дэд гарчиг
+//   ---       → хэвтээ зураас
+//   | M | 64.5 | 60 |  → хүснэгт (эхний мөр нь толгой)
+//   хоосон мөр → зай
+function richDesc(t){
+  const out = []; let tbl = null;
+  // Мөр доторх тэмдэглэгээ
+  const inl = s => esc(s).replace(/!!(.+?)!!/g, '<b class="rd-red">$1</b>').replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+  // Цуглуулсан хүснэгтийн мөрүүдийг хүснэгт болгоно
+  const flush = () => { if (!tbl) return;
+    out.push(`<div class="rd-tw"><table class="rd-tbl">${tbl.map((r, i) => `<tr>${r.map(c => i ? `<td>${inl(c)}</td>` : `<th>${inl(c)}</th>`).join("")}</tr>`).join("")}</table></div>`); tbl = null; };
+  for (const raw of String(t || "").split(/\r?\n/)) {
+    const l = raw.trim();
+    if (l.startsWith("|")) { (tbl = tbl || []).push(l.replace(/^\|/, "").replace(/\|$/, "").split("|").map(c => c.trim())); continue; }
+    flush();
+    if (!l) out.push('<div class="rd-gap"></div>');
+    else if (l === "---") out.push("<hr>");
+    else if (l.startsWith("# ")) out.push(`<h5>${inl(l.slice(2))}</h5>`);
+    else out.push(`<p>${inl(l)}</p>`);
+  }
+  flush(); return out.join("");
+}
+
 function openModal(id){
   const p = byId(id); if (!p) return;
   // Зургууд: галерей, эсвэл гол зураг (+ ойрын зураг)
@@ -2036,8 +2078,11 @@ function openModal(id){
       </div>
     </div>
     <div class="pd-more">
-      ${p.desc || p.line || p.mat || p.size ? `<section class="pd-sec"><h4>Дэлгэрэнгүй</h4>
-        ${p.desc ? `<p class="pd-desc">${esc(p.desc)}</p>` : ""}
+      ${(p.detail && p.detail.length) || p.desc ? `<!-- Барааны дэлгэрэнгүй: урт зургууд доор доороо, дараа нь төвд бичвэр -->
+      <section class="pd-sec"><h4>Барааны дэлгэрэнгүй</h4><div class="rd">
+        ${p.detail && p.detail.length ? `<div class="rd-imgs">${p.detail.map(src => `<img src="${esc(src)}" alt="" loading="lazy">`).join("")}</div>` : ""}
+        ${p.desc ? `<div class="rd-txt">${richDesc(p.desc)}</div>` : ""}</div></section>` : ""}
+      ${p.line || p.mat || p.size ? `<section class="pd-sec"><h4>Үзүүлэлт</h4>
         <dl class="spec">${p.line ? `<dt>Үйлдвэрлэгч</dt><dd>${esc(p.line)}</dd>` : ""}${p.size ? `<dt>Хэмжээ</dt><dd>${esc(p.size)}</dd>` : ""}${p.mat ? `<dt>Материал</dt><dd>${esc(p.mat)}</dd>` : ""}</dl></section>` : ""}
       <section class="pd-sec" id="reviews"><h4>Хэрэглэгчийн сэтгэгдэл</h4><div id="rvBox"><p class="rv-empty">Уншиж байна…</p></div></section>
       ${sims.length ? `<section class="pd-sec"><h4>Танд таалагдаж магадгүй</h4><div class="sim">${sims.map(x => `<button type="button" data-sim="${esc(x.id)}"><img src="${esc(x.img)}" alt="" loading="lazy"><b>${esc(x.name)}</b><span>${fmt(x.price)}</span></button>`).join("")}</div></section>` : ""}
@@ -3023,6 +3068,8 @@ async function loadDbProducts(){
     const safeImg = u => typeof u === "string" && /^(https:\/\/|\/?img\/)/.test(u) && !/["'<>\s`]/.test(u) ? u : "";
     const imgs = (d.images || []).map(safeImg).filter(Boolean), x = { ...(d.extra || {}) }, labels = x.labels || [];
     x.img = safeImg(x.img);
+    // Дэлгэрэнгүйн урт зургууд (extra.detail) — мөн зөвхөн аюулгүй холбоос
+    x.detail = Array.isArray(x.detail) ? x.detail.map(safeImg).filter(Boolean) : [];
     // labels-ийг бараанд хуулахгүй
     delete x.labels;
     return { ...x, id: d.id, cat: d.cat, series: d.series || "", name: d.name, line: d.line || "", price: d.price, was: d.was || null,

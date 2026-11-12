@@ -1507,6 +1507,24 @@ textarea{resize:none;overflow:hidden;min-height:64px}
 #heroImg.hwait{opacity:0}
 /* Дөрвөлжин, хэвтээ зургийг тайрахгүй, бүтнээр нь багтааж харуулна (нүдний шил, бүс гэх мэт) */
 .ph img.fitw,.car img.fitw,.sim img.fitw,.drop img.fitw{object-fit:contain;background:#fff}
+/* ===== SHOP / FIT шилжүүлэгч (логоны хажууд бөөрөнхий хос товч) ===== */
+.brandsw{justify-self:center;display:flex;align-items:center;gap:14px}
+.sw{display:inline-flex;border:1px solid var(--ink);border-radius:999px;padding:3px}
+.sw a{display:grid;place-items:center;min-width:46px;height:28px;padding:0 12px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.1em;text-decoration:none;color:var(--ink)}
+.sw a[aria-current=page]{background:var(--ink);color:var(--bg)}
+.sw a:not([aria-current]):hover{background:var(--bg2)}
+@media (max-width:860px){ .brandsw{gap:8px} .sw{padding:2px} .sw a{min-width:38px;height:26px;padding:0 9px;font-size:10px} }
+/* Утсанд: лого + шилжүүлэгч + 4 товч нэг мөрөнд багтахаар жижигрүүлнэ (хэвтээ гүйлгээ гаргахгүй) */
+@media (max-width:600px){
+  header.top .bar{grid-template-columns:auto 1fr auto;gap:4px}
+  .brandsw{gap:6px}
+  .brandsw .logo svg.lg{height:16px}
+  .sw a{min-width:32px;height:24px;padding:0 7px;font-size:9.5px;letter-spacing:.08em}
+  header.top .hicons{gap:0}
+  header.top .menubtn,header.top .iconbtn,header.top .cartbtn{padding:4px}
+  header.top .menubtn svg,header.top .iconbtn svg{width:22px;height:22px}
+  header.top .cartbtn svg{width:23px;height:23px}
+}
 </style>
 
 <!-- ===== ДЭЭД ЦЭС: лого, холбоосууд, сагсны товч ===== -->
@@ -1516,8 +1534,8 @@ textarea{resize:none;overflow:hidden;min-height:64px}
 <header class="top"><div class="wrap bar">
   <!-- Цэс нээх (☰) товч -->
   <button class="menubtn" id="openMenu" type="button" aria-label="Цэс нээх"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
-  <!-- Голд лого -->
-  <a class="logo" href="#top" aria-label="FINN"><span class="lgbox"><svg class="lg" viewBox="0 -4 503 108" fill="currentColor" aria-hidden="true"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/><text x="480" y="22" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="20">®</text></svg></span></a>
+  <!-- Голд лого ба SHOP / FIT шилжүүлэгч (дэлгүүр идэвхтэй; FIT дарвал сургалтын хэсэг рүү) -->
+  <div class="brandsw"><a class="logo" href="#top" aria-label="FINN"><span class="lgbox"><svg class="lg" viewBox="0 -4 503 108" fill="currentColor" aria-hidden="true"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/><text x="480" y="22" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="20">®</text></svg></span></a><nav class="sw" aria-label="FINN хэсэг солих"><a href="/" aria-current="page">SHOP</a><a href="/fit">FIT</a></nav></div>
   <!-- Баруун талд: хайлт ба сагс -->
   <div class="hicons">
     <!-- Өдөр / шөнийн горим солих -->
@@ -1531,7 +1549,7 @@ textarea{resize:none;overflow:hidden;min-height:64px}
 <div class="dscrim" id="dscrim" hidden></div>
 <nav class="drawer" id="drawer" hidden aria-label="Цэс">
   <div class="dhead"><span class="logo" style="font-size:20px"><span class="lgbox"><svg class="lg" viewBox="0 -4 503 108" fill="currentColor" aria-hidden="true"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/><text x="480" y="22" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="20">®</text></svg></span></span><button class="x" id="closeMenu" type="button" aria-label="Хаах">×</button></div>
-  <a href="#shop">Бүх бараа</a><a href="#saved" id="drawerFav">Хадгалсан бараа <b id="favCount" hidden></b></a><a href="#how">Хэрхэн захиалах</a><a href="#faq" id="drawerFaq">Түгээмэл асуулт</a><a href="#contact">Холбоо барих</a>
+  <a href="#shop">Бүх бараа</a><a href="/fit">FINN Fit — сургалт</a><a href="#saved" id="drawerFav">Хадгалсан бараа <b id="favCount" hidden></b></a><a href="#how">Хэрхэн захиалах</a><a href="#faq" id="drawerFaq">Түгээмэл асуулт</a><a href="#contact">Холбоо барих</a>
   <!-- Үйлчилгээний мэдээлэл: хүргэлт, хугацаа, төлбөр, тусламж -->
   <ul class="dperks">
     <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="7" width="13" height="10"/><path d="M15 10h4l3 3v4h-7"/><circle cx="6" cy="18.5" r="1.5"/><circle cx="18" cy="18.5" r="1.5"/></svg><span><b>Хүргэлттэй</b><span>УБ хотод хүргэнэ</span></span></li>
@@ -1709,6 +1727,10 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":
 
 // "hoodie::Хар / L" түлхүүрээс барааны id-г ("hoodie") салгана
 const keyId = k => String(k).split("::")[0];
+// FINN Fit гишүүний дэлгүүрийн хөнгөлөлт (%), гишүүн биш бол 0
+let FIT_DISC = 0;
+// Хөнгөлөлтийг нийт дүнд тооцно (сервертэй яг ижил томьёо)
+const withDisc = sum => FIT_DISC ? Math.round(sum * (100 - FIT_DISC) / 100) : sum;
 // ===== САГС =====
 // Сагс: барааны түлхүүрүүдийн жагсаалт ("hoodie::Хар / L" гэх мэт)
 let cart = [];
@@ -1896,7 +1918,7 @@ function renderCount(){
   $("count").textContent = cart.length;
   // Сагс хоосон бол дүрсний тоог нууна
   $("count").toggleAttribute("data-zero", !cart.length);
-  const total = cart.reduce((s, id) => s + byId(id).price, 0);
+  const total = withDisc(cart.reduce((s, id) => s + byId(id).price, 0));
   $("mbar").hidden = !cart.length;
   $("mbarTxt").textContent = `Сагс харах (${cart.length})`;
   $("mbarSum").textContent = fmt(total);
@@ -2193,11 +2215,13 @@ function renderCart(){
   $("sheetTitle").textContent = "Таны сагс";
   const items = cart.map(byId);
   if (!items.length){ $("sheetBody").innerHTML = `<div class="empty">Сагс хоосон байна.<br>Бараагаа сонгоод “Сагслах” дарна уу.</div>`; return; }
-  const total = items.reduce((s, p) => s + p.price, 0);
+  // Барааны нийлбэр, гишүүний хөнгөлөлттэй нийт дүн
+  const sub = items.reduce((s, p) => s + p.price, 0), total = withDisc(sub);
   // Сагсны HTML: бараанууд, сануулга, нийт дүн, маягт
   $("sheetBody").innerHTML = `
     <div class="items">${groupCart(cart).map(({ k, p, n, opt }) => `<div class="it"><img src="${p.img}" alt=""><div><div class="n">${esc(p.name)}</div>${opt ? `<div class="p">${esc(opt)}</div>` : ""}<div class="p">${fmt(p.price)}${n > 1 ? ` × ${n}` : ""}${p.pre ? " · захиалгаар" : ""}</div><button type="button" class="rm" data-id="${esc(k)}">Сагснаас хасах</button></div>${p.pre ? `<div class="qty"><button type="button" class="dec" data-id="${esc(k)}" aria-label="Хасах">−</button><b>${n}</b><button type="button" class="inc" data-id="${esc(k)}" aria-label="Нэмэх">+</button></div>` : ""}</div>`).join("")}</div>
     ${items.some(p => p.pre) ? `<div class="note">Захиалгаар ирэх бараа Солонгосоос ${SHOP.preDays}-т ирнэ. Төлбөрийг 100% урьдчилж төлнө.</div>` : ""}
+    ${FIT_DISC ? `<div class="total" style="font-size:14px;font-weight:500"><span>FINN Fit гишүүний хөнгөлөлт −${FIT_DISC}%</span><span>−${fmt(sub - total)}</span></div>` : ""}
     <div class="total"><span>Нийт (${items.length})</span><span>${fmt(total)}</span></div>
     <form id="orderForm" novalidate>
       <label>Нэр<input id="f-name" required autocomplete="name"></label>
@@ -2817,8 +2841,24 @@ async function loadMe(){
   }
   // Дээд цэсний хүний дүрс дээр нэвтэрсэн эсэхийг тэмдэглэнэ
   $("openAcct").classList.toggle("on", !!me);
+  // FINN Fit гишүүн бол дэлгүүрийн хөнгөлөлтийг (%) уншина — сервер ч яг ижлээр тооцно
+  FIT_DISC = 0;
+  if (me) {
+    try {
+      const [m, c] = await Promise.all([
+        sb.from("fit_members").select("tier,until").eq("user_id", me.id).maybeSingle(),
+        sb.from("fit_config").select("member_disc,vip_disc").eq("id", 1).maybeSingle()
+      ]);
+      if (m.data && new Date(m.data.until) > new Date() && c.data) FIT_DISC = Math.max(0, Math.min(50, Number(m.data.tier === "vip" ? c.data.vip_disc : c.data.member_disc) || 0));
+    } catch (e) {}
+  }
+  // Доод мөрний сагсны дүнг хөнгөлөлттэйгээр шинэчилнэ
+  renderCount();
   // Хадгалсан барааг уншина (гарсан бол хоосолно)
   loadFavs();
+  // FINN Fit-ээс нэвтрэхээр ирсэн бол нэвтэрмэгц буцааж илгээнэ
+  let back = ""; try { back = sessionStorage.getItem("finn-back") || ""; } catch (e) {}
+  if (me && back === "/fit") { try { sessionStorage.removeItem("finn-back"); } catch (e) {} location.href = back; }
 }
 // Алдааны кодыг монгол бичиг болгоно
 const AERR = { email: "Имэйл хаяг буруу байна.", username: "Нэр 3–20 тэмдэгт, латин жижиг үсэг, тоо, _ . байна.", password: "Нууц үг 8+ тэмдэгт, үсэг ба тоо агуулсан байна.",
@@ -3021,7 +3061,12 @@ async function loadDbProducts(){
       if (ev === "PASSWORD_RECOVERY") { await loadMe(); openAcct("newpw"); }
     });
     await Promise.all([loadMe(), loadDbProducts().catch(() => {}), loadSettings().catch(() => {})]);
+    // FINN Fit-ээс "#p/<барааны id>" холбоосоор ирвэл тэр барааг шууд нээнэ
+    const pm = location.hash.match(/^#p\/([a-z0-9_-]{1,40})$/i);
+    if (pm && PRODUCTS.some(p => p.id === pm[1])) { history.replaceState(null, "", location.pathname); openModal(pm[1]); }
     if (fromLink && me && !/type=recovery/.test(location.hash)) { toast("Бүртгэл баталгаажлаа 🎉"); openAcct("profile"); }
+    // FINN Fit хуудаснаас "Нэвтрэх" дарж ирсэн бол нэвтрэх цонхыг нээж, нэвтэрсний дараа буцаана
+    if (location.hash === "#login") { history.replaceState(null, "", location.pathname); if (me) location.href = "/fit"; else { try { sessionStorage.setItem("finn-back", "/fit"); } catch (e) {} openAcct(); } }
     // Хаягийн мөрөөс токенуудыг цэвэрлэнэ
     if (fromOAuth) { toast(oauthErr ? "Facebook нэвтрэлт цуцлагдлаа" : me ? `Тавтай морил, ${me.username} 👋` : "Нэвтэрлээ"); }
     if (fromLink || fromOAuth) history.replaceState(null, "", location.pathname);

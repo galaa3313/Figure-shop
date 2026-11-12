@@ -40,5 +40,11 @@
       "path": "/api/keepalive",
       "schedule": "17 3 * * *"
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/fit",
+      "destination": "/fit.html"
+    }
   ]
 }

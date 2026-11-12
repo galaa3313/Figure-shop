@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FINN Fit — сургалт, хоол, нийгэмлэг</title>
+<meta name="description" content="FINN Fit — видео хичээл, хоолны төлөвлөгөө, 30 хоногийн сорилт, нийгэмлэг.">
+<meta property="og:title" content="FINN Fit">
+<meta property="og:image" content="https://finn.mn/brand/og.jpg">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="/brand/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+<style>
+/* ===== ӨНГӨ, ФОНТ (FINN дэлгүүртэй ижил) ===== */
+:root{
+  --bg:#ffffff; --bg2:#f5f5f3; --ink:#111111; --muted:#6f6f6f; --line:#e6e6e3; --red:#e5172f; --green:#1f8a4c;
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+/* Хуудасны үндсэн хэлбэр */
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+img{max-width:100%;display:block}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px}
+.mut{color:var(--muted)}
+.sm{font-size:13px}
+h1,h2,h3{line-height:1.2;margin:0}
+/* ===== ДЭЭД МӨР ===== */
+.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:10px;height:60px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:900;font-size:22px;letter-spacing:.14em}
+.logo i{font-style:normal;font-size:11px;letter-spacing:.14em;background:var(--ink);color:#fff;padding:3px 7px}
+.top .sp{flex:1}
+.top .shop{font-size:13px;text-decoration:none;border:1px solid var(--line);padding:8px 12px}
+.acct{height:40px;padding:0 14px;border:1px solid var(--ink);background:var(--ink);color:#fff;font-size:13px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center}
+.acct.on{background:#fff;color:var(--ink)}
+/* ===== ДООД ЦЭС (утсан дээр доор, компьютер дээр дээд мөрний доор) ===== */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;height:62px;text-decoration:none;font-size:11px;color:var(--muted)}
+.tabs a svg{width:22px;height:22px}
+.tabs a[aria-current=page]{color:var(--ink);font-weight:700}
+@media (min-width:900px){
+  body{padding-bottom:0}
+  .tabs{position:sticky;top:60px;bottom:auto;border-top:0;border-bottom:1px solid var(--line);grid-template-columns:repeat(5,auto);justify-content:center;gap:8px}
+  .tabs a{flex-direction:row;height:48px;padding:0 16px;font-size:14px}
+  .tabs a svg{width:18px;height:18px}
+}
+/* ===== ЕРӨНХИЙ ХЭСГҮҮД ===== */
+main{padding:18px 0 40px;min-height:60vh}
+.sec{margin-top:26px}
+.sechd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px}
+.sechd h2{font-size:18px;font-weight:800}
+.sechd a{font-size:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 20px;border:1px solid var(--ink);background:var(--ink);color:#fff;font-weight:700;font-size:14px;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--ink)}
+.btn.sm{height:38px;padding:0 12px;font-size:12.5px}
+.btn.full{width:100%}
+.btn[disabled]{opacity:.5;cursor:default}
+.card{border:1px solid var(--line);background:#fff}
+.hero{background:var(--ink);color:#fff;padding:26px 22px;display:flex;flex-direction:column;gap:12px}
+.hero .eb{font-size:11px;font-weight:700;letter-spacing:.16em;color:#bdbdbd}
+.hero h1{font-size:clamp(26px,6vw,36px);font-weight:900;letter-spacing:-.01em}
+.hero p{margin:0;color:#d6d6d6;font-size:14.5px}
+.hero .btn{align-self:flex-start;background:#fff;color:var(--ink);border-color:#fff}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{height:36px;padding:0 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px}
+.chip[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.08em;padding:4px 8px;background:#fff;color:var(--ink)}
+.tag.red{background:var(--red);color:#fff}
+.tag.dark{background:var(--ink);color:#fff}
+.bar4{height:4px;background:var(--line)}
+.bar4 b{display:block;height:4px;background:var(--ink)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.empty{padding:28px 18px;text-align:center;color:var(--muted);border:1px dashed var(--line)}
+.load{padding:40px 0;text-align:center;color:var(--muted)}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Хөтөлбөрийн карт */
+.prog{display:flex;flex-direction:column;text-decoration:none}
+.prog .cv{position:relative;aspect-ratio:16/9;background:#1a1a1a center/cover no-repeat;display:grid;place-items:center;color:#8f8f8f;font-size:12px}
+.prog .cv .tag{position:absolute;left:12px;top:12px}
+.prog .cv .tag.red{left:auto;right:12px}
+.prog .bd{padding:14px 16px 16px;display:flex;flex-direction:column;gap:5px}
+.prog b{font-size:16.5px}
+/* Хичээлийн мөр */
+.lrow{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid #f0f0f0;text-decoration:none}
+.lrow .num{width:44px;height:44px;flex:none;display:grid;place-items:center;background:var(--bg2);font-weight:800;color:var(--muted)}
+.lrow.done .num{background:var(--ink);color:#fff}
+.lrow .t{flex:1;display:flex;flex-direction:column;gap:2px}
+.lrow svg{flex:none}
+/* Видео хэсэг */
+.video{position:relative;aspect-ratio:16/9;background:#111;display:grid;place-items:center;color:#9a9a9a;font-size:13px}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.ex{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid #f0f0f0}
+.ex .n{width:46px;height:46px;flex:none;background:var(--bg2);display:grid;place-items:center;font-weight:800;color:#9a9a9a}
+.body{white-space:pre-line;font-size:14.5px;color:#333}
+/* Барааны жижиг карт */
+.prod{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--line)}
+.prod img,.prod .ph{width:64px;height:64px;flex:none;object-fit:cover;background:var(--bg2)}
+.prod .t{flex:1;display:flex;flex-direction:column;gap:3px;font-size:13.5px}
+/* Түгжээтэй контент */
+.lock{border:1px solid var(--ink);padding:22px 18px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.lock h3{font-size:18px}
+/* Нийгэмлэг */
+.compose{border:1px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.compose textarea{border:0;resize:none;outline:none;font-size:14.5px;min-height:56px}
+.compose .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.compose select{height:38px;border:1px solid var(--line);background:#fff;padding:0 8px}
+.post{padding:16px 0;border-bottom:1px solid #f0f0f0;display:flex;flex-direction:column;gap:10px}
+.post .hd{display:flex;align-items:center;gap:10px}
+.av{width:38px;height:38px;border-radius:50%;background:#e9e9e9;display:grid;place-items:center;font-weight:800;position:relative;flex:none}
+.av i{position:absolute;right:-4px;bottom:-4px;min-width:18px;height:18px;border-radius:9px;background:var(--ink);color:#fff;font-size:10.5px;font-style:normal;font-weight:700;display:grid;place-items:center;padding:0 4px}
+.post .tx{white-space:pre-line;font-size:14.5px;overflow-wrap:anywhere}
+.post .ph{max-height:420px;object-fit:cover;width:100%}
+.post .act{display:flex;gap:16px;align-items:center}
+.post .act button{border:0;background:none;padding:6px 0;display:flex;align-items:center;gap:6px;font-size:13px;color:#555}
+.post .act button.on{color:var(--red);font-weight:700}
+.post .act .del{margin-left:auto;font-size:12px;color:var(--muted)}
+.cmts{background:var(--bg2);padding:10px 12px;display:flex;flex-direction:column;gap:8px;font-size:13.5px}
+.cmts form{display:flex;gap:8px}
+.cmts input{flex:1;height:40px;border:1px solid var(--line);padding:0 10px;background:#fff}
+/* Түвшин, тэргүүлэгчид */
+.lvhero{background:var(--ink);color:#fff;padding:20px;display:flex;align-items:center;gap:16px}
+.lvhero .ring{width:64px;height:64px;border-radius:50%;border:3px solid #fff;display:grid;place-items:center;font-size:26px;font-weight:900;flex:none}
+.lvl{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f0f0f0}
+.lvl .b{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;background:#f0f0f0;color:#9a9a9a;flex:none}
+.lvl.got .b{background:var(--ink);color:#fff}
+.lb{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #f0f0f0;margin-bottom:6px}
+.lb.me{border-color:var(--ink);background:#f7f7f7}
+.seg{display:inline-flex;border:1px solid var(--ink)}
+.seg button{height:34px;padding:0 12px;border:0;background:#fff;font-size:12.5px}
+.seg button[aria-pressed=true]{background:var(--ink);color:#fff}
+/* Сорилт */
+.days{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.days button{height:48px;border:1px solid var(--line);background:#fff;font-weight:700;color:#9a9a9a;font-size:13px}
+.days button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.days button.today{border-color:var(--ink);color:var(--ink)}
+.days button[disabled]{opacity:.45;cursor:default}
+.stat3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line)}
+.stat3>div{padding:12px;display:flex;flex-direction:column;gap:2px}
+.stat3>div+div{border-left:1px solid var(--line)}
+.stat3 span{font-size:11.5px;color:var(--muted)}
+.stat3 b{font-size:19px}
+.hero .stat3{border-color:#333}.hero .stat3>div+div{border-color:#333}.hero .stat3 span{color:#bdbdbd}
+/* Хоол */
+.dayseg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:14px}
+.dayseg button{height:44px;border:1px solid var(--line);background:#fff;font-size:13px}
+.dayseg button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.meal{border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.meal .w{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted)}
+.meal details summary{cursor:pointer;font-size:13px;text-decoration:underline}
+/* Гишүүнчлэл */
+.terms{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--ink);margin-bottom:14px}
+.terms button{height:54px;border:0;background:#fff;font-size:13.5px;font-weight:600;line-height:1.2}
+.terms button[aria-pressed=true]{background:var(--ink);color:#fff}
+.terms small{display:block;color:var(--red);font-size:11px;font-weight:700}
+.plan{width:100%;text-align:left;border:1px solid var(--line);background:#fff;padding:16px;display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.plan[aria-pressed=true]{border:2px solid var(--ink);padding:15px}
+.plan .pr{font-size:22px;font-weight:900}
+.plan ul{margin:4px 0 0;padding-left:18px;font-size:13px;color:#444}
+/* Миний ахиц */
+.chart{height:140px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;align-items:end;border-bottom:1px solid #ddd;padding-bottom:6px}
+.chart i{display:block;background:var(--ink);min-height:4px}
+.chart i.z{background:#e6e6e6}
+.chartx{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;text-align:center;font-size:11px;color:var(--muted);margin-top:4px}
+.mlink{display:flex;justify-content:space-between;align-items:center;height:52px;border-bottom:1px solid #f0f0f0;text-decoration:none;font-size:14.5px;width:100%;background:none;border-left:0;border-right:0;border-top:0;padding:0;text-align:left}
+/* ===== ТӨЛБӨРИЙН ЦОНХ ===== */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center}
+.modal[hidden]{display:none}
+.sheet{background:#fff;width:100%;max-width:520px;max-height:92vh;overflow:auto;padding:20px 18px calc(22px + env(safe-area-inset-bottom,0px));position:relative}
+@media (min-width:600px){.modal{align-items:center}}
+.sheet .x{position:absolute;right:10px;top:10px;width:44px;height:44px;border:0;background:var(--bg2);border-radius:50%;font-size:18px}
+.qr{width:220px;height:220px;margin:8px auto;image-rendering:pixelated}
+.banks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}
+.banks a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10.5px;text-decoration:none;text-align:center;border:1px solid var(--line);padding:8px 4px}
+.banks img{width:36px;height:36px;border-radius:8px}
+/* Мэдэгдэл */
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:60;background:var(--ink);color:#fff;padding:12px 18px;font-size:14px;max-width:90vw;text-align:center}
+.toast a{color:#fff;text-decoration:underline;margin-left:8px}
+/* SHOP / FIT шилжүүлэгч (дэлгүүрийнхтэй ижил) */
+.sw{display:inline-flex;border:1px solid var(--ink);border-radius:999px;padding:3px}
+.sw a{display:grid;place-items:center;min-width:42px;height:28px;padding:0 11px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.1em;text-decoration:none}
+.sw a[aria-current=page]{background:var(--ink);color:#fff}
+.sw a:not([aria-current]):hover{background:var(--bg2)}
+@media (max-width:420px){ .sw a{min-width:36px;padding:0 8px;font-size:10px} .logo{font-size:19px} .acct{padding:0 10px;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+
+<!-- ===== ДЭЭД МӨР: лого, дэлгүүр рүү, нэвтрэх ===== -->
+<header class="top"><div class="wrap">
+  <!-- Лого ба SHOP / FIT шилжүүлэгч (FIT идэвхтэй; SHOP дарвал дэлгүүр рүү) -->
+  <a class="logo" href="#home" aria-label="FINN Fit нүүр">FINN</a>
+  <nav class="sw" aria-label="FINN хэсэг солих"><a href="/">SHOP</a><a href="#home" aria-current="page">FIT</a></nav>
+  <span class="sp"></span>
+  <a class="acct" id="acct" href="/#login">Нэвтрэх</a>
+</div></header>
+
+<!-- ===== ҮНДСЭН ЦЭС ===== -->
+<nav class="tabs" id="tabs" aria-label="FINN Fit цэс">
+  <a href="#home" data-r="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z"/></svg>Нүүр</a>
+  <a href="#programs" data-r="programs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>Хөтөлбөр</a>
+  <a href="#community" data-r="community"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M21 12a8 8 0 0 1-12 7l-5 1 1-4a8 8 0 1 1 16-4z"/></svg>Нийгэмлэг</a>
+  <a href="#challenge" data-r="challenge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>Сорилт</a>
+  <a href="#me" data-r="me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Би</a>
+</nav>
+
+<main><div class="wrap" id="main"><div class="load"><span class="spin"></span>Ачаалж байна…</div></div></main>
+
+<!-- ===== ТӨЛБӨР, МЭДЭЭЛЛИЙН ЦОНХ ===== -->
+<div class="modal" id="modal" hidden><div class="sheet" role="dialog" aria-modal="true"><button class="x" id="mx" type="button" aria-label="Хаах">✕</button><div id="mbody"></div></div></div>
+
+<script>
+// =====================================================================
+// FINN FIT — сургалтын хэсэг (finn.mn/fit)
+// Мэдээллийг Supabase-ээс уншина; төлбөрийг серверийн /api/fit-pay-ээр QPay-ээр авна.
+// Түгжээтэй хичээл, хоолны төлөвлөгөөг мэдээллийн сан (RLS) өөрөө хамгаална.
+// =====================================================================
+
+// ----- Туслах функцууд -----
+// Элементийг id-аар нь авна
+const $ = id => document.getElementById(id);
+// HTML-д аюулгүй болгоно (хортой код оруулахаас сэргийлнэ)
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+// Мөнгөн дүн: 45'000₮
+const fmt = n => Number(n || 0).toLocaleString("en-US").replace(/,/g, "'") + "₮";
+// Огноо: 2026.11.12
+const dt = s => s ? new Date(s).toLocaleDateString("mn-MN", { year: "numeric", month: "2-digit", day: "2-digit" }) : "";
+// Хэдий хугацааны өмнө ("5 мин", "2 цаг", "3 өдөр")
+const ago = s => { const m = Math.max(1, Math.round((Date.now() - new Date(s)) / 60000)); return m < 60 ? m + " мин" : m < 1440 ? Math.round(m / 60) + " цаг" : Math.round(m / 1440) + " өдөр"; };
+// Зөвхөн https:// зургийн холбоос (бусад нь хоосон)
+const okImg = u => typeof u === "string" && /^https:\/\//.test(u) && !/["'<>\s`]/.test(u) ? u : "";
+// Улаанбаатарын өнөөдрийн огноо "2026-11-12"
+const todayUB = () => new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+
+// ----- Мэдэгдэл ("Хадгаллаа" гэх мэт) -----
+let toastT;
+function toast(msg, link){
+  document.querySelectorAll(".toast").forEach(t => t.remove());
+  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
+  // Нэмэлт холбоос (жишээ: "Сагс руу")
+  if (link) { const a = document.createElement("a"); a.href = link.href; a.textContent = link.text; t.appendChild(a); }
+  document.body.appendChild(t); clearTimeout(toastT); toastT = setTimeout(() => t.remove(), 2600);
+}
+
+// ----- Төлөв -----
+// sb = Supabase холболт, me = нэвтэрсэн хэрэглэгч, FIT = миний гишүүнчлэл, оноо
+let sb = null, me = null;
+let FIT = { tier: null, until: null, points: 0, level: 1, next: 50, lessons: 0, streak: 0 };
+const isMember = () => !!FIT.tier;
+const isAdmin = () => !!(me && me.role === "admin");
+// Хуудас хурдан солигдоход хуучин хуудасны хоцорсон хариуг үл тоомсорлоно
+let VIEW = 0;
+// Түвшний нэрс ба шаардлагатай оноо
+const LV = [["Эхлэгч", 0], ["Идэвхтэй", 50], ["Тогтмол", 150], ["Тэвчээртэй", 300], ["Хүчирхэг", 600], ["Ган зүрх", 1000], ["Аварга", 1500], ["Домог", 2200], ["FINN Мастер", 3000]];
+
+// ----- Нэвтэрсэн хэрэглэгч, гишүүнчлэл, оноог уншина -----
+async function loadMe(){
+  me = null;
+  const { data } = await sb.auth.getUser();
+  if (data && data.user) {
+    const r = await sb.from("profiles").select("username,role").eq("id", data.user.id).maybeSingle();
+    if (r.data) me = { ...r.data, id: data.user.id };
+  }
+  FIT = { tier: null, until: null, points: 0, level: 1, next: 50, lessons: 0, streak: 0 };
+  if (me) {
+    const { data: f } = await sb.rpc("fit_me");
+    const x = f && f[0];
+    if (x) FIT = { tier: x.tier, until: x.until, points: x.points, level: x.level, next: x.next_at, lessons: x.lessons, streak: x.streak };
+  }
+  // Дээд мөрний товч: нэвтрээгүй бол "Нэвтрэх", нэвтэрсэн бол нэр
+  const a = $("acct");
+  if (me) { a.textContent = me.username; a.href = "#me"; a.classList.add("on"); }
+  else { a.textContent = "Нэвтрэх"; a.href = "/#login"; a.classList.remove("on"); }
+}
+// Нэвтрэх шаардлагатай үйлдэл дээр: нэвтрээгүй бол дэлгүүрийн нэвтрэх цонх руу илгээнэ
+function needLogin(){
+  if (me) return false;
+  toast("Эхлээд нэвтэрнэ үү", { href: "/#login", text: "Нэвтрэх" });
+  return true;
+}
+// Серверийн API-д нэвтрэх токентой хүсэлт
+async function authHeader(){
+  const { data } = await sb.auth.getSession();
+  return data && data.session ? { Authorization: "Bearer " + data.session.access_token } : {};
+}
+
+// ===== ХУУДАС СОЛИХ (хаягийн # хэсгээр) =====
+const ROUTES = { home: vHome, programs: vPrograms, program: vProgram, lesson: vLesson, meals: vMeals, community: vCommunity, levels: vLevels, challenge: vChallenge, join: vJoin, me: vMe };
+function route(){
+  // "#lesson/12" → ["lesson", "12"]
+  const [name, arg] = (location.hash.slice(1) || "home").split("/");
+  const fn = ROUTES[name] || vHome;
+  // Доод цэсний идэвхтэй товч
+  const tabOf = { program: "programs", lesson: "programs", meals: "home", levels: "me", join: "me" }[name] || name;
+  document.querySelectorAll("#tabs a").forEach(a => { if (a.dataset.r === tabOf) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+  const my = ++VIEW;
+  $("main").innerHTML = `<div class="load"><span class="spin"></span>Ачаалж байна…</div>`;
+  scrollTo(0, 0);
+  fn(arg, my).catch(e => { if (my === VIEW) $("main").innerHTML = `<div class="empty">Алдаа гарлаа. Хуудсаа шинэчилнэ үү.<br><span class="sm">${esc(e && e.message || e)}</span></div>`; });
+}
+addEventListener("hashchange", route);
+// Хуучирсан (өөр хуудас руу шилжсэн) эсэх
+const stale = my => my !== VIEW;
+
+// Гишүүн биш хүнд харуулах "түгжээтэй" хэсэг
+const lockBox = (title, text) => `<div class="lock">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="11" width="14" height="10"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+  <h3>${esc(title)}</h3><p class="mut" style="margin:0">${esc(text)}</p>
+  ${me ? `<a class="btn" href="#join">Гишүүн болох</a>` : `<a class="btn" href="/#login">Нэвтрэх</a>`}</div>`;
+
+// ===== 1. НҮҮР =====
+async function vHome(_, my){
+  // Миний хамгийн сүүлд дасгал хийсэн хөтөлбөр → дараагийн хичээл
+  let next = null;
+  if (me) {
+    const { data: last } = await sb.from("fit_progress").select("lesson_id,done_at").eq("user_id", me.id).order("done_at", { ascending: false }).limit(1);
+    if (last && last[0]) {
+      const { data: l } = await sb.from("fit_lessons").select("program_id").eq("id", last[0].lesson_id).maybeSingle();
+      if (l) {
+        const { data: idx } = await sb.rpc("fit_lesson_index", { p: l.program_id });
+        const n = (idx || []).find(x => !x.done);
+        if (n) next = { ...n, program_id: l.program_id, total: idx.length, doneN: idx.filter(x => x.done).length };
+      }
+    }
+  }
+  const { data: progs } = await sb.from("fit_programs").select("id,title,level,place,cover,premium").order("sort", { ascending: false }).limit(4);
+  if (stale(my)) return;
+  $("main").innerHTML = `
+    ${tx("notice", "") ? `<div class="card" style="padding:12px 14px;margin-bottom:14px;border-color:var(--ink);font-size:14px">📣 ${esc(tx("notice", ""))}</div>` : ""}
+    <section class="hero">
+      <span class="eb">${esc(tx("eb", "FINN FIT · СУРГАЛТ"))}</span>
+      <h1>${esc(tx("title", "Биеэ хөгжүүлэх аялал эндээс эхэлнэ"))}</h1>
+      <p>${esc(tx("sub", "Хөтөлбөр, хичээл, хоолны төлөвлөгөө, 30 хоногийн сорилт — нэг дор."))}</p>
+      ${me ? `<div class="stat3" style="margin-top:6px"><div><span>Түвшин</span><b>${FIT.level}</b></div><div><span>Оноо</span><b>${FIT.points}</b></div><div><span>Дараалсан өдөр</span><b>${FIT.streak}</b></div></div>` : ""}
+      <a class="btn" href="#programs">${esc(tx("btn", "Хөтөлбөр сонгох →"))}</a>
+    </section>
+    ${next ? `<section class="sec"><div class="sechd"><h2>Дараагийн хичээл</h2><a href="#program/${esc(next.program_id)}">Хөтөлбөр</a></div>
+      <a class="card" href="#lesson/${next.id}" style="display:flex;gap:14px;padding:14px;align-items:center;text-decoration:none">
+        <div class="lrow" style="border:0;padding:0"><div class="num">${next.n}</div></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px"><b>${esc(next.title)}</b><span class="sm mut">${next.minutes} мин · ${next.doneN}/${next.total} дууссан</span>
+        <div class="bar4"><b style="width:${Math.round(next.doneN / next.total * 100)}%"></b></div></div></a></section>` : ""}
+    <section class="sec grid2">
+      <a class="card" href="#meals" style="padding:16px;text-decoration:none;display:flex;flex-direction:column;gap:6px"><b>Хоолны төлөвлөгөө</b><span class="sm mut">7 хоногийн цэс, жор</span></a>
+      <a class="card" href="#levels" style="padding:16px;text-decoration:none;display:flex;flex-direction:column;gap:6px"><b>Түвшин ба тэргүүлэгчид</b><span class="sm mut">Оноо цуглуулж түвшин ахи</span></a>
+    </section>
+    <section class="sec"><div class="sechd"><h2>Хөтөлбөрүүд</h2><a href="#programs">Бүгд</a></div>
+      ${(progs || []).length ? `<div class="grid2">${progs.map(progCard).join("")}</div>` : `<div class="empty">Удахгүй хөтөлбөрүүд нэмэгдэнэ.</div>`}</section>
+    ${!isMember() ? `<section class="sec card" style="padding:18px;display:flex;flex-direction:column;gap:8px;border-color:var(--ink)">
+      <span class="tag red" style="align-self:flex-start">ГИШҮҮНЧЛЭЛ</span><b style="font-size:16px">${esc(tx("joinTitle", "Бүх хөтөлбөр, хоолны төлөвлөгөө, нийгэмлэг"))}</b>
+      <span class="sm mut">${esc(tx("joinSub", "QPay-ээр төлнө · дэлгүүрт гишүүний хөнгөлөлт"))}</span><a class="btn" href="#join" style="align-self:flex-start;margin-top:4px">Багц үзэх</a></section>` : ""}`;
+}
+// Хөтөлбөрийн карт
+const progCard = p => `<a class="card prog" href="#program/${esc(p.id)}">
+  <div class="cv" ${okImg(p.cover) ? `style="background-image:url('${esc(okImg(p.cover))}')"` : ""}>${okImg(p.cover) ? "" : "FINN FIT"}<span class="tag">${esc(p.level)}</span>${p.premium ? `<span class="tag red">ГИШҮҮН</span>` : `<span class="tag red" style="background:var(--green)">ҮНЭГҮЙ</span>`}</div>
+  <div class="bd"><b>${esc(p.title)}</b><span class="sm mut">${esc(p.place)}</span></div></a>`;
+
+// ===== 2. ХӨТӨЛБӨРҮҮД =====
+async function vPrograms(_, my){
+  const { data } = await sb.from("fit_programs").select("id,title,level,place,cover,premium,descr").order("sort", { ascending: false });
+  if (stale(my)) return;
+  const all = data || [];
+  let f = "Бүгд";
+  const F = ["Бүгд", "Эхлэгч", "Дунд", "Ахисан", "Гэртээ", "Заалд", "Үнэгүй"];
+  const draw = () => {
+    const list = all.filter(p => f === "Бүгд" || p.level === f || p.place === f || (f === "Үнэгүй" && !p.premium) || (p.level === "Бүх түвшин" && ["Эхлэгч", "Дунд", "Ахисан"].includes(f)));
+    $("main").innerHTML = `<h1 style="font-size:24px;font-weight:900;margin-bottom:14px">Хөтөлбөрүүд</h1>
+      <div class="chips">${F.map(x => `<button class="chip" type="button" data-f="${x}" aria-pressed="${x === f}">${x}</button>`).join("")}</div>
+      ${list.length ? `<div class="grid2">${list.map(progCard).join("")}</div>` : `<div class="empty">Энэ шүүлтүүрт хөтөлбөр алга.</div>`}`;
+    document.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { f = b.dataset.f; draw(); });
+  };
+  draw();
+}
+
+// ===== 3. НЭГ ХӨТӨЛБӨР (хичээлүүдийн жагсаалт) =====
+async function vProgram(id, my){
+  const [{ data: p }, { data: idx }] = await Promise.all([
+    sb.from("fit_programs").select("*").eq("id", id).maybeSingle(),
+    sb.rpc("fit_lesson_index", { p: id })
+  ]);
+  if (stale(my)) return;
+  if (!p) { $("main").innerHTML = `<div class="empty">Хөтөлбөр олдсонгүй. <a href="#programs">Бүх хөтөлбөр</a></div>`; return; }
+  const L = idx || [], doneN = L.filter(x => x.done).length, locked = L.some(x => x.locked);
+  $("main").innerHTML = `
+    <a href="#programs" class="sm">← Хөтөлбөрүүд</a>
+    <div class="card prog" style="margin-top:10px"><div class="cv" ${okImg(p.cover) ? `style="background-image:url('${esc(okImg(p.cover))}')"` : ""}>${okImg(p.cover) ? "" : "FINN FIT"}<span class="tag">${esc(p.level)}</span></div>
+      <div class="bd"><h1 style="font-size:22px;font-weight:900">${esc(p.title)}</h1><span class="sm mut">${esc(p.place)} · ${L.length} хичээл</span>
+      ${p.descr ? `<p class="body" style="margin:6px 0 0">${esc(p.descr)}</p>` : ""}
+      ${me && L.length ? `<div style="margin-top:8px;display:flex;flex-direction:column;gap:6px"><span class="sm">${doneN}/${L.length} дууссан</span><div class="bar4"><b style="width:${Math.round(doneN / L.length * 100)}%"></b></div></div>` : ""}</div></div>
+    ${locked ? `<div class="sec">${lockBox("Үлдсэн хичээлүүд гишүүдэд нээлттэй", "Үнэгүй хичээлүүдээр туршаад, таалагдвал гишүүн болоорой.")}</div>` : ""}
+    <section class="sec"><div class="sechd"><h2>Хичээлүүд</h2></div>
+      ${L.length ? L.map(l => `<a class="lrow ${l.done ? "done" : ""}" href="${l.locked ? "#join" : "#lesson/" + l.id}">
+        <div class="num">${l.done ? "✓" : l.n}</div><div class="t"><b>${esc(l.title)}</b><span class="sm mut">${l.minutes} мин${l.free && p.premium ? " · үнэгүй" : ""}</span></div>
+        ${l.locked ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9a9a9a" stroke-width="1.8" aria-label="Түгжээтэй"><rect x="5" y="11" width="14" height="10"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>` : `<span aria-hidden="true">›</span>`}</a>`).join("") : `<div class="empty">Хичээл удахгүй нэмэгдэнэ.</div>`}
+    </section>`;
+}
+
+// ===== 4. ХИЧЭЭЛ =====
+// YouTube холбоосыг нууцлалтай (nocookie) оруулах хэлбэрт хөрвүүлнэ
+function ytEmbed(u){
+  const m = String(u || "").match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);
+  return m ? "https://www.youtube-nocookie.com/embed/" + m[1] : "";
+}
+async function vLesson(id, my){
+  // Мэдээллийн сан эрхгүй хүнд түгжээтэй хичээлийг буцаадаггүй (RLS)
+  const { data: l } = await sb.from("fit_lessons").select("*").eq("id", Number(id)).maybeSingle();
+  if (stale(my)) return;
+  if (!l) { $("main").innerHTML = `<a href="#programs" class="sm">← Хөтөлбөрүүд</a><div class="sec">${lockBox("Энэ хичээл гишүүдэд зориулагдсан", "Гишүүн болоод бүх хичээл, хоолны төлөвлөгөө, нийгэмлэгт нэвтэрнэ.")}</div>`; return; }
+  // Дуусгасан эсэх, хөтөлбөрийн нэр, хэрэгтэй бараа
+  const [{ data: pr }, { data: done }, { data: prods }] = await Promise.all([
+    sb.from("fit_programs").select("id,title").eq("id", l.program_id).maybeSingle(),
+    me ? sb.from("fit_progress").select("lesson_id").eq("user_id", me.id).eq("lesson_id", l.id) : Promise.resolve({ data: [] }),
+    (l.products || []).length ? sb.from("products").select("id,name,price,images,options,active").in("id", l.products) : Promise.resolve({ data: [] })
+  ]);
+  if (stale(my)) return;
+  const isDone = !!(done && done.length), yt = l.bunny_id ? "" : ytEmbed(l.video_url);
+  const ex = Array.isArray(l.exercises) ? l.exercises : [];
+  $("main").innerHTML = `
+    <a href="#program/${esc(l.program_id)}" class="sm">← ${esc(pr ? pr.title : "Хөтөлбөр")}</a>
+    ${l.bunny_id ? `<div class="video" id="bvid" style="margin-top:10px"><span><span class="spin"></span>Видео ачаалж байна…</span></div>` : ""}
+    ${yt ? `<div class="video" style="margin-top:10px"><iframe src="${esc(yt)}" title="${esc(l.title)}" allow="encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`
+      : okImg(l.video_url) ? `<a class="btn ghost full" style="margin-top:10px" href="${esc(okImg(l.video_url))}" target="_blank" rel="noopener">▶ Видео үзэх</a>` : ""}
+    <div style="margin-top:14px;display:flex;flex-direction:column;gap:4px"><span class="sm mut" style="letter-spacing:.08em;font-weight:600">ХИЧЭЭЛ ${l.n} · ${l.minutes} МИН</span><h1 style="font-size:24px;font-weight:900">${esc(l.title)}</h1></div>
+    ${l.body ? `<p class="body" style="margin:12px 0 0">${esc(l.body)}</p>` : ""}
+    ${ex.length ? `<section class="sec"><div class="sechd"><h2>Дасгалууд</h2></div>
+      ${ex.map((e, i) => `<div class="ex"><div class="n">${i + 1}</div><div style="display:flex;flex-direction:column;gap:2px"><b>${esc(e.name)}</b><span class="sm mut">${esc(e.sets || "")}</span></div></div>`).join("")}</section>` : ""}
+    ${(prods || []).filter(p => p.active).length ? `<section class="sec"><div class="sechd"><h2>Энэ хичээлд хэрэгтэй</h2>${FIT_DISC_TXT()}</div>
+      <div style="display:flex;flex-direction:column;gap:10px">${prods.filter(p => p.active).map(p => `<div class="prod">
+        ${okImg((p.images || [])[0]) ? `<img src="${esc(okImg(p.images[0]))}" alt="" loading="lazy">` : `<div class="ph"></div>`}
+        <div class="t"><b style="font-weight:600">${esc(p.name)}</b><span>${fmt(p.price)}</span></div>
+        ${(p.options || []).length ? `<a class="btn ghost sm" href="/#p/${esc(p.id)}">Сонгох</a>` : `<button class="btn ghost sm" type="button" data-add="${esc(p.id)}">Сагслах</button>`}</div>`).join("")}</div></section>` : ""}
+    <div class="sec"><button class="btn full" id="ldone" type="button" ${isDone ? "disabled" : ""}>${isDone ? "✓ Энэ хичээлийг дуусгасан" : "Хичээл дууслаа · +20 оноо"}</button></div>`;
+  // Bunny видео: сервер үзэх эрхийг шалгаад 3 цагийн хугацаатай холбоос өгнө
+  if (l.bunny_id) {
+    try {
+      const r = await fetch(`/api/fit-video?id=${l.id}`, { headers: await authHeader() });
+      const j = await r.json();
+      if (stale(my)) return;
+      if (j.ok && /^https:\/\/iframe\.mediadelivery\.net\//.test(j.url)) {
+        const f = document.createElement("iframe");
+        f.src = j.url; f.title = l.title; f.loading = "lazy";
+        f.allow = "accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"; f.allowFullscreen = true;
+        $("bvid").replaceChildren(f);
+      } else $("bvid").textContent = j.error === "member" ? "Видео гишүүдэд зориулагдсан" : "Видео түр ачаалж чадсангүй";
+    } catch (e) { if ($("bvid")) $("bvid").textContent = "Видео түр ачаалж чадсангүй"; }
+  }
+  // Сагслах: дэлгүүрийн сагс (localStorage "fb-cart")-нд нэмнэ
+  document.querySelectorAll("[data-add]").forEach(b => b.onclick = () => {
+    let cart = []; try { cart = JSON.parse(localStorage.getItem("fb-cart") || "[]"); } catch (e) {}
+    cart.push(b.dataset.add);
+    try { localStorage.setItem("fb-cart", JSON.stringify(cart)); } catch (e) {}
+    b.textContent = "Сагсанд орлоо ✓"; b.disabled = true;
+    toast("Сагсанд орлоо", { href: "/", text: "Сагс руу" });
+  });
+  // Хичээл дуусгах
+  $("ldone").onclick = async () => {
+    if (needLogin()) return;
+    const b = $("ldone"); b.disabled = true; b.innerHTML = `<span class="spin"></span>Хадгалж байна…`;
+    const { error } = await sb.from("fit_progress").insert({ lesson_id: l.id });
+    if (error && !/duplicate/i.test(error.message)) { b.disabled = false; b.textContent = "Хичээл дууслаа · +20 оноо"; return toast("Алдаа: " + error.message); }
+    b.textContent = "✓ Энэ хичээлийг дуусгасан";
+    toast("Сайн байна! +20 оноо 💪");
+    await loadMe();
+  };
+}
+// Гишүүний дэлгүүрийн хөнгөлөлтийн бичиг (гишүүн бол)
+let DISC = { member: 0, vip: 0 };
+// Админаас засдаг бичвэрүүд (хоосон бол доорх үндсэн бичиг харагдана)
+let TX = {};
+// Бичвэр авах: админ бичсэн бол түүнийг, үгүй бол үндсэн бичгийг
+const tx = (k, d) => (TX && typeof TX[k] === "string" && TX[k].trim()) ? TX[k].trim() : d;
+const FIT_DISC_TXT = () => { const d = FIT.tier === "vip" ? DISC.vip : FIT.tier ? DISC.member : 0; return d ? `<span class="sm" style="color:var(--red);font-weight:700">Гишүүнд −${d}%</span>` : ""; };
+
+// ===== 5. ХООЛНЫ ТӨЛӨВЛӨГӨӨ =====
+async function vMeals(_, my){
+  const { data: goals } = await sb.rpc("fit_meal_goals");
+  if (stale(my)) return;
+  const G = (goals || []).map(g => g.goal);
+  if (!isMember()) {
+    $("main").innerHTML = `<h1 style="font-size:24px;font-weight:900;margin-bottom:14px">Хоолны төлөвлөгөө</h1>
+      ${G.length ? `<p class="mut">Бэлэн төлөвлөгөө: ${G.map(esc).join(", ")}</p>` : ""}
+      ${lockBox("Хоолны төлөвлөгөө гишүүдэд", "7 хоногийн цэс, жор, илчлэг — гишүүн болоод нээгээрэй.")}`;
+    return;
+  }
+  if (!G.length) { $("main").innerHTML = `<h1 style="font-size:24px;font-weight:900">Хоолны төлөвлөгөө</h1><div class="empty sec">Удахгүй нэмэгдэнэ.</div>`; return; }
+  // Сонгосон зорилго, гараг (өнөөдрийн гараг)
+  let goal = G[0], day = ((new Date(Date.now() + 8 * 3600e3).getUTCDay() + 6) % 7) + 1;
+  try { const g = localStorage.getItem("fit-goal"); if (G.includes(g)) goal = g; } catch (e) {}
+  const DN = ["Да", "Мя", "Лх", "Пү", "Ба", "Бя", "Ня"], SO = { "Өглөө": 1, "Өдөр": 2, "Зууш": 3, "Орой": 4 };
+  const draw = async () => {
+    const { data } = await sb.from("fit_meals").select("*").eq("goal", goal).eq("day", day);
+    if (stale(my)) return;
+    const M = (data || []).sort((a, b) => SO[a.slot] - SO[b.slot] || a.sort - b.sort);
+    const sum = k => M.reduce((s, m) => s + (Number(m[k]) || 0), 0);
+    $("main").innerHTML = `<h1 style="font-size:24px;font-weight:900;margin-bottom:14px">Хоолны төлөвлөгөө</h1>
+      <div class="chips">${G.map(g => `<button class="chip" type="button" data-g="${esc(g)}" aria-pressed="${g === goal}">${esc(g)}</button>`).join("")}</div>
+      <div class="dayseg">${DN.map((d, i) => `<button type="button" data-d="${i + 1}" aria-pressed="${i + 1 === day}">${d}</button>`).join("")}</div>
+      ${M.length ? `<div class="stat3" style="margin-bottom:14px"><div><span>Илчлэг</span><b>${sum("kcal") || "—"}</b></div><div><span>Уураг</span><b>${sum("protein") ? sum("protein") + "г" : "—"}</b></div><div><span>Нүүрс ус</span><b>${sum("carbs") ? sum("carbs") + "г" : "—"}</b></div></div>
+        ${M.map(m => `<div class="meal"><span class="w">${esc(m.slot).toUpperCase()}</span><b>${esc(m.name)}</b>
+          <span class="sm mut">${[m.kcal ? m.kcal + " ккал" : "", m.protein ? "уураг " + m.protein + "г" : "", m.carbs ? "нүүрс ус " + m.carbs + "г" : "", m.fat ? "өөх " + m.fat + "г" : ""].filter(Boolean).join(" · ")}</span>
+          ${m.recipe ? `<details><summary>Жор харах</summary><p class="body" style="margin:8px 0 0">${esc(m.recipe)}</p></details>` : ""}</div>`).join("")}`
+        : `<div class="empty">Энэ өдрийн цэс хараахан ороогүй.</div>`}`;
+    document.querySelectorAll("[data-g]").forEach(b => b.onclick = () => { goal = b.dataset.g; try { localStorage.setItem("fit-goal", goal); } catch (e) {} draw(); });
+    document.querySelectorAll("[data-d]").forEach(b => b.onclick = () => { day = Number(b.dataset.d); draw(); });
+  };
+  await draw();
+}
+
+// ===== 6. НИЙГЭМЛЭГ =====
+// Зургийг шахна (iPhone Safari webp үүсгэдэггүй тул JPEG)
+function shrink(file, max = 1400){
+  return new Promise((ok, no) => {
+    const img = new Image();
+    img.onload = () => {
+      const s = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement("canvas");
+      c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+      const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(img.src);
+      c.toBlob(b => b && b.type === "image/webp" ? ok(b) : c.toBlob(j => j ? ok(j) : no(new Error("зураг")), "image/jpeg", .82), "image/webp", .82);
+    };
+    img.onerror = () => no(new Error("зураг уншиж чадсангүй")); img.src = URL.createObjectURL(file);
+  });
+}
+async function vCommunity(_, my){
+  if (!me) { $("main").innerHTML = `<h1 style="font-size:24px;font-weight:900;margin-bottom:14px">Нийгэмлэг</h1>${lockBox("Нийгэмлэгт нэвтэрнэ үү", "Бусад гишүүдийн ахиц, асуулт, дасгалжуулагчийн мэдэгдлийг харна.")}`; return; }
+  let cat = "", photo = null;
+  const CATS = [["", "Бүгд"], ["Мэдэгдэл", "Мэдэгдэл"], ["Ахиц", "Ахиц"], ["Асуулт", "Асуулт"]];
+  const draw = async () => {
+    const { data } = await sb.rpc("fit_feed", { c: cat || null, lim: 30 });
+    if (stale(my)) return;
+    const F = data || [];
+    $("main").innerHTML = `<h1 style="font-size:24px;font-weight:900;margin-bottom:14px">Нийгэмлэг</h1>
+      <div class="chips">${CATS.map(([k, t]) => `<button class="chip" type="button" data-c="${k}" aria-pressed="${k === cat}">${t}</button>`).join("")}</div>
+      ${isMember() ? `<form class="compose" id="pf">
+        <label for="pt" class="sm mut">Ахиц, асуултаа хуваалцаарай</label>
+        <textarea id="pt" maxlength="2000" placeholder="Жишээ: 7 дахь өдрөө дуусгалаа…"></textarea>
+        <img id="pimg" alt="" hidden style="max-height:160px;object-fit:cover">
+        <div class="row"><select id="pc" aria-label="Ангилал"><option>Ахиц</option><option>Асуулт</option>${isAdmin() ? "<option>Мэдэгдэл</option>" : ""}</select>
+          <label class="btn ghost sm" style="cursor:pointer">Зураг<input type="file" id="pfile" accept="image/*" hidden></label>
+          <button class="btn sm" id="psend" type="submit" style="margin-left:auto">Нийтлэх</button></div></form>`
+        : `<div class="lock" style="padding:14px 16px;flex-direction:row;align-items:center;gap:12px"><span class="sm" style="flex:1">Пост бичих, лайк дарахын тулд гишүүн болно уу.</span><a class="btn sm" href="#join">Гишүүн болох</a></div>`}
+      <div>${F.length ? F.map(postHtml).join("") : `<div class="empty sec">Пост алга. Анхны постоо бичээрэй!</div>`}</div>`;
+    document.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { cat = b.dataset.c; draw(); });
+    // Зураг сонгох
+    if ($("pfile")) $("pfile").onchange = e => { const f = e.target.files[0]; if (!f) return; photo = f; $("pimg").src = URL.createObjectURL(f); $("pimg").hidden = false; };
+    // Нийтлэх
+    if ($("pf")) $("pf").onsubmit = async e => {
+      e.preventDefault();
+      const body = $("pt").value.trim(); if (!body) return toast("Юм бичнэ үү");
+      const b = $("psend"); b.disabled = true; b.innerHTML = `<span class="spin"></span>`;
+      try {
+        let url = null;
+        if (photo) {
+          const blob = await shrink(photo);
+          const path = `${me.id}/fit-${Date.now()}.${blob.type === "image/webp" ? "webp" : "jpg"}`;
+          const up = await sb.storage.from("reviews").upload(path, blob, { contentType: blob.type, cacheControl: "31536000" });
+          if (up.error) throw up.error;
+          url = sb.storage.from("reviews").getPublicUrl(path).data.publicUrl;
+        }
+        const { error } = await sb.from("fit_posts").insert({ cat: $("pc").value, body, photo: url });
+        if (error) throw error;
+        photo = null; toast("Нийтэллээ · +5 оноо"); loadMe(); draw();
+      } catch (err) { b.disabled = false; b.textContent = "Нийтлэх"; toast("Алдаа: " + (err.message || err)); }
+    };
+    // Лайк
+    document.querySelectorAll("[data-like]").forEach(b => b.onclick = async () => {
+      if (!isMember()) return toast("Лайк дарахын тулд гишүүн болно уу", { href: "#join", text: "Багц" });
+      const id = Number(b.dataset.like), on = b.classList.contains("on");
+      b.disabled = true;
+      const { error } = on ? await sb.from("fit_likes").delete().eq("post_id", id).eq("user_id", me.id) : await sb.from("fit_likes").insert({ post_id: id });
+      b.disabled = false;
+      if (error) return toast("Алдаа: " + error.message);
+      const n = b.querySelector("b"); n.textContent = Number(n.textContent) + (on ? -1 : 1); b.classList.toggle("on", !on);
+    });
+    // Сэтгэгдэл нээх
+    document.querySelectorAll("[data-cm]").forEach(b => b.onclick = () => openComments(Number(b.dataset.cm), b.closest(".post")));
+    // Устгах (өөрийн), нуух (админ)
+    document.querySelectorAll("[data-pdel]").forEach(b => b.onclick = async () => {
+      if (!confirm("Энэ постыг устгах уу?")) return;
+      const { error } = await sb.from("fit_posts").delete().eq("id", Number(b.dataset.pdel));
+      if (error) return toast("Алдаа: " + error.message); toast("Устгалаа"); draw();
+    });
+    document.querySelectorAll("[data-phide]").forEach(b => b.onclick = async () => {
+      const { error } = await sb.from("fit_posts").update({ hidden: true }).eq("id", Number(b.dataset.phide));
+      if (error) return toast("Алдаа: " + error.message); toast("Нууллаа"); draw();
+    });
+  };
+  await draw();
+}
+// Нэг постын HTML
+const postHtml = p => `<article class="post">
+  <div class="hd"><div class="av">${esc((p.username || "?")[0].toUpperCase())}<i>${p.level}</i></div>
+    <div style="display:flex;flex-direction:column"><b style="font-size:14px">${esc(p.username)}</b><span class="sm mut">${esc(p.cat)} · ${ago(p.created_at)}</span></div>
+    ${p.coach ? `<span class="tag dark" style="margin-left:auto">ДАСГАЛЖУУЛАГЧ</span>` : ""}</div>
+  <div class="tx">${esc(p.body)}</div>
+  ${okImg(p.photo) ? `<img class="ph" src="${esc(okImg(p.photo))}" alt="" loading="lazy">` : ""}
+  <div class="act">
+    <button type="button" data-like="${p.id}" class="${p.liked ? "on" : ""}" aria-label="Лайк"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 11v9H4v-9h3zM7 11l4-8a2 2 0 0 1 3 2l-1 5h6a2 2 0 0 1 2 2l-2 7a2 2 0 0 1-2 1H7"/></svg><b>${p.likes}</b></button>
+    <button type="button" data-cm="${p.id}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 12a8 8 0 0 1-12 7l-5 1 1-4a8 8 0 1 1 16-4z"/></svg>${p.comments}</button>
+    ${p.mine ? `<button type="button" class="del" data-pdel="${p.id}">Устгах</button>` : isAdmin() ? `<button type="button" class="del" data-phide="${p.id}">Нуух</button>` : ""}
+  </div></article>`;
+// Сэтгэгдлүүдийг постын доор нээнэ
+async function openComments(id, el){
+  const old = el.querySelector(".cmts"); if (old) { old.remove(); return; }
+  const box = document.createElement("div"); box.className = "cmts"; box.innerHTML = `<span class="sm mut"><span class="spin"></span>Ачаалж байна…</span>`; el.appendChild(box);
+  const draw = async () => {
+    const { data } = await sb.rpc("fit_comments_of", { p: id });
+    box.innerHTML = `${(data || []).map(c => `<div><b>${esc(c.username)}</b> ${esc(c.body)} <span class="sm mut">· ${ago(c.created_at)}</span></div>`).join("") || `<span class="sm mut">Сэтгэгдэл алга.</span>`}
+      ${isMember() ? `<form><input maxlength="1000" placeholder="Сэтгэгдэл бичих…" aria-label="Сэтгэгдэл"><button class="btn sm" type="submit">Илгээх</button></form>` : ""}`;
+    const f = box.querySelector("form");
+    if (f) f.onsubmit = async e => {
+      e.preventDefault(); const v = f.querySelector("input").value.trim(); if (!v) return;
+      const { error } = await sb.from("fit_comments").insert({ post_id: id, body: v });
+      if (error) return toast("Алдаа: " + error.message); draw();
+    };
+  };
+  draw();
+}
+
+// ===== 7. ТҮВШИН, ТЭРГҮҮЛЭГЧИД =====
+async function vLevels(_, my){
+  let days = 7;
+  const draw = async () => {
+    const { data } = await sb.rpc("fit_leaderboard", { days });
+    if (stale(my)) return;
+    const cur = LV[FIT.level - 1] || LV[0], nx = FIT.next, prev = cur[1];
+    const pct = nx ? Math.round((FIT.points - prev) / (nx - prev) * 100) : 100;
+    $("main").innerHTML = `<h1 style="font-size:24px;font-weight:900;margin-bottom:14px">Түвшин</h1>
+      ${me ? `<div class="lvhero"><div class="ring">${FIT.level}</div><div style="flex:1;display:flex;flex-direction:column;gap:6px">
+        <b style="font-size:16px">Түвшин ${FIT.level} · ${esc(cur[0])}</b><span class="sm" style="color:#cfcfcf">${nx ? `Дараагийн түвшин хүртэл ${nx - FIT.points} оноо` : "Хамгийн дээд түвшин!"} · нийт ${FIT.points}</span>
+        <div class="bar4" style="background:#333"><b style="width:${pct}%;background:#fff"></b></div></div></div>` : lockBox("Нэвтэрч оноогоо хараарай", "Хичээл дуусгах, пост бичих, сорилтын өдөр тэмдэглэх бүрт оноо авна.")}
+      <section class="sec"><div class="sechd"><h2>Оноо хэрхэн авах вэ</h2></div>
+        <div class="stat3"><div><span>Хичээл дуусгах</span><b>+20</b></div><div><span>Сорилтын өдөр</span><b>+10</b></div><div><span>Пост (өдөрт 3)</span><b>+5</b></div></div>
+        <p class="sm mut" style="margin:8px 0 0">Бусдаас авсан лайк бүр +1.</p></section>
+      <section class="sec"><div class="sechd"><h2>Түвшнүүд</h2></div>
+        ${LV.map(([n, p], i) => `<div class="lvl ${FIT.level > i ? "got" : ""}"><div class="b">${i + 1}</div><div style="flex:1"><b style="font-size:14px">${esc(n)}</b></div><span class="sm mut">${p} оноо</span></div>`).join("")}</section>
+      <section class="sec"><div class="sechd"><h2>Тэргүүлэгчид</h2><div class="seg"><button type="button" data-days="7" aria-pressed="${days === 7}">7 хоног</button><button type="button" data-days="30" aria-pressed="${days === 30}">Сар</button></div></div>
+        ${(data || []).length ? data.map((r, i) => `<div class="lb ${r.me ? "me" : ""}"><b style="width:22px">${i + 1}</b><div class="av" style="width:32px;height:32px">${esc((r.username || "?")[0].toUpperCase())}<i>${r.level}</i></div><span style="flex:1">${esc(r.username)}${r.me ? " (та)" : ""}</span><b>+${r.pts}</b></div>`).join("") : `<div class="empty">Энэ хугацаанд оноо авсан хүн алга.</div>`}</section>`;
+    document.querySelectorAll("[data-days]").forEach(b => b.onclick = () => { days = Number(b.dataset.days); draw(); });
+  };
+  await draw();
+}
+
+// ===== 8. СОРИЛТ =====
+async function vChallenge(_, my){
+  const { data: list } = await sb.from("fit_challenges").select("*").order("starts_on", { ascending: false });
+  if (stale(my)) return;
+  // Дуусаагүй хамгийн ойрын сорилт (эс бөгөөс хамгийн сүүлийнх)
+  const today = todayUB(), endOf = c => new Date(new Date(c.starts_on + "T00:00:00Z").getTime() + c.days * 864e5).toISOString().slice(0, 10);
+  const live = (list || []).filter(c => endOf(c) > today).sort((a, b) => a.starts_on.localeCompare(b.starts_on));
+  const ch = live[0] || (list || [])[0];
+  if (!ch) { $("main").innerHTML = `<h1 style="font-size:24px;font-weight:900">Сорилт</h1><div class="empty sec">Удахгүй шинэ сорилт зарлагдана.</div>`; return; }
+  const [{ data: cnt }, { data: mem }, { data: dd }] = await Promise.all([
+    sb.rpc("fit_challenge_count", { c: ch.id }),
+    me ? sb.from("fit_challenge_members").select("user_id").eq("challenge_id", ch.id).eq("user_id", me.id) : Promise.resolve({ data: [] }),
+    me ? sb.from("fit_challenge_days").select("day").eq("challenge_id", ch.id).eq("user_id", me.id) : Promise.resolve({ data: [] })
+  ]);
+  if (stale(my)) return;
+  const joined = !!(mem && mem.length), done = new Set((dd || []).map(x => x.day));
+  // Өнөөдөр хэд дэх өдөр вэ (эхлээгүй бол 0)
+  const todayN = Math.floor((new Date(today + "T00:00:00Z") - new Date(ch.starts_on + "T00:00:00Z")) / 864e5) + 1;
+  const ended = endOf(ch) <= today, left = Math.max(0, ch.days - Math.max(0, todayN - 1));
+  $("main").innerHTML = `<section class="hero">
+      <span class="eb" style="color:#ff6b7c">СОРИЛТ · ${esc(ch.starts_on)}-НД ЭХЭЛНЭ</span>
+      <h1>${esc(ch.title)}</h1>${ch.descr ? `<p style="white-space:pre-line">${esc(ch.descr)}</p>` : ""}
+      <div class="stat3"><div><span>Элсэлт</span><b>${ch.fee ? fmt(ch.fee) : "Үнэгүй"}</b></div><div><span>Оролцогч</span><b>${cnt || 0}</b></div><div><span>${ended ? "Дууссан" : "Үлдсэн"}</span><b>${ended ? "✓" : left + " өдөр"}</b></div></div></section>
+    ${joined ? `<section class="sec"><div class="sechd"><h2>Миний ${ch.days} өдөр</h2><span class="sm mut">${done.size}/${ch.days}</span></div>
+      <div class="days">${Array.from({ length: ch.days }, (_, i) => i + 1).map(n => `<button type="button" data-day="${n}" class="${done.has(n) ? "on" : ""} ${n === todayN ? "today" : ""}" ${done.has(n) || n > todayN ? "disabled" : ""} aria-label="${n}-р өдөр${done.has(n) ? " дууссан" : ""}">${done.has(n) ? "✓" : n}</button>`).join("")}</div>
+      <p class="sm mut" style="margin:8px 0 0">${todayN < 1 ? "Сорилт хараахан эхлээгүй байна." : "Өдрийн дасгалаа хийгээд нүдээ дарж тэмдэглэнэ (+10 оноо). Ирээдүйн өдрийг тэмдэглэх боломжгүй."}</p></section>` : ""}
+    ${ch.reward ? `<section class="sec card" style="padding:16px;border-color:var(--ink)"><b>Шагнал</b><p class="body" style="margin:6px 0 0">${esc(ch.reward)}</p></section>` : ""}
+    ${!joined && !ended ? `<div class="sec"><button class="btn full" id="cjoin" type="button">Сорилтод нэгдэх${ch.fee ? " · " + fmt(ch.fee) : ""}</button><p class="sm mut" style="text-align:center">QPay-ээр төлнө</p></div>` : ""}`;
+  // Өдөр тэмдэглэх
+  document.querySelectorAll("[data-day]").forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    const { error } = await sb.from("fit_challenge_days").insert({ challenge_id: ch.id, day: Number(b.dataset.day) });
+    if (error) { b.disabled = false; return toast("Алдаа: " + error.message); }
+    b.classList.add("on"); b.textContent = "✓"; toast("+10 оноо 🔥"); loadMe();
+  });
+  // Нэгдэх: үнэгүй бол шууд, төлбөртэй бол QPay
+  if ($("cjoin")) $("cjoin").onclick = async () => {
+    if (needLogin()) return;
+    if (!ch.fee) {
+      const { error } = await sb.from("fit_challenge_members").insert({ challenge_id: ch.id });
+      if (error) return toast("Алдаа: " + error.message);
+      toast("Сорилтод нэгдлээ!"); return route();
+    }
+    pay({ kind: "challenge", id: ch.id }, "Сорилтын элсэлт");
+  };
+}
+
+// ===== 9. ГИШҮҮНЧЛЭЛ (төлбөрийн хаалга) =====
+async function vJoin(_, my){
+  const { data: plans } = await sb.from("fit_plans").select("tier,months,price").eq("active", true);
+  if (stale(my)) return;
+  const P = plans || [];
+  const months = [...new Set(P.map(p => p.months))].sort((a, b) => a - b);
+  if (!months.length) { $("main").innerHTML = `<h1 style="font-size:24px;font-weight:900">Гишүүнчлэл</h1><div class="empty sec">Гишүүнчлэлийн үнэ хараахан тохируулагдаагүй байна.</div>`; return; }
+  let m = months.includes(3) ? 3 : months[0], tier = "member";
+  const price = (t, mm) => (P.find(p => p.tier === t && p.months === mm) || {}).price;
+  // Сарын үнээс хэмнэлтийн хувь
+  const save = mm => { const one = price("member", 1); const x = price("member", mm); return one && x && mm > 1 ? Math.round((1 - x / (one * mm)) * 100) : 0; };
+  const FEAT = {
+    member: ["Бүх хөтөлбөр, хичээл", "Хоолны төлөвлөгөө", "Нийгэмлэг: пост, лайк, сэтгэгдэл", DISC.member ? `Дэлгүүрт ${DISC.member}% хөнгөлөлт` : ""],
+    vip: ["Гишүүний бүх эрх", "Дасгалжуулагчтай шууд холбоо", DISC.vip ? `Дэлгүүрт ${DISC.vip}% хөнгөлөлт` : ""]
+  };
+  const draw = () => {
+    $("main").innerHTML = `<h1 style="font-size:24px;font-weight:900;margin-bottom:6px">Гишүүн болох</h1>
+      ${isMember() ? `<p class="sm" style="margin:0 0 12px">Таны ${FIT.tier === "vip" ? "VIP" : "гишүүнчлэл"} <b>${dt(FIT.until)}</b> хүртэл хүчинтэй. Одоо төлбөл хугацаа нь араас нэмэгдэнэ.</p>` : `<p class="sm mut" style="margin:0 0 12px">Хугацаа сонгоод багцаа сонгоно.</p>`}
+      <div class="terms">${months.map(mm => `<button type="button" data-m="${mm}" aria-pressed="${mm === m}">${mm} сар${save(mm) ? `<small>−${save(mm)}%</small>` : ""}</button>`).join("")}</div>
+      ${["member", "vip"].filter(t => price(t, m)).map(t => `<button class="plan" type="button" data-t="${t}" aria-pressed="${t === tier}">
+        <span style="display:flex;justify-content:space-between;width:100%"><b style="font-size:16px">${t === "vip" ? "VIP" : "Гишүүн"}</b>${t === "member" ? `<span class="tag dark">ТҮГЭЭМЭЛ</span>` : ""}</span>
+        <span class="pr">${fmt(price(t, m))}</span><span class="sm mut">${m} сар · сард ${fmt(Math.round(price(t, m) / m))}</span>
+        <ul>${FEAT[t].filter(Boolean).map(f => `<li>${esc(f)}</li>`).join("")}</ul></button>`).join("")}
+      <button class="btn full" id="jpay" type="button" style="margin-top:6px">QPay-ээр төлөх · ${fmt(price(tier, m) || 0)}</button>
+      <p class="sm mut" style="text-align:center">Автоматаар мөнгө татахгүй. Хугацаа дуусахад дахин сунгана.</p>`;
+    document.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { m = Number(b.dataset.m); if (!price(tier, m)) tier = "member"; draw(); });
+    document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { tier = b.dataset.t; draw(); });
+    $("jpay").onclick = () => { if (needLogin()) return; pay({ kind: "member", tier, months: m }, (tier === "vip" ? "VIP" : "Гишүүн") + " · " + m + " сар"); };
+  };
+  draw();
+}
+
+// ===== QPay ТӨЛБӨР (гишүүнчлэл, сорилт) =====
+let payTimer = null;
+function closeModal(){ $("modal").hidden = true; clearInterval(payTimer); }
+$("mx").onclick = closeModal;
+$("modal").addEventListener("click", e => { if (e.target === $("modal")) closeModal(); });
+async function pay(body, title){
+  $("mbody").innerHTML = `<h2 style="font-size:20px;margin-bottom:10px">${esc(title)}</h2><div class="load"><span class="spin"></span>QPay нэхэмжлэх үүсгэж байна…</div>`;
+  $("modal").hidden = false;
+  let q;
+  try {
+    const r = await fetch("/api/fit-pay", { method: "POST", headers: { "Content-Type": "application/json", ...(await authHeader()) }, body: JSON.stringify(body) });
+    q = await r.json();
+    if (!q.ok) throw new Error({ login: "Нэвтэрнэ үү", plan: "Багц олдсонгүй", joined: "Та аль хэдийн нэгдсэн", ended: "Сорилт дууссан", too_many: "Түр хүлээгээд дахин оролдоно уу" }[q.error] || "QPay түр ажиллахгүй байна");
+  } catch (e) { $("mbody").innerHTML = `<h2 style="font-size:20px">${esc(title)}</h2><p>${esc(e.message)}</p><button class="btn full" type="button" onclick="closeModal()">Хаах</button>`; return; }
+  const mobile = matchMedia("(pointer:coarse)").matches || /Android|iPhone|iPad/i.test(navigator.userAgent);
+  const banks = (q.urls || []).filter(u => u && u.link && /^[a-z][a-z0-9+.-]*:/i.test(u.link) && !/^\s*javascript:/i.test(u.link));
+  $("mbody").innerHTML = `<h2 style="font-size:20px;margin-bottom:4px">${esc(title)}</h2>
+    <p class="sm mut" style="margin:0">Төлөх дүн: <b style="color:var(--ink)">${fmt(q.amount)}</b> · ${esc(q.code)}</p>
+    ${q.qr_image ? `<img class="qr" src="data:image/png;base64,${esc(q.qr_image)}" alt="QPay QR код">` : ""}
+    <p class="sm mut" style="text-align:center;margin:0">${mobile ? "Банкаа сонгоод апп руугаа орно, эсвэл QR-ыг уншуулна." : "Банкны апп-аараа QR-ыг уншуулна."}</p>
+    ${mobile && banks.length ? `<div class="banks">${banks.map(u => `<a href="${esc(u.link)}">${okImg(u.logo) ? `<img src="${esc(okImg(u.logo))}" alt="">` : ""}${esc(u.description || u.name || "")}</a>`).join("")}</div>` : ""}
+    <p class="sm" id="pst" style="text-align:center"><span class="spin"></span>Төлбөр хүлээж байна…</p>
+    <button class="btn full" id="pchk" type="button">Төлбөрөө шалгах</button>`;
+  // Төлөгдсөн бол: хаагаад гишүүнчлэлээ шинэчилнэ
+  const onPaid = async () => { clearInterval(payTimer); $("pst").innerHTML = "✓ Төлбөр амжилттай!"; await loadMe(); setTimeout(() => { closeModal(); toast("Амжилттай! Тавтай морил 💪"); route(); }, 900); };
+  const check = async manual => {
+    try {
+      const r = await fetch(`/api/fit-check?code=${encodeURIComponent(q.code)}&sig=${encodeURIComponent(q.sig)}${manual ? "&manual=1" : ""}`);
+      const j = await r.json(); if (j.paid) return onPaid(); if (manual) toast("Төлбөр хараахан орж ирээгүй байна");
+    } catch (e) {}
+  };
+  // 4 секунд тутам (10 минут хүртэл) мэдээллийн сангаас шалгана
+  let n = 0; clearInterval(payTimer); payTimer = setInterval(() => { if (++n > 150) return clearInterval(payTimer); check(false); }, 4000);
+  $("pchk").onclick = async () => { const b = $("pchk"); b.disabled = true; await check(true); b.disabled = false; };
+}
+
+// ===== 10. МИНИЙ ХУУДАС =====
+async function vMe(_, my){
+  if (!me) { $("main").innerHTML = `<h1 style="font-size:24px;font-weight:900;margin-bottom:14px">Миний FINN Fit</h1>${lockBox("Нэвтэрнэ үү", "Ахиц, оноо, гишүүнчлэлээ эндээс харна.")}`; return; }
+  // Сүүлийн 7 хоногт дуусгасан хичээлүүдийн минут
+  const since = new Date(Date.now() - 6 * 864e5); since.setHours(0, 0, 0, 0);
+  const { data } = await sb.from("fit_progress").select("done_at, fit_lessons(minutes)").eq("user_id", me.id).gte("done_at", since.toISOString());
+  if (stale(my)) return;
+  const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(since.getTime() + i * 864e5); return { key: d.toDateString(), lbl: ["Ня", "Да", "Мя", "Лх", "Пү", "Ба", "Бя"][d.getDay()], min: 0 }; });
+  (data || []).forEach(r => { const k = new Date(r.done_at).toDateString(); const d = days.find(x => x.key === k); if (d) d.min += (r.fit_lessons && r.fit_lessons.minutes) || 0; });
+  const max = Math.max(30, ...days.map(d => d.min));
+  $("main").innerHTML = `<div style="display:flex;align-items:center;gap:14px">
+      <div class="av" style="width:56px;height:56px;font-size:20px;background:var(--ink);color:#fff">${esc(me.username[0].toUpperCase())}<i style="background:#fff;color:var(--ink);border:1px solid var(--ink)">${FIT.level}</i></div>
+      <div style="display:flex;flex-direction:column"><b style="font-size:18px">${esc(me.username)}</b><span class="sm mut">${FIT.tier ? (FIT.tier === "vip" ? "VIP" : "Гишүүн") + " · " + dt(FIT.until) + " хүртэл" : "Гишүүнчлэлгүй"}</span></div></div>
+    <div class="stat3 sec"><div><span>Дараалсан өдөр</span><b>${FIT.streak}</b></div><div><span>Хичээл</span><b>${FIT.lessons}</b></div><div><span>Оноо</span><b>${FIT.points}</b></div></div>
+    <section class="sec"><div class="sechd"><h2>Сүүлийн 7 хоног</h2><span class="sm mut">дасгалын минут</span></div>
+      <div class="chart">${days.map(d => `<i class="${d.min ? "" : "z"}" style="height:${Math.max(4, Math.round(d.min / max * 130))}px" title="${d.min} мин"></i>`).join("")}</div>
+      <div class="chartx">${days.map(d => `<span>${d.lbl}</span>`).join("")}</div></section>
+    ${!FIT.tier ? `<section class="sec">${lockBox("Гишүүн болоод бүгдийг нээ", "Бүх хөтөлбөр, хоолны төлөвлөгөө, нийгэмлэгт бичих эрх.")}</section>` : ""}
+    <section class="sec">
+      <a class="mlink" href="#levels">Түвшин ба тэргүүлэгчид <span aria-hidden="true">›</span></a>
+      <a class="mlink" href="#meals">Хоолны төлөвлөгөө <span aria-hidden="true">›</span></a>
+      <a class="mlink" href="#join">${FIT.tier ? "Гишүүнчлэл сунгах" : "Гишүүн болох"} <span aria-hidden="true">›</span></a>
+      <a class="mlink" href="/">FINN дэлгүүр <span aria-hidden="true">›</span></a>
+      <button class="mlink" id="logout" type="button">Гарах <span aria-hidden="true">›</span></button>
+    </section>`;
+  $("logout").onclick = async () => { await sb.auth.signOut(); await loadMe(); location.hash = "#home"; route(); };
+}
+
+// ===== ЭХЛҮҮЛЭХ =====
+(async () => {
+  try {
+    if (!window.supabase) throw new Error("Сүлжээгээ шалгана уу");
+    const c = await (await fetch("/api/config")).json();
+    if (!c.supabaseUrl || !c.supabaseAnon) throw new Error("Тохиргоо дутуу");
+    sb = window.supabase.createClient(c.supabaseUrl, c.supabaseAnon, { auth: { persistSession: true, autoRefreshToken: true } });
+    // Гишүүний дэлгүүрийн хөнгөлөлтийн хувь
+    // "*" — texts багана хараахан нэмэгдээгүй байсан ч алдаа гарахгүй
+    const cf = await sb.from("fit_config").select("*").eq("id", 1).maybeSingle();
+    if (cf.data) { DISC = { member: cf.data.member_disc, vip: cf.data.vip_disc }; TX = cf.data.texts || {}; }
+    await loadMe();
+    // Өөр табаас нэвтэрсэн / гарсан бол шинэчилнэ
+    sb.auth.onAuthStateChange(ev => { if ((ev === "SIGNED_IN" && !me) || (ev === "SIGNED_OUT" && me)) loadMe().then(route); });
+    route();
+  } catch (e) {
+    $("main").innerHTML = `<div class="empty">FINN Fit ачаалж чадсангүй: ${esc(e.message || e)}</div>`;
+  }
+})();
+</script>
+</body>
+</html>

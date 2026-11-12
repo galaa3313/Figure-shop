@@ -22,6 +22,13 @@ header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid v
 .logo i{display:inline-block;width:.3em;height:.72em;background:var(--red);transform:skewX(-26deg);margin:0 .14em 0 .1em}
 .logo small{font-weight:500;font-size:12px;color:var(--muted);margin-left:10px;letter-spacing:.1em}
 nav{display:flex;gap:4px;flex:1}
+/* SHOP | FIT шилжүүлэгч (дэлгүүрийн толгойтой ижил хэв маяг) */
+.asw{display:inline-flex;border:1px solid var(--ink);border-radius:999px;padding:3px;flex:none}
+.asw button{min-width:46px;height:28px;padding:0 12px;border:0;border-radius:999px;background:none;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--ink)}
+.asw button[aria-pressed=true]{background:var(--ink);color:#fff}
+.asw button:not([aria-pressed=true]):hover{background:var(--bg2)}
+/* Нийгэмлэгийн нийтлэл: нуусан бол бүдэг */
+tr.hid td{opacity:.5}
 nav button{border:0;background:none;padding:8px 12px;font:inherit;font-weight:500;color:var(--muted);cursor:pointer}
 nav button[aria-pressed=true]{color:var(--ink);box-shadow:inset 0 -2px 0 var(--ink)}
 main{padding:20px max(16px,3vw) 60px;max-width:1300px;margin:0 auto}
@@ -135,6 +142,7 @@ td.mo{width:44px;position:relative}
   /* Табууд нэг мөрөнд, хажуу тийш гүйлгэнэ */
   header{flex-wrap:nowrap;gap:10px;padding:10px 12px}
   header .logo small{display:none}
+  .asw{padding:2px} .asw button{min-width:38px;height:26px;padding:0 9px;font-size:10px}
   nav{flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   nav::-webkit-scrollbar{display:none}
   nav button{white-space:nowrap;padding:8px 10px;font-size:14px}
@@ -389,13 +397,28 @@ nav button .rq[hidden]{display:none}
 <!-- Дээд мөр -->
 <header>
   <a class="logo" href="/" aria-label="FINN"><svg viewBox="0 -4 503 108" fill="currentColor" style="height:18px;width:auto"><path d="M14.0,0.0 L118.0,0.0 L109.0,15.0 L0.0,15.0 Z M0.0,22.0 L15.0,22.0 L15.0,100.0 L0.0,100.0 Z M15.0,52.0 L94.4,52.0 L86.4,67.0 L15.0,67.0 Z M148.0,0.0 L163.0,0.0 L163.0,100.0 L148.0,100.0 Z M193.0,0.0 L208.0,0.0 L208.0,100.0 L193.0,100.0 Z M304.0,0.0 L319.0,0.0 L319.0,100.0 L304.0,100.0 Z M208.0,0.0 L228.0,0.0 L304.0,100.0 L284.0,100.0 Z M349.0,0.0 L364.0,0.0 L364.0,100.0 L349.0,100.0 Z M460.0,0.0 L475.0,0.0 L475.0,100.0 L460.0,100.0 Z M364.0,0.0 L384.0,0.0 L460.0,100.0 L440.0,100.0 Z"/></svg><small>АДМИН</small></a>
+  <!-- SHOP | FIT: аль хэсгийг удирдахаа сонгоно -->
+  <div class="asw" id="asw" role="group" aria-label="Удирдах хэсэг" hidden>
+    <button type="button" data-m="shop" aria-pressed="true">SHOP</button>
+    <button type="button" data-m="fit" aria-pressed="false">FIT</button>
+  </div>
   <nav id="tabs" hidden>
-    <button type="button" data-t="orders" aria-pressed="true">Захиалга</button>
-    <button type="button" data-t="users" aria-pressed="false">Хэрэглэгч</button>
-    <button type="button" data-t="products" aria-pressed="false">Бараа</button>
-    <button type="button" data-t="reviews" aria-pressed="false">Сэтгэгдэл</button>
-    <button type="button" data-t="settings" aria-pressed="false">Сайтын тохиргоо</button>
-    <button type="button" data-t="history" aria-pressed="false">Түүх</button>
+    <!-- Дэлгүүрийн удирдлага -->
+    <button type="button" data-g="shop" data-t="orders" aria-pressed="true">Захиалга</button>
+    <button type="button" data-g="shop" data-t="users" aria-pressed="false">Хэрэглэгч</button>
+    <button type="button" data-g="shop" data-t="products" aria-pressed="false">Бараа</button>
+    <button type="button" data-g="shop" data-t="reviews" aria-pressed="false">Сэтгэгдэл</button>
+    <button type="button" data-g="shop" data-t="settings" aria-pressed="false">Сайтын тохиргоо</button>
+    <button type="button" data-g="shop" data-t="history" aria-pressed="false">Түүх</button>
+    <!-- FINN Fit сургалтын удирдлага -->
+    <button type="button" data-g="fit" data-t="f-prog" aria-pressed="false" hidden>Хөтөлбөр</button>
+    <button type="button" data-g="fit" data-t="f-less" aria-pressed="false" hidden>Хичээл</button>
+    <button type="button" data-g="fit" data-t="f-plans" aria-pressed="false" hidden>Үнэ</button>
+    <button type="button" data-g="fit" data-t="f-mem" aria-pressed="false" hidden>Гишүүд</button>
+    <button type="button" data-g="fit" data-t="f-meals" aria-pressed="false" hidden>Хоол</button>
+    <button type="button" data-g="fit" data-t="f-chal" aria-pressed="false" hidden>Сорилт</button>
+    <button type="button" data-g="fit" data-t="f-comm" aria-pressed="false" hidden>Нийгэмлэг</button>
+    <button type="button" data-g="fit" data-t="f-conf" aria-pressed="false" hidden>Fit тохиргоо</button>
   </nav>
   <span id="whoami" style="color:var(--muted);font-size:13px"></span>
 </header>
@@ -432,9 +455,10 @@ async function loadCats(){
 let VIEW = 0;
 
 // Админ API руу нэвтрэх токентой хүсэлт илгээнэ
-async function api(body){
+// path: аль серверийн хаяг руу (анхдагч нь /api/admin, видео оруулахад /api/fit-upload)
+async function api(body, path = "/api/admin"){
   const { data } = await sb.auth.getSession();
-  const r = await fetch("/api/admin", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (data.session ? data.session.access_token : "") }, body: JSON.stringify(body) });
+  const r = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (data.session ? data.session.access_token : "") }, body: JSON.stringify(body) });
   const j = await r.json().catch(() => ({}));
   if (!j.ok) throw new Error(j.error || "server");
   return j;
@@ -1678,6 +1702,450 @@ async function showHistory(f){
   });
 }
 
+// =====================================================================
+// ===== FINN FIT (сургалтын хэсэг): хөтөлбөр, хичээл, үнэ, гишүүд, хоол, сорилт =====
+// =====================================================================
+// Нүдний доорх цэс (Fit табын дотор)
+const FIT_SUB = [["prog", "Хөтөлбөр"], ["less", "Хичээл"], ["plans", "Үнэ"], ["mem", "Гишүүд"], ["meals", "Хоол"], ["chal", "Сорилт"], ["comm", "Нийгэмлэг"], ["conf", "Fit тохиргоо"]];
+let FIT_CUR = "prog";
+async function showFit(sub){
+  if (sub) FIT_CUR = sub;
+  const my = ++VIEW;
+  // Дээд мөрөнд FIT горим, харгалзах табыг тэмдэглэнэ (дотоод цэс хэрэггүй болсон)
+  setMode("fit", false);
+  $("tabs").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.t === "f-" + FIT_CUR));
+  const name = (FIT_SUB.find(x => x[0] === FIT_CUR) || [, ""])[1];
+  $("main").innerHTML = `<div class="bar"><h2>FINN Fit · ${esc(name)}</h2><a class="btn" href="/fit" target="_blank" rel="noopener">Fit хуудсыг нээх ↗</a></div>
+    <div id="fform"></div><div id="fbody"><p class="msg">Ачаалж байна…</p></div>`;
+  try { await ({ prog: fitPrograms, less: fitLessons, plans: fitPlans, mem: fitMembers, meals: fitMeals, chal: fitChallenges, comm: fitCommunity, conf: fitTexts })[FIT_CUR](my); }
+  catch (e) {
+    if (my !== VIEW) return;
+    // Хүснэгт байхгүй бол (SQL ажиллуулаагүй) ойлгомжтой бичиг
+    $("fbody").innerHTML = `<p class="msg">Алдаа: ${esc(e.message || e)}${/fit_|relation|schema/i.test(String(e.message)) ? "<br><b>finn-fit.sql</b>-ийг Supabase-д ажиллуулсан уу?" : ""}</p>`;
+  }
+}
+// Supabase хариуны алдааг шидэнэ
+const must = r => { if (r.error) throw r.error; return r.data; };
+// Латин ID (кирилл нэрнээс): "30 хоногийн эхлэл" → "30-hogiin-ehlel"
+const FTR = { а:"a",б:"b",в:"v",г:"g",д:"d",е:"e",ё:"yo",ж:"j",з:"z",и:"i",й:"i",к:"k",л:"l",м:"m",н:"n",о:"o",ө:"u",п:"p",р:"r",с:"s",т:"t",у:"u",ү:"u",ф:"f",х:"h",ц:"ts",ч:"ch",ш:"sh",щ:"sh",ъ:"",ы:"y",ь:"",э:"e",ю:"yu",я:"ya" };
+const fslug = v => String(v).toLowerCase().split("").map(c => FTR[c] ?? c).join("").replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "").replace(/-{2,}/g, "-").slice(0, 36);
+// Маягтын нэг талбар
+const ff = (id, label, v, type = "text", extra = "") => type === "textarea"
+  ? `<label class="full">${label}<textarea id="${id}" rows="4" ${extra}>${esc(v ?? "")}</textarea></label>`
+  : type === "check" ? `<label class="row" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="${id}" ${v ? "checked" : ""} style="width:auto"> ${label}</label>`
+  : `<label>${label}<input id="${id}" type="${type}" value="${esc(v ?? "")}" ${extra}></label>`;
+const fsel = (id, label, v, opts) => `<label>${label}<select id="${id}">${opts.map(o => { const [val, t] = Array.isArray(o) ? o : [o, o]; return `<option value="${esc(val)}" ${String(val) === String(v) ? "selected" : ""}>${esc(t)}</option>`; }).join("")}</select></label>`;
+const fv = id => $(id).value.trim();
+// Хадгалах товчийг түгжиж эргэлдэх тэмдэг харуулна
+const fbusy = (b, on) => { b.disabled = on; if (on) { b.dataset.t = b.textContent; b.innerHTML = '<span class="spin"></span>Хадгалж байна…'; } else if (b.dataset.t) b.textContent = b.dataset.t; };
+
+// ----- 1) ХӨТӨЛБӨР -----
+async function fitPrograms(my){
+  const list = must(await sb.from("fit_programs").select("*").order("sort", { ascending: false }));
+  if (my !== VIEW) return;
+  $("fbody").innerHTML = `<div class="bar"><span class="mut">${list.length} хөтөлбөр</span><button class="btn dark" id="fpnew" style="margin-left:auto">+ Шинэ хөтөлбөр</button></div>
+    <div class="tbl"><table><thead><tr><th>Нэр</th><th>Түвшин / газар</th><th>Төрөл</th><th>Төлөв</th><th></th></tr></thead><tbody>
+    ${list.map(p => `<tr><td><b>${esc(p.title)}</b><small>${esc(p.id)}</small></td><td>${esc(p.level)}<small>${esc(p.place)}</small></td><td>${p.premium ? "Гишүүдэд" : "Үнэгүй"}</td>
+      <td>${p.active ? '<span class="tag ok">Идэвхтэй</span>' : '<span class="tag no">Нуусан</span>'}</td><td><button class="btn" data-fpe="${esc(p.id)}">Засах</button></td></tr>`).join("") || '<tr><td colspan="5">Хөтөлбөр алга. "+ Шинэ хөтөлбөр" дарна уу.</td></tr>'}</tbody></table></div>`;
+  $("fpnew").onclick = () => fitProgForm(null, list);
+  $("fbody").querySelectorAll("[data-fpe]").forEach(b => b.onclick = () => fitProgForm(list.find(x => x.id === b.dataset.fpe), list));
+}
+function fitProgForm(p, list){
+  const isNew = !p; p = p || { id: "", title: "", level: "Эхлэгч", place: "Гэртээ", descr: "", cover: "", premium: true, sort: (list[0] ? list[0].sort + 1 : 0), active: true };
+  $("fform").innerHTML = `<form class="form" id="fpf"><h3 class="full" style="margin:0">${isNew ? "Шинэ хөтөлбөр" : "Хөтөлбөр засах"}</h3>
+    ${ff("fp-title", "Нэр *", p.title, "text", 'required maxlength="120"')}
+    ${ff("fp-id", "ID (латин, автоматаар)", p.id, "text", isNew ? 'pattern="[a-z0-9][a-z0-9-]{1,39}"' : "readonly")}
+    ${fsel("fp-level", "Түвшин", p.level, ["Эхлэгч", "Дунд", "Ахисан", "Бүх түвшин"])}
+    ${fsel("fp-place", "Хаана", p.place, ["Гэртээ", "Заалд"])}
+    ${ff("fp-descr", "Тайлбар", p.descr, "textarea")}
+    <label>Нүүр зураг<input type="file" id="fp-file" accept="image/*"></label>
+    <div><img id="fp-img" src="${esc(p.cover || "")}" alt="" style="max-width:220px;${p.cover ? "" : "display:none"}"></div>
+    ${ff("fp-sort", "Эрэмбэ (их нь эхэнд)", p.sort, "number")}
+    <div class="full row">${ff("fp-prem", "Гишүүдэд (үнэгүй гэж тэмдэглэсэн хичээлээс бусад нь түгжээтэй)", p.premium, "check")}${ff("fp-act", "Сайтад харуулах", p.active, "check")}</div>
+    <div class="full row"><button class="btn dark" type="submit" id="fpsave">Хадгалах</button><button class="btn" type="button" id="fpx">Болих</button>
+      ${isNew ? "" : '<button class="btn red" type="button" id="fpdel" style="margin-left:auto">Устгах</button>'}</div></form>`;
+  let cover = p.cover || "";
+  if (isNew) $("fp-title").addEventListener("change", () => { if (!fv("fp-id")) $("fp-id").value = fslug(fv("fp-title")) || "program-" + Date.now().toString(36); });
+  $("fp-file").onchange = async e => { const f = e.target.files[0]; if (!f) return; toast("Зураг оруулж байна…"); try { cover = await upload(f, "fit"); $("fp-img").src = cover; $("fp-img").style.display = ""; toast("Зураг орлоо"); } catch (err) { toast("Алдаа: " + err.message); } };
+  $("fpx").onclick = () => { $("fform").innerHTML = ""; };
+  $("fpf").onsubmit = async e => {
+    e.preventDefault();
+    if (!fv("fp-id")) $("fp-id").value = fslug(fv("fp-title"));
+    const row = { id: fv("fp-id"), title: fv("fp-title"), level: $("fp-level").value, place: $("fp-place").value, descr: $("fp-descr").value.trim(), cover: cover || null,
+      premium: $("fp-prem").checked, active: $("fp-act").checked, sort: Number(fv("fp-sort")) || 0 };
+    if (!/^[a-z0-9][a-z0-9-]{1,39}$/.test(row.id)) return toast("ID буруу: латин жижиг үсэг, тоо, зураас");
+    const b = $("fpsave"); fbusy(b, true);
+    const r = isNew ? await sb.from("fit_programs").insert(row) : await sb.from("fit_programs").update(row).eq("id", p.id);
+    fbusy(b, false);
+    if (r.error) return toast("Алдаа: " + (/duplicate/.test(r.error.message) ? "ийм ID-тай хөтөлбөр байна" : r.error.message));
+    toast("Хадгаллаа"); $("fform").innerHTML = ""; showFit("prog");
+  };
+  if ($("fpdel")) $("fpdel").onclick = async () => {
+    if (!confirm(`«${p.title}» хөтөлбөрийг устгах уу?\n\nДотрох БҮХ хичээл, сурагчдын ахиц хамт устна. Түр нуух бол "Сайтад харуулах"-ыг арилгана уу.`)) return;
+    const r = await sb.from("fit_programs").delete().eq("id", p.id).select("id");
+    if (r.error || !r.data || !r.data.length) return toast("Устгагдсангүй" + (r.error ? ": " + r.error.message : ""));
+    toast("Устгалаа"); $("fform").innerHTML = ""; showFit("prog");
+  };
+  $("fform").scrollIntoView({ behavior: "smooth" });
+}
+
+// ----- 2) ХИЧЭЭЛ -----
+let FIT_PROG = "";
+async function fitLessons(my){
+  const progs = must(await sb.from("fit_programs").select("id,title").order("sort", { ascending: false }));
+  if (my !== VIEW) return;
+  if (!progs.length) { $("fbody").innerHTML = `<p class="msg">Эхлээд "Хөтөлбөр" хэсэгт хөтөлбөр нэмнэ үү.</p>`; return; }
+  if (!progs.some(p => p.id === FIT_PROG)) FIT_PROG = progs[0].id;
+  const list = must(await sb.from("fit_lessons").select("*").eq("program_id", FIT_PROG).order("n"));
+  if (my !== VIEW) return;
+  $("fbody").innerHTML = `<div class="bar">${fsel("fl-prog", "", FIT_PROG, progs.map(p => [p.id, p.title]))}<button class="btn dark" id="flnew" style="margin-left:auto">+ Шинэ хичээл</button></div>
+    <div class="tbl"><table><thead><tr><th>#</th><th>Нэр</th><th>Мин</th><th>Нээлттэй</th><th>Дасгал / бараа</th><th></th></tr></thead><tbody>
+    ${list.map(l => `<tr><td>${l.n}</td><td><b>${esc(l.title)}</b>${l.active ? "" : ' <span class="tag no">нуусан</span>'}</td><td>${l.minutes}</td><td>${l.free ? "Үнэгүй" : "Гишүүд"}</td>
+      <td>${(l.exercises || []).length} / ${(l.products || []).length}</td><td><button class="btn" data-fle="${l.id}">Засах</button></td></tr>`).join("") || '<tr><td colspan="6">Хичээл алга.</td></tr>'}</tbody></table></div>`;
+  $("fl-prog").onchange = e => { FIT_PROG = e.target.value; showFit("less"); };
+  $("flnew").onclick = () => fitLessonForm(null, list);
+  $("fbody").querySelectorAll("[data-fle]").forEach(b => b.onclick = () => fitLessonForm(list.find(x => x.id === Number(b.dataset.fle)), list));
+}
+async function fitLessonForm(l, list){
+  const isNew = !l;
+  l = l || { n: (list.length ? Math.max(...list.map(x => x.n)) + 1 : 1), title: "", minutes: 20, free: list.length < 3, body: "", exercises: [], products: [], video_url: "", active: true };
+  // Дэлгүүрийн бараанууд (хичээлд холбохоор)
+  const prods = must(await sb.from("products").select("id,name").eq("active", true).order("sort", { ascending: false }));
+  const exText = (l.exercises || []).map(e => e.sets ? `${e.name} | ${e.sets}` : e.name).join("\n");
+  $("fform").innerHTML = `<form class="form" id="flf"><h3 class="full" style="margin:0">${isNew ? "Шинэ хичээл" : "Хичээл засах"}</h3>
+    ${ff("fl-n", "Дугаар", l.n, "number", 'min="1" max="500" required')}
+    ${ff("fl-title", "Нэр *", l.title, "text", 'required maxlength="120"')}
+    ${ff("fl-min", "Үргэлжлэх (мин)", l.minutes, "number", 'min="1" max="300"')}
+    <div class="full" style="border:1px solid var(--line);padding:12px;display:flex;flex-direction:column;gap:8px">
+      <b style="font-size:13.5px">🎬 Хичээлийн видео (Bunny Stream — хамгаалалттай)</b>
+      <span class="mut" id="fl-vst" style="font-size:12.5px">${l.bunny_id ? "Видео орсон ✓ · ID " + esc(l.bunny_id.slice(0, 8)) + "…" : "Видео ороогүй"}</span>
+      <div class="upbar" id="fl-vbar" hidden><b></b></div>
+      <div class="row" style="gap:8px;flex-wrap:wrap"><label class="btn" style="cursor:pointer">${l.bunny_id ? "Видео солих" : "Видео оруулах"}<input type="file" id="fl-vfile" accept="video/*" hidden></label>
+        ${l.bunny_id ? '<button class="btn red" type="button" id="fl-vdel">Видео хасах</button>' : ""}</div>
+    </div>
+    ${ff("fl-video", "Эсвэл YouTube холбоос (Unlisted — хамгаалалт сул)", l.video_url || "", "url", 'placeholder="https://youtu.be/…"')}
+    ${ff("fl-body", "Тайлбар (халаалт, техник, анхаарах зүйл)", l.body, "textarea")}
+    <label class="full">Дасгалууд — мөр бүрт нэг: <code>Нэр | сет × давталт</code><textarea id="fl-ex" rows="5" placeholder="Squat | 3 × 12&#10;Plank | 3 × 40 сек">${esc(exText)}</textarea></label>
+    <div class="full"><span class="mut" style="font-size:12px">Энэ хичээлд хэрэгтэй бараа (сурагчид шууд сагсална)</span>
+      <div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px;max-height:160px;overflow:auto;border:1px solid var(--line);padding:8px">
+      ${prods.map(p => `<label style="flex-direction:row;display:flex;gap:6px;align-items:center;font-size:13px;color:var(--ink)"><input type="checkbox" value="${esc(p.id)}" data-flp ${(l.products || []).includes(p.id) ? "checked" : ""} style="width:auto">${esc(p.name)}</label>`).join("") || '<span class="mut">Бараа алга</span>'}</div></div>
+    <div class="full row">${ff("fl-free", "Үнэгүй (гишүүн биш хүн ч үзнэ)", l.free, "check")}${ff("fl-act", "Сайтад харуулах", l.active, "check")}</div>
+    <div class="full row"><button class="btn dark" type="submit" id="flsave">Хадгалах</button><button class="btn" type="button" id="flx">Болих</button>
+      ${isNew ? "" : '<button class="btn red" type="button" id="fldel" style="margin-left:auto">Устгах</button>'}</div></form>`;
+  $("flx").onclick = () => { $("fform").innerHTML = ""; };
+  // ---- Bunny видео ----
+  let bunnyId = l.bunny_id || null;
+  // tus (тасарвал үргэлжлүүлэн оруулдаг) санг хэрэгтэй үед ачаална
+  const tusLib = () => window.tus ? Promise.resolve(window.tus) : new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = "https://cdn.jsdelivr.net/npm/tus-js-client@4.1.0/dist/tus.min.js"; sc.onload = () => ok(window.tus); sc.onerror = () => no(new Error("оруулагч ачаалсангүй")); document.head.appendChild(sc); });
+  // Видео боловсруулалт дуустал (Bunny хөрвүүлэх) 5 секунд тутам шалгана
+  const watch = async id => {
+    for (let i = 0; i < 240 && $("fl-vst"); i++) {
+      try { const r = await api({ action: "status", id }, "/api/fit-upload"); if (r.status === 4) { $("fl-vst").textContent = "Видео бэлэн боллоо ✓ (" + Math.round(r.length / 60) + " мин)"; return; }
+        if (r.status === 5 || r.status === 6) { $("fl-vst").textContent = "Bunny видеог боловсруулж чадсангүй — өөр файл оролдоно уу"; return; }
+        $("fl-vst").textContent = `Bunny боловсруулж байна… ${r.progress || 0}% (хаасан ч үргэлжилнэ)`; } catch (e) {}
+      await new Promise(z => setTimeout(z, 5000));
+    }
+  };
+  $("fl-vfile").onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    if (!confirm(`«${f.name}» (${(f.size / 1048576).toFixed(0)} МБ) видеог оруулах уу?\n\nОруулж дуустал энэ цонхыг бүү хаагаарай.`)) return;
+    const bar = $("fl-vbar"), old = bunnyId; bar.hidden = false; bar.firstElementChild.style.width = "0%";
+    try {
+      const [T, c] = await Promise.all([tusLib(), api({ action: "create", title: fv("fl-title") || f.name }, "/api/fit-upload")]);
+      await new Promise((ok, no) => new T.Upload(f, {
+        endpoint: "https://video.bunnycdn.com/tusupload", retryDelays: [0, 3000, 10000, 30000],
+        headers: { AuthorizationSignature: c.signature, AuthorizationExpire: String(c.expire), LibraryId: c.libraryId, VideoId: c.videoId },
+        metadata: { filetype: f.type || "video/mp4", title: fv("fl-title") || f.name },
+        onProgress: (a, t) => { bar.firstElementChild.style.width = Math.round(a / t * 100) + "%"; $("fl-vst").textContent = `Оруулж байна… ${Math.round(a / t * 100)}%`; },
+        onSuccess: ok, onError: no
+      }).start());
+      bunnyId = c.videoId;
+      // Хуучин хичээл бол шууд хадгална, хуучин видеог Bunny-ээс устгана
+      if (!isNew) { must(await sb.from("fit_lessons").update({ bunny_id: bunnyId }).eq("id", l.id)); if (old) api({ action: "delete", id: old }, "/api/fit-upload").catch(() => {}); toast("Видео орлоо ✓"); }
+      else toast("Видео орлоо — одоо «Хадгалах» дарна уу");
+      bar.hidden = true; watch(bunnyId);
+    } catch (err) { bar.hidden = true; $("fl-vst").textContent = "Алдаа: " + (err.message === "not_configured" ? "Bunny тохиргоо (BUNNY_…) дутуу" : err.message || err); }
+  };
+  if ($("fl-vdel")) $("fl-vdel").onclick = async () => {
+    if (!confirm("Энэ хичээлийн видеог хасах уу? Bunny-ээс бүр устгана.")) return;
+    try { must(await sb.from("fit_lessons").update({ bunny_id: null }).eq("id", l.id)); await api({ action: "delete", id: bunnyId }, "/api/fit-upload").catch(() => {}); bunnyId = null; toast("Видео хаслаа"); showFit("less"); }
+    catch (err) { toast("Алдаа: " + err.message); }
+  };
+  if (bunnyId) watch(bunnyId);
+  $("flf").onsubmit = async e => {
+    e.preventDefault();
+    const ex = $("fl-ex").value.split("\n").map(s => s.trim()).filter(Boolean).slice(0, 40).map(s => { const [n, ...r] = s.split("|"); return { name: n.trim().slice(0, 80), sets: r.join("|").trim().slice(0, 80) }; });
+    const vu = fv("fl-video");
+    if (vu && !/^https:\/\//.test(vu)) return toast("Видео холбоос https://-ээр эхэлнэ");
+    const row = { program_id: FIT_PROG, n: Number(fv("fl-n")), title: fv("fl-title"), minutes: Number(fv("fl-min")) || 20, body: $("fl-body").value.trim(),
+      exercises: ex, products: [...document.querySelectorAll("[data-flp]:checked")].map(x => x.value), video_url: vu || null, free: $("fl-free").checked, active: $("fl-act").checked };
+    // Bunny видео (шинэ хичээлд оруулсан бол)
+    if (bunnyId) row.bunny_id = bunnyId;
+    const b = $("flsave"); fbusy(b, true);
+    const r = isNew ? await sb.from("fit_lessons").insert(row) : await sb.from("fit_lessons").update(row).eq("id", l.id);
+    fbusy(b, false);
+    if (r.error) return toast("Алдаа: " + (/duplicate/.test(r.error.message) ? "энэ дугаартай хичээл байна" : r.error.message));
+    toast("Хадгаллаа"); $("fform").innerHTML = ""; showFit("less");
+  };
+  if ($("fldel")) $("fldel").onclick = async () => {
+    if (!confirm(`«${l.title}» хичээлийг устгах уу?`)) return;
+    const r = await sb.from("fit_lessons").delete().eq("id", l.id).select("id");
+    if (r.error || !r.data || !r.data.length) return toast("Устгагдсангүй");
+    if (l.bunny_id) api({ action: "delete", id: l.bunny_id }, "/api/fit-upload").catch(() => {});
+    toast("Устгалаа"); $("fform").innerHTML = ""; showFit("less");
+  };
+  $("fform").scrollIntoView({ behavior: "smooth" });
+}
+
+// ----- 3) ҮНЭ ба ГИШҮҮНИЙ ХӨНГӨЛӨЛТ -----
+async function fitPlans(my){
+  const [plans, cfg] = await Promise.all([sb.from("fit_plans").select("*"), sb.from("fit_config").select("*").eq("id", 1).maybeSingle()]);
+  const P = must(plans), C = must(cfg) || { member_disc: 5, vip_disc: 10 };
+  if (my !== VIEW) return;
+  const cell = (t, m) => { const x = P.find(p => p.tier === t && p.months === m); return `<input type="number" min="0" step="1000" data-pp="${t}:${m}" value="${x && x.active ? x.price : ""}" placeholder="—" style="max-width:120px">`; };
+  $("fbody").innerHTML = `<form class="form" id="fplf"><h3 class="full" style="margin:0">Гишүүнчлэлийн үнэ (₮)</h3>
+    <p class="full mut" style="margin:0;font-size:12.5px">Хоосон үлдээсэн хугацаа сайтад харагдахгүй. Нийт үнийг бичнэ (жишээ нь 3 сар = 54000).</p>
+    <div class="full tbl"><table style="min-width:0"><thead><tr><th>Багц</th><th>1 сар</th><th>3 сар</th><th>6 сар</th><th>12 сар</th></tr></thead><tbody>
+      <tr><td><b>Гишүүн</b></td>${[1, 3, 6, 12].map(m => `<td>${cell("member", m)}</td>`).join("")}</tr>
+      <tr><td><b>VIP</b></td>${[1, 3, 6, 12].map(m => `<td>${cell("vip", m)}</td>`).join("")}</tr></tbody></table></div>
+    <h3 class="full" style="margin:8px 0 0">Дэлгүүрийн хөнгөлөлт (%)</h3>
+    ${ff("fc-m", "Гишүүн", C.member_disc, "number", 'min="0" max="50"')}${ff("fc-v", "VIP", C.vip_disc, "number", 'min="0" max="50"')}
+    <div class="full"><button class="btn dark" type="submit" id="fplsave">Хадгалах</button></div></form>`;
+  $("fplf").onsubmit = async e => {
+    e.preventDefault();
+    const b = $("fplsave"); fbusy(b, true);
+    try {
+      for (const inp of document.querySelectorAll("[data-pp]")) {
+        const [tier, m] = inp.dataset.pp.split(":"), price = Number(inp.value), months = Number(m);
+        const ex = P.find(p => p.tier === tier && p.months === months);
+        if (price > 0) must(ex ? await sb.from("fit_plans").update({ price, active: true }).eq("id", ex.id) : await sb.from("fit_plans").insert({ tier, months, price, active: true }));
+        else if (ex && ex.active) must(await sb.from("fit_plans").update({ active: false }).eq("id", ex.id));
+      }
+      must(await sb.from("fit_config").update({ member_disc: Number(fv("fc-m")) || 0, vip_disc: Number(fv("fc-v")) || 0 }).eq("id", 1));
+      toast("Хадгаллаа"); showFit("plans");
+    } catch (err) { fbusy(b, false); toast("Алдаа: " + err.message); }
+  };
+}
+
+// ----- 4) ГИШҮҮД (жагсаалт, гараар олгох/сунгах, төлбөрүүд) -----
+async function fitMembers(my){
+  const [mem, pays] = await Promise.all([
+    sb.from("fit_members").select("*").order("until", { ascending: false }).limit(500),
+    sb.from("fit_payments").select("*").order("created_at", { ascending: false }).limit(30)
+  ]);
+  const M = must(mem), PY = must(pays);
+  const ids = [...new Set([...M.map(m => m.user_id), ...PY.map(p => p.user_id)])];
+  const prof = ids.length ? must(await sb.from("profiles").select("id,username,email").in("id", ids)) : [];
+  if (my !== VIEW) return;
+  const nm = id => { const p = prof.find(x => x.id === id); return p ? p.username : "?"; };
+  const now = Date.now(), act = M.filter(m => new Date(m.until) > now);
+  $("fbody").innerHTML = `<form class="form" id="fmf"><h3 class="full" style="margin:0">Гишүүнчлэл олгох / сунгах (гараар)</h3>
+      ${ff("fm-u", "Хэрэглэгчийн нэвтрэх нэр", "", "text", 'required')}${fsel("fm-t", "Багц", "member", [["member", "Гишүүн"], ["vip", "VIP"]])}
+      ${ff("fm-m", "Хэдэн сар", 1, "number", 'min="1" max="36"')}${ff("fm-note", "Тэмдэглэл (жишээ: бэлэг, бэлнээр төлсөн)", "", "text")}
+      <div class="full"><button class="btn dark" type="submit" id="fmsave">Олгох</button></div></form>
+    <div class="bar"><h3 style="margin:0">Гишүүд <small class="mut">(идэвхтэй ${act.length} / нийт ${M.length})</small></h3></div>
+    <div class="tbl"><table><thead><tr><th>Хэрэглэгч</th><th>Багц</th><th>Хүртэл</th><th>Тэмдэглэл</th><th></th></tr></thead><tbody>
+      ${M.map(m => `<tr><td><b>${esc(nm(m.user_id))}</b></td><td>${m.tier === "vip" ? "VIP" : "Гишүүн"}</td><td>${dt(m.until)} ${new Date(m.until) > now ? '<span class="tag ok">идэвхтэй</span>' : '<span class="tag no">дууссан</span>'}</td>
+        <td><small>${esc(m.note || "")}</small></td><td>${new Date(m.until) > now ? `<button class="btn red" data-fmend="${m.user_id}">Зогсоох</button>` : ""}</td></tr>`).join("") || '<tr><td colspan="5">Гишүүн алга.</td></tr>'}</tbody></table></div>
+    <div class="bar" style="margin-top:20px"><h3 style="margin:0">Сүүлийн төлбөрүүд</h3></div>
+    <div class="tbl"><table><thead><tr><th>Код</th><th>Хэрэглэгч</th><th>Юу</th><th>Дүн</th><th>Төлөв</th></tr></thead><tbody>
+      ${PY.map(p => `<tr><td><code>${esc(p.code)}</code><small>${dt(p.created_at)}</small></td><td>${esc(nm(p.user_id))}</td><td>${p.kind === "member" ? (p.tier === "vip" ? "VIP" : "Гишүүн") + " · " + p.months + " сар" : "Сорилт"}</td><td>${fmt(p.amount)}</td>
+        <td>${p.status === "paid" ? '<span class="tag ok">Төлсөн</span>' : p.status === "pending" ? '<span class="tag">Хүлээгдэж байна</span>' : '<span class="tag no">Цуцалсан</span>'}</td></tr>`).join("") || '<tr><td colspan="5">Төлбөр алга.</td></tr>'}</tbody></table></div>`;
+  // Гараар олгох: одоогийн хугацааны араас нэмнэ
+  $("fmf").onsubmit = async e => {
+    e.preventDefault();
+    const b = $("fmsave"); fbusy(b, true);
+    try {
+      const u = must(await sb.from("profiles").select("id,username").eq("username", fv("fm-u").toLowerCase()).maybeSingle());
+      if (!u) throw new Error("ийм нэртэй хэрэглэгч алга");
+      const cur = M.find(m => m.user_id === u.id), base = cur && new Date(cur.until) > now ? new Date(cur.until) : new Date();
+      base.setMonth(base.getMonth() + (Number(fv("fm-m")) || 1));
+      if (!confirm(`«${u.username}»-д ${$("fm-t").value === "vip" ? "VIP" : "Гишүүн"} эрх ${dt(base)} хүртэл олгох уу?`)) { fbusy(b, false); return; }
+      must(await sb.from("fit_members").upsert({ user_id: u.id, tier: $("fm-t").value, until: base.toISOString(), updated_at: new Date().toISOString(), note: fv("fm-note") || null }));
+      toast("Олголоо"); showFit("mem");
+    } catch (err) { fbusy(b, false); toast("Алдаа: " + err.message); }
+  };
+  // Гишүүнчлэлийг зогсоох (хугацааг одоо болгоно)
+  $("fbody").querySelectorAll("[data-fmend]").forEach(b => b.onclick = async () => {
+    if (!confirm(`«${nm(b.dataset.fmend)}»-ийн гишүүнчлэлийг одоо зогсоох уу?`)) return;
+    const r = await sb.from("fit_members").update({ until: new Date().toISOString(), updated_at: new Date().toISOString() }).eq("user_id", b.dataset.fmend);
+    if (r.error) return toast("Алдаа: " + r.error.message); toast("Зогсоолоо"); showFit("mem");
+  });
+}
+
+// ----- 7) НИЙГЭМЛЭГ: мэдэгдэл бичих, нийтлэл/сэтгэгдэл нуух, устгах -----
+const FCAT = { "Ахиц": "", "Асуулт": "", "Мэдэгдэл": "ok" };
+async function fitCommunity(my){
+  const [po, co] = await Promise.all([
+    sb.from("fit_posts").select("id,username,cat,body,photo,hidden,created_at").order("created_at", { ascending: false }).limit(100),
+    sb.from("fit_comments").select("id,post_id,username,body,hidden,created_at").order("created_at", { ascending: false }).limit(100)
+  ]);
+  const P = must(po), C = must(co);
+  if (my !== VIEW) return;
+  // Нийтлэлийн мөр: нуух/гаргах, устгах товчтой
+  const prow = p => `<tr class="${p.hidden ? "hid" : ""}"><td><b>${esc(p.username)}</b><small>${dt(p.created_at)}</small></td>
+    <td><span class="tag ${FCAT[p.cat] || ""}">${esc(p.cat)}</span></td>
+    <td style="max-width:420px;white-space:pre-wrap">${esc(p.body)}${p.photo ? `<br><a href="${esc(p.photo)}" target="_blank" rel="noopener">📷 зураг</a>` : ""}</td>
+    <td style="white-space:nowrap"><button class="btn" data-ph="${p.id}" data-v="${p.hidden ? 0 : 1}">${p.hidden ? "Гаргах" : "Нуух"}</button>
+      <button class="btn red" data-pd="${p.id}">Устгах</button></td></tr>`;
+  // Сэтгэгдлийн мөр
+  const crow = c => `<tr class="${c.hidden ? "hid" : ""}"><td><b>${esc(c.username)}</b><small>${dt(c.created_at)}</small></td>
+    <td style="max-width:420px;white-space:pre-wrap">${esc(c.body)}</td><td><small>#${c.post_id}</small></td>
+    <td style="white-space:nowrap"><button class="btn" data-ch="${c.id}" data-v="${c.hidden ? 0 : 1}">${c.hidden ? "Гаргах" : "Нуух"}</button>
+      <button class="btn red" data-cd="${c.id}">Устгах</button></td></tr>`;
+  $("fbody").innerHTML = `<form class="form" id="fnf"><h3 class="full" style="margin:0">📣 Гишүүдэд мэдэгдэл нийтлэх</h3>
+      ${ff("fn-b", "Мэдэгдлийн бичиг (жишээ: Пүрэв гаригт 20:00-д шууд дасгал)", "", "textarea", 'maxlength="2000" required')}
+      <div class="full"><button class="btn dark" type="submit" id="fnsave">Нийтлэх</button></div></form>
+    <div class="bar"><h3 style="margin:0">Нийтлэлүүд <small class="mut">(сүүлийн ${P.length})</small></h3></div>
+    <div class="tbl"><table><thead><tr><th>Хэн</th><th>Ангилал</th><th>Бичиг</th><th></th></tr></thead><tbody>
+      ${P.map(prow).join("") || '<tr><td colspan="4">Нийтлэл алга.</td></tr>'}</tbody></table></div>
+    <div class="bar" style="margin-top:20px"><h3 style="margin:0">Сэтгэгдлүүд <small class="mut">(сүүлийн ${C.length})</small></h3></div>
+    <div class="tbl"><table><thead><tr><th>Хэн</th><th>Бичиг</th><th>Нийтлэл</th><th></th></tr></thead><tbody>
+      ${C.map(crow).join("") || '<tr><td colspan="4">Сэтгэгдэл алга.</td></tr>'}</tbody></table></div>`;
+  // Мэдэгдэл нийтлэх
+  $("fnf").onsubmit = async e => {
+    e.preventDefault();
+    const b = $("fnsave"); fbusy(b, true);
+    try { must(await sb.from("fit_posts").insert({ cat: "Мэдэгдэл", body: fv("fn-b") })); toast("Нийтэллээ"); showFit("comm"); }
+    catch (err) { fbusy(b, false); toast("Алдаа: " + err.message + (/row-level|policy/i.test(err.message) ? " — finn-fit-admin.sql ажиллуулсан уу?" : "")); }
+  };
+  // Нуух / гаргах, устгах (нийтлэл ба сэтгэгдэл ижил арга)
+  const act = (sel, table, kind) => $("fbody").querySelectorAll(sel).forEach(b => b.onclick = async () => {
+    const id = b.dataset.ph || b.dataset.pd || b.dataset.ch || b.dataset.cd;
+    let r;
+    if (kind === "hide") r = await sb.from(table).update({ hidden: b.dataset.v === "1" }).eq("id", id).select("id");
+    else { if (!confirm("Бүр мөсөн устгах уу? Буцаах боломжгүй.")) return; r = await sb.from(table).delete().eq("id", id).select("id"); }
+    if (r.error) return toast("Алдаа: " + r.error.message);
+    if (!r.data || !r.data.length) return toast("Өөрчлөгдсөнгүй (эрх шалгана уу)");
+    toast(kind === "hide" ? (b.dataset.v === "1" ? "Нуулаа" : "Гаргалаа") : "Устгалаа"); showFit("comm");
+  });
+  act("[data-ph]", "fit_posts", "hide"); act("[data-pd]", "fit_posts", "del");
+  act("[data-ch]", "fit_comments", "hide"); act("[data-cd]", "fit_comments", "del");
+}
+
+// ----- 8) FIT ТОХИРГОО: Fit нүүр хуудасны бичвэрүүд -----
+// [түлхүүр, нэр, үндсэн бичиг, урт эсэх]
+const FTXT = [
+  ["notice", "Дээд мэдэгдэл (хоосон бол харагдахгүй)", "", true],
+  ["eb", "Жижиг гарчиг", "FINN FIT · СУРГАЛТ"],
+  ["title", "Том гарчиг", "Биеэ хөгжүүлэх аялал эндээс эхэлнэ"],
+  ["sub", "Тайлбар", "Хөтөлбөр, хичээл, хоолны төлөвлөгөө, 30 хоногийн сорилт — нэг дор.", true],
+  ["btn", "Товчны бичиг", "Хөтөлбөр сонгох →"],
+  ["joinTitle", "Гишүүнчлэлийн хайрцаг — гарчиг", "Бүх хөтөлбөр, хоолны төлөвлөгөө, нийгэмлэг"],
+  ["joinSub", "Гишүүнчлэлийн хайрцаг — жижиг бичиг", "QPay-ээр төлнө · дэлгүүрт гишүүний хөнгөлөлт"]
+];
+async function fitTexts(my){
+  const C = must(await sb.from("fit_config").select("*").eq("id", 1).maybeSingle()) || {};
+  if (my !== VIEW) return;
+  // texts багана байхгүй бол SQL ажиллуулаагүй гэсэн үг
+  if (!("texts" in C)) { $("fbody").innerHTML = `<p class="msg"><b>finn-fit-admin.sql</b>-ийг Supabase-д ажиллуулсны дараа энэ хэсэг нээгдэнэ.</p>`; return; }
+  const T = C.texts || {};
+  $("fbody").innerHTML = `<form class="form" id="ftf"><h3 class="full" style="margin:0">Fit нүүр хуудасны бичвэрүүд</h3>
+    <p class="full mut" style="margin:0;font-size:12.5px">Хоосон үлдээвэл саарал бичигтэй үндсэн хувилбар харагдана. Үнэ, хөнгөлөлтийг «Үнэ» табаас засна.</p>
+    ${FTXT.map(([k, label, d, long]) => long
+      ? `<label class="full">${label}<textarea id="ft-${k}" rows="2" maxlength="400" placeholder="${esc(d)}">${esc(T[k] || "")}</textarea></label>`
+      : `<label class="full">${label}<input id="ft-${k}" maxlength="120" placeholder="${esc(d)}" value="${esc(T[k] || "")}"></label>`).join("")}
+    <div class="full row"><button class="btn dark" type="submit" id="ftsave">Хадгалах</button><a class="btn" href="/fit" target="_blank" rel="noopener">Үр дүнг харах ↗</a></div></form>`;
+  $("ftf").onsubmit = async e => {
+    e.preventDefault();
+    const b = $("ftsave"); fbusy(b, true);
+    try {
+      // Зөвхөн бөглөсөн талбаруудыг хадгална
+      const out = {}; FTXT.forEach(([k]) => { const v = fv("ft-" + k); if (v) out[k] = v; });
+      must(await sb.from("fit_config").update({ texts: out }).eq("id", 1).select("id"));
+      toast("Хадгаллаа"); showFit("conf");
+    } catch (err) { fbusy(b, false); toast("Алдаа: " + err.message); }
+  };
+}
+
+// ----- 5) ХООЛНЫ ТӨЛӨВЛӨГӨӨ -----
+let FIT_GOAL = "", FIT_DAY = 1;
+async function fitMeals(my){
+  const all = must(await sb.from("fit_meals").select("*").order("day").order("sort"));
+  if (my !== VIEW) return;
+  const goals = [...new Set(all.map(m => m.goal))];
+  if (!FIT_GOAL || !goals.includes(FIT_GOAL)) FIT_GOAL = goals[0] || "";
+  const DN = ["Даваа", "Мягмар", "Лхагва", "Пүрэв", "Баасан", "Бямба", "Ням"], SO = { "Өглөө": 1, "Өдөр": 2, "Зууш": 3, "Орой": 4 };
+  const list = all.filter(m => m.goal === FIT_GOAL && m.day === FIT_DAY).sort((a, b) => SO[a.slot] - SO[b.slot] || a.sort - b.sort);
+  $("fbody").innerHTML = `<div class="bar">
+      ${goals.length ? fsel("fmg", "", FIT_GOAL, goals) : '<span class="mut">Зорилго алга</span>'}
+      <button class="btn" id="fmgnew">+ Шинэ зорилго</button>
+      ${fsel("fmd", "", FIT_DAY, DN.map((d, i) => [i + 1, d]))}
+      <button class="btn dark" id="fmnew" style="margin-left:auto" ${FIT_GOAL ? "" : "disabled"}>+ Хоол нэмэх</button></div>
+    <div class="tbl"><table><thead><tr><th>Цаг</th><th>Хоол</th><th>Ккал</th><th>Уураг / НУ / Өөх</th><th></th></tr></thead><tbody>
+      ${list.map(m => `<tr><td>${esc(m.slot)}</td><td><b>${esc(m.name)}</b></td><td>${m.kcal ?? "—"}</td><td>${[m.protein, m.carbs, m.fat].map(x => x ?? "—").join(" / ")}</td><td><button class="btn" data-fme="${m.id}">Засах</button></td></tr>`).join("") || '<tr><td colspan="5">Энэ өдөрт хоол алга.</td></tr>'}</tbody></table></div>`;
+  if ($("fmg")) $("fmg").onchange = e => { FIT_GOAL = e.target.value; showFit("meals"); };
+  $("fmd").onchange = e => { FIT_DAY = Number(e.target.value); showFit("meals"); };
+  $("fmgnew").onclick = () => { const g = prompt("Шинэ зорилгын нэр (жишээ: Жин хасах, Булчин нэмэх):"); if (g && g.trim()) { FIT_GOAL = g.trim().slice(0, 40); fitMealForm(null); } };
+  $("fmnew").onclick = () => fitMealForm(null);
+  $("fbody").querySelectorAll("[data-fme]").forEach(b => b.onclick = () => fitMealForm(list.find(x => x.id === Number(b.dataset.fme))));
+}
+function fitMealForm(m){
+  const isNew = !m; m = m || { slot: "Өглөө", name: "", kcal: "", protein: "", carbs: "", fat: "", recipe: "", sort: 0 };
+  $("fform").innerHTML = `<form class="form" id="fmlf"><h3 class="full" style="margin:0">${esc(FIT_GOAL)} · ${["Даваа", "Мягмар", "Лхагва", "Пүрэв", "Баасан", "Бямба", "Ням"][FIT_DAY - 1]} — ${isNew ? "шинэ хоол" : "хоол засах"}</h3>
+    ${fsel("fml-slot", "Цаг", m.slot, ["Өглөө", "Өдөр", "Зууш", "Орой"])}${ff("fml-name", "Хоолны нэр *", m.name, "text", 'required maxlength="120"')}
+    ${ff("fml-kcal", "Ккал", m.kcal, "number", 'min="0"')}${ff("fml-p", "Уураг (г)", m.protein, "number", 'min="0"')}
+    ${ff("fml-c", "Нүүрс ус (г)", m.carbs, "number", 'min="0"')}${ff("fml-f", "Өөх тос (г)", m.fat, "number", 'min="0"')}
+    ${ff("fml-r", "Жор", m.recipe, "textarea")}
+    <div class="full row"><button class="btn dark" type="submit" id="fmlsave">Хадгалах</button><button class="btn" type="button" id="fmlx">Болих</button>
+      ${isNew ? "" : '<button class="btn red" type="button" id="fmldel" style="margin-left:auto">Устгах</button>'}</div></form>`;
+  const num = id => fv(id) === "" ? null : Number(fv(id));
+  $("fmlx").onclick = () => { $("fform").innerHTML = ""; };
+  $("fmlf").onsubmit = async e => {
+    e.preventDefault();
+    const row = { goal: FIT_GOAL, day: FIT_DAY, slot: $("fml-slot").value, name: fv("fml-name"), kcal: num("fml-kcal"), protein: num("fml-p"), carbs: num("fml-c"), fat: num("fml-f"), recipe: $("fml-r").value.trim() };
+    const b = $("fmlsave"); fbusy(b, true);
+    const r = isNew ? await sb.from("fit_meals").insert(row) : await sb.from("fit_meals").update(row).eq("id", m.id);
+    fbusy(b, false); if (r.error) return toast("Алдаа: " + r.error.message);
+    toast("Хадгаллаа"); $("fform").innerHTML = ""; showFit("meals");
+  };
+  if ($("fmldel")) $("fmldel").onclick = async () => {
+    if (!confirm(`«${m.name}»-ийг устгах уу?`)) return;
+    const r = await sb.from("fit_meals").delete().eq("id", m.id); if (r.error) return toast("Алдаа: " + r.error.message);
+    toast("Устгалаа"); $("fform").innerHTML = ""; showFit("meals");
+  };
+  $("fform").scrollIntoView({ behavior: "smooth" });
+}
+
+// ----- 6) СОРИЛТ -----
+async function fitChallenges(my){
+  const list = must(await sb.from("fit_challenges").select("*").order("starts_on", { ascending: false }));
+  const counts = await Promise.all(list.map(c => sb.rpc("fit_challenge_count", { c: c.id }).then(r => r.data || 0)));
+  if (my !== VIEW) return;
+  $("fbody").innerHTML = `<div class="bar"><span class="mut">${list.length} сорилт</span><button class="btn dark" id="fcnew" style="margin-left:auto">+ Шинэ сорилт</button></div>
+    <div class="tbl"><table><thead><tr><th>Нэр</th><th>Эхлэх</th><th>Өдөр</th><th>Элсэлт</th><th>Оролцогч</th><th></th></tr></thead><tbody>
+    ${list.map((c, i) => `<tr><td><b>${esc(c.title)}</b>${c.active ? "" : ' <span class="tag no">нуусан</span>'}</td><td>${esc(c.starts_on)}</td><td>${c.days}</td><td>${c.fee ? fmt(c.fee) : "Үнэгүй"}</td><td>${counts[i]}</td>
+      <td><button class="btn" data-fce="${c.id}">Засах</button></td></tr>`).join("") || '<tr><td colspan="6">Сорилт алга.</td></tr>'}</tbody></table></div>`;
+  $("fcnew").onclick = () => fitChalForm(null);
+  $("fbody").querySelectorAll("[data-fce]").forEach(b => b.onclick = () => fitChalForm(list.find(x => x.id === Number(b.dataset.fce))));
+}
+function fitChalForm(c){
+  const isNew = !c;
+  c = c || { title: "30 хоногийн FINN сорилт", descr: "", starts_on: new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10), days: 30, fee: 0, reward: "", active: true };
+  $("fform").innerHTML = `<form class="form" id="fcf"><h3 class="full" style="margin:0">${isNew ? "Шинэ сорилт" : "Сорилт засах"}</h3>
+    ${ff("fc-title", "Нэр *", c.title, "text", 'required maxlength="120"')}${ff("fc-start", "Эхлэх өдөр", c.starts_on, "date", "required")}
+    ${ff("fc-days", "Хэдэн өдөр", c.days, "number", 'min="1" max="100"')}${ff("fc-fee", "Элсэлтийн төлбөр (₮, 0 = үнэгүй)", c.fee, "number", 'min="0" step="1000"')}
+    ${ff("fc-descr", "Тайлбар", c.descr, "textarea")}${ff("fc-reward", "Шагнал (бодитоор өгөх боломжтойг л бичнэ)", c.reward, "textarea")}
+    <div class="full">${ff("fc-act", "Сайтад харуулах", c.active, "check")}</div>
+    <div class="full row"><button class="btn dark" type="submit" id="fcsave">Хадгалах</button><button class="btn" type="button" id="fcx">Болих</button>
+      ${isNew ? "" : '<button class="btn red" type="button" id="fcdel" style="margin-left:auto">Устгах</button>'}</div></form>`;
+  $("fcx").onclick = () => { $("fform").innerHTML = ""; };
+  $("fcf").onsubmit = async e => {
+    e.preventDefault();
+    const row = { title: fv("fc-title"), starts_on: fv("fc-start"), days: Number(fv("fc-days")) || 30, fee: Number(fv("fc-fee")) || 0, descr: $("fc-descr").value.trim(), reward: $("fc-reward").value.trim(), active: $("fc-act").checked };
+    const b = $("fcsave"); fbusy(b, true);
+    const r = isNew ? await sb.from("fit_challenges").insert(row) : await sb.from("fit_challenges").update(row).eq("id", c.id);
+    fbusy(b, false); if (r.error) return toast("Алдаа: " + r.error.message);
+    toast("Хадгаллаа"); $("fform").innerHTML = ""; showFit("chal");
+  };
+  if ($("fcdel")) $("fcdel").onclick = async () => {
+    if (!confirm(`«${c.title}» сорилтыг устгах уу?\n\nОролцогчид, тэдний тэмдэглэсэн өдрүүд хамт устна. Төлбөр төлсөн хүн байвал эхлээд мөнгийг нь шийдээрэй.`)) return;
+    const r = await sb.from("fit_challenges").delete().eq("id", c.id); if (r.error) return toast("Алдаа: " + r.error.message);
+    toast("Устгалаа"); $("fform").innerHTML = ""; showFit("chal");
+  };
+  $("fform").scrollIntoView({ behavior: "smooth" });
+}
+
 // ===== СУПЕР АДМИН: админ эрхийн хүсэлтийн мэдэгдэл =====
 let ME_SUPER = false;
 async function refreshReqBadge(){
@@ -1701,7 +2169,28 @@ async function refreshReqBadge(){
 
 // Таб солих
 const TABS = { orders: () => showOrders(""), users: showUsers, products: () => showProducts(), settings: showSettings, reviews: showReviews, history: () => showHistory() };
-$("tabs").addEventListener("click", e => { const b = e.target.closest("[data-t]"); if (!b) return; $("tabs").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); const my = VIEW + 1; TABS[b.dataset.t]().catch(err => { if (VIEW === my) $("main").innerHTML = `<p class="msg">Алдаа: ${esc(err.message)}</p>`; }); });
+// Fit табууд: "f-prog" → showFit("prog") гэх мэт
+FIT_SUB.forEach(([k]) => TABS["f-" + k] = () => showFit(k));
+$("tabs").addEventListener("click", e => { const b = e.target.closest("[data-t]"); if (!b) return;
+  // Нөгөө бүлгийн таб дарагдвал (жишээ нь "Харах" товчоор) горимыг нь солино
+  if (b.dataset.g !== MODE) setMode(b.dataset.g, false);
+  $("tabs").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); const my = VIEW + 1; TABS[b.dataset.t]().catch(err => { if (VIEW === my) $("main").innerHTML = `<p class="msg">Алдаа: ${esc(err.message)}</p>`; }); });
+
+// ===== SHOP | FIT горим: дээд мөрөнд зөвхөн тухайн хэсгийн табууд харагдана =====
+let MODE = "shop";
+// Сүүлд сонгосон горимыг санана (дараа нээхэд тэр хэсэг нь гарна)
+try { if (localStorage.getItem("finn-admin-mode") === "fit") MODE = "fit"; } catch (e) {}
+// m: "shop" | "fit"; go=true бол тухайн хэсгийн эхний табыг нээнэ
+function setMode(m, go = true){
+  MODE = m === "fit" ? "fit" : "shop";
+  try { localStorage.setItem("finn-admin-mode", MODE); } catch (e) {}
+  $("asw").querySelectorAll("[data-m]").forEach(x => x.setAttribute("aria-pressed", x.dataset.m === MODE));
+  $("tabs").querySelectorAll("[data-g]").forEach(x => x.hidden = x.dataset.g !== MODE);
+  // Хажуу тийш гүйлгэсэн табуудыг эхлэл рүү нь буцаана
+  $("tabs").scrollLeft = 0;
+  if (go) { const f = $("tabs").querySelector(`[data-g="${MODE}"]`); if (f) f.click(); }
+}
+$("asw").addEventListener("click", e => { const b = e.target.closest("[data-m]"); if (b && b.dataset.m !== MODE) setMode(b.dataset.m); });
 
 // Эхлүүлэх: нэвтэрсэн, админ эсэхийг шалгана
 (async () => {
@@ -1714,11 +2203,11 @@ $("tabs").addEventListener("click", e => { const b = e.target.closest("[data-t]"
     if (!data.user) { $("main").innerHTML = `<p class="msg">Эхлээд <a href="/">сайт дээрээ</a> админ бүртгэлээрээ нэвтэрнэ үү.</p>`; return; }
     const { data: p } = await sb.from("profiles").select("username,role").eq("id", data.user.id).maybeSingle();
     if (!p || p.role !== "admin") { $("main").innerHTML = `<p class="msg">Танд админ эрх байхгүй байна.</p>`; return; }
-    $("whoami").textContent = p.username; $("tabs").hidden = false;
+    $("whoami").textContent = p.username; $("tabs").hidden = false; $("asw").hidden = false;
     // Супер админ бол хүлээгдэж буй админ хүсэлтийг шалгаж мэдэгдэнэ (1 минут тутам шинэчилнэ)
     refreshReqBadge(); setInterval(refreshReqBadge, 60000);
-    const first = VIEW + 1;
-    await showOrders("").catch(e => { if (VIEW === first) $("main").innerHTML = `<p class="msg">Алдаа: ${esc(e.message)}</p>`; });
+    // Сүүлд ашигласан хэсгийн (SHOP эсвэл FIT) эхний табыг нээнэ
+    setMode(MODE);
   } catch (e) { $("main").innerHTML = `<p class="msg">${esc(e.message)}</p>`; }
 })();
 

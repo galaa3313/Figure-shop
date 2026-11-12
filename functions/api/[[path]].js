@@ -15,11 +15,19 @@ import qpayCallback from "../../api/qpay-callback.js";
 import qpayCheck from "../../api/qpay-check.js";
 import qpayCreate from "../../api/qpay-create.js";
 import signup from "../../api/signup.js";
+// FINN Fit: гишүүнчлэл, сорилтын төлбөр
+import fitPay from "../../api/fit-pay.js";
+import fitCheck from "../../api/fit-check.js";
+import fitCallback from "../../api/fit-callback.js";
+// FINN Fit: Bunny видео
+import fitVideo from "../../api/fit-video.js";
+import fitUpload from "../../api/fit-upload.js";
 
 // Хаягийн нэр → функц
 const H = {
   "admin": admin, "cancel-order": cancelOrder, "config": config, "keepalive": keepalive, "login": login,
-  "order": order, "qpay-callback": qpayCallback, "qpay-check": qpayCheck, "qpay-create": qpayCreate, "signup": signup
+  "order": order, "qpay-callback": qpayCallback, "qpay-check": qpayCheck, "qpay-create": qpayCreate, "signup": signup,
+  "fit-pay": fitPay, "fit-check": fitCheck, "fit-callback": fitCallback, "fit-video": fitVideo, "fit-upload": fitUpload
 };
 
 export async function onRequest(ctx) {

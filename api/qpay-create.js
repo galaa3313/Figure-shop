@@ -3,6 +3,8 @@
 const L = require("./_lib.js");
 // Supabase: нэвтэрсэн хэрэглэгч, захиалгын хүснэгт
 const SB = require("./_sb.js");
+// FINN Fit гишүүний дэлгүүрийн хөнгөлөлт
+const F = require("./_fit.js");
 
 // Сайтаас "Захиалга үүсгэх" дарахад энд ирнэ
 module.exports = async (req, res) => {
@@ -17,6 +19,9 @@ module.exports = async (req, res) => {
   // Нэвтэрсэн хэрэглэгч бол түүний id-г захиалгад холбоно (зочин бол null)
   const user = await SB.userFrom(req).catch(() => null);
   if (!o) return res.status(400).json({ ok: false, error: "invalid" });
+  // FINN Fit гишүүн бол дэлгүүрийн хөнгөлөлт (сайтынхтай ижил томьёо: бүхэлдээ бөөрөнхийлнө)
+  const disc = await F.discount(user && user.id);
+  if (disc) { o.total = Math.round(o.total * (100 - disc) / 100); o.items += `; FINN Fit гишүүний хөнгөлөлт −${disc}%`; }
   try {
     // Төлбөр ормогц QPay мэдэгдэх хаяг
     // Аюулгүй байдал: ижил дугаартай захиалга аль хэдийн байвал шинэ нэхэмжлэх үүсгэхгүй

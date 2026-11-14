@@ -66,7 +66,7 @@ td small{color:var(--muted);display:block}
 .pc .btns{display:flex;gap:6px;padding:0 10px 10px}
 .msg{padding:40px 0;text-align:center;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;z-index:9}
-@media (max-width:640px){.form{grid-template-columns:1fr}}
+@media (max-width:640px){.form{grid-template-columns:minmax(0,1fr)}}
 /* Нэмэлт: бараа, тохиргооны хуудас */
 .post{display:grid;grid-template-columns:160px 1fr;gap:12px;border:1px solid var(--line);padding:10px;margin-bottom:8px;align-items:start}
 .post img{width:160px;height:110px;object-fit:cover;background:var(--bg2)}
@@ -86,6 +86,39 @@ nav{flex-wrap:wrap}
 .pc .btns .btn{flex:1;padding:6px 8px;font-size:12px}
 .thumbs figure{width:96px;height:128px}
 .thumbs figure.main{outline:2px solid var(--ink)}
+/* ===== Захиалгын жагсаалт: нэг мөр, дарахад задарна ===== */
+.olist{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.ocount{margin:8px 0;font-size:12.5px}
+.ord{border-bottom:1px solid var(--line);background:#fff}
+.ord summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:150px 1fr auto auto 18px;gap:12px;align-items:center;padding:12px 10px}
+.ord summary::-webkit-details-marker{display:none}
+.ord summary:hover{background:#fafafa}
+.ord[open] summary{background:#f6f6f4}
+.ord small{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
+.ord .oc b{font-size:13.5px}.ord .on{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}
+.ord .ot{font-weight:700;font-size:14px;white-space:nowrap}
+.ord .os{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:4px 10px;border-radius:999px;white-space:nowrap;background:#fff6dd;color:#8a6100}
+.ord .os i{width:7px;height:7px;border-radius:50%;background:currentColor}
+.ord.ok .os{background:#e9f7ee;color:#1d7a3f}.ord.off .os{background:#f1f1f1;color:#888}
+.ord.off .oc b,.ord.off .on,.ord.off .ot{color:#999}
+.ochev{font-size:22px;color:var(--muted);transition:transform .2s;text-align:center}
+.ord[open] .ochev{transform:rotate(90deg)}
+.obody{padding:6px 10px 16px;display:grid;grid-template-columns:1.2fr 1fr;gap:14px 24px;background:#f6f6f4}
+.og{display:grid;grid-template-columns:1fr 1fr;gap:12px}.og small,.oitems small{text-transform:uppercase;letter-spacing:.06em}
+.og b{display:block}.og a{color:var(--ink)}
+.oitems ul{margin:4px 0 0;padding-left:18px;font-size:13.5px;line-height:1.5}
+.otot{margin-top:6px;font-size:13px}.okc{color:#1d7a3f}
+.oact{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;border-top:1px solid var(--line);padding-top:12px}
+.oact label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);min-width:220px;flex:1}
+.oact .btn{height:40px}.oact .del{color:#d62828;border-color:#f0b4b4}.oact .del.sure{background:#d62828;color:#fff}
+@media (max-width:640px){
+  .ord summary{grid-template-columns:1fr auto 16px;grid-template-areas:"c t ch" "n s ch";gap:4px 10px;padding:12px 4px}
+  .ord .oc{grid-area:c}.ord .on{grid-area:n;font-size:13px}.ord .ot{grid-area:t;text-align:right}.ord .os{grid-area:s;justify-self:end}.ochev{grid-area:ch}
+  .ord .on small{display:none}
+  /* Утсанд огноог дугаарын хажууд нэг мөрөнд */
+  .ord .oc small{display:inline;margin-left:6px}
+  .obody,.og{grid-template-columns:1fr}.oact label{min-width:100%}
+}
 /* ===== Барааны маягт: дугаартай алхам, өнгө, зургийн карт, хэмжээ ===== */
 #pf{gap:14px 16px}
 .pfsec{border:1px solid var(--line);background:#fff;padding:16px;display:flex;flex-direction:column;gap:12px}
@@ -139,6 +172,34 @@ nav{flex-wrap:wrap}
 .szc[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
 .szg{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.szg>span{width:58px;font-size:12px;color:var(--muted)}
 .pfmore summary{cursor:pointer;font-size:12.5px;color:var(--muted);padding:4px 0}
+/* ⑤ Сайтад ингэж харагдана */
+.pvsec{background:#f6f6f4}
+.pvchk{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.pvchk li{font-size:12.5px;padding:5px 10px;border:1px solid}
+.pvchk .ok{color:#1d7a3f;border-color:#bfe3cb;background:#f0faf3}.pvchk .no{color:#c62828;border-color:#f3c0c0;background:#fff4f4;font-weight:700}
+.pvwrap{min-width:0;max-width:100%;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.pvcol{min-width:0;max-width:100%;display:flex;flex-direction:column;gap:6px}
+.pvcard{width:190px;background:#fff;padding-bottom:10px;border:1px solid var(--line)}
+.pvcard .ph{position:relative;aspect-ratio:3/4;background:#efefed;display:grid;place-items:center;font-size:28px;overflow:hidden}
+.pvcard .ph img{width:100%;height:100%;object-fit:cover}.pvcard .ph i{position:absolute;left:6px;top:6px;background:#e5172f;color:#fff;font-style:normal;font-size:11px;padding:2px 6px}
+.pvcard>span{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 10px 0}
+.pvcard>b{display:block;font-size:13px;padding:2px 10px;line-height:1.3}
+.pvcard .pr,.pvphone .pr{padding:2px 10px;font-size:13.5px;display:flex;gap:6px;align-items:baseline}
+.pr s{color:var(--muted);font-size:12px}.pr em{color:#e5172f;font-style:normal;font-size:12px;font-weight:700}
+.pvcard u{display:block;text-decoration:none;font-size:11px;color:#c06a00;padding:2px 10px}
+.pvphone{box-sizing:border-box;width:340px;max-width:100%;background:#fff;border:8px solid #111;border-radius:22px;overflow:hidden;max-height:720px;overflow-y:auto}
+.pvgal{aspect-ratio:3/4;background:#efefed;display:grid;place-items:center;color:var(--muted)}.pvgal img{width:100%;height:100%;object-fit:cover}
+.pvthumbs{display:flex;gap:4px;padding:6px;overflow-x:auto}.pvthumbs img{width:44px;height:58px;object-fit:cover;opacity:.55;cursor:pointer;border:2px solid transparent}.pvthumbs img.on{opacity:1;border-color:#111}
+.pvb{padding:10px 14px 14px}.pvb .ser{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.pvb h3{margin:2px 0 4px;font-size:18px;font-weight:500;line-height:1.25}.pvb .pr{padding:0 0 8px;font-size:17px}
+.pvo{margin:6px 0}.pvo small{display:block;font-size:11.5px;color:var(--muted);margin-bottom:4px}.pvo div{display:flex;flex-wrap:wrap;gap:5px}
+.pvo button{height:34px;min-width:40px;padding:0 10px;border:1px solid var(--line);background:#fff;font-size:12.5px;color:var(--ink)}
+.pvo button[aria-pressed=true]{border:2px solid #111;font-weight:700}.pvo button:disabled{opacity:1}
+.pvbtn{margin-top:10px;height:44px;display:grid;place-items:center;background:#111;color:#fff;font-size:13.5px;opacity:.55}
+.pvm{margin:10px 0 0;padding-left:16px;font-size:12px;color:var(--muted)}
+.pvd{border-top:1px solid var(--line);padding:12px 14px;text-align:center}.pvd h4{margin:0 0 10px;font-size:13px}.pvd img{width:100%;display:block}
+.pvd .rd-txt{padding-top:10px}
+@media (max-width:560px){.pvcard{width:150px}.pvwrap{gap:12px}.pfsave #pvgo{display:none}}
 /* Доод мөр: жижиг харагдац + Хадгалах — үргэлж харагдана */
 .pfsave{position:sticky;bottom:0;z-index:5;background:#fff;padding:10px 0;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
 .pvw{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
@@ -569,7 +630,9 @@ async function api(body, path = "/api/admin"){
 // ===== ЗАХИАЛГА =====
 async function showOrders(status){
   const my = ++VIEW;
-  $("main").innerHTML = `<div class="bar"><h2>Захиалга</h2><select id="fst" style="width:auto"><option value="">Бүх төлөв</option><option value="unpaid" ${status === "unpaid" ? "selected" : ""}>⏳ Төлөөгүй (эргэж залгах)</option><option value="hidden" ${status === "hidden" ? "selected" : ""}>🙈 Нуусан захиалга</option></select><button class="btn" id="rel">Шинэчлэх</button></div><div class="tbl"><table><thead><tr><th>Дугаар / огноо</th><th>Харилцагч</th><th>Бараа</th><th>Дүн</th><th>Төлөв</th><th></th></tr></thead><tbody id="ob"><tr><td colspan="6">Уншиж байна…</td></tr></tbody></table></div>`;
+  $("main").innerHTML = `<div class="bar"><h2>Захиалга</h2><select id="fst" style="width:auto"><option value="">Бүх төлөв</option><option value="unpaid" ${status === "unpaid" ? "selected" : ""}>⏳ Төлөөгүй (эргэж залгах)</option><option value="hidden" ${status === "hidden" ? "selected" : ""}>🙈 Нуусан захиалга</option></select><button class="btn" id="rel">Шинэчлэх</button></div>
+    <!-- Захиалга бүр нэг мөр: дарахад доошоо задарч дэлгэрэнгүй харагдана -->
+    <div class="olist" id="ob"><p class="mut">Уншиж байна…</p></div>`;
   const j = await api({ action: "orders", status });
   // Хариу ирэх хооронд өөр таб руу шилжсэн бол юу ч хийхгүй
   if (my !== VIEW) return;
@@ -578,18 +641,33 @@ async function showOrders(status){
   $("fst").innerHTML += STATUSES.map(s => `<option ${s === status ? "selected" : ""}>${esc(s)}</option>`).join("");
   $("fst").onchange = e => showOrders(e.target.value);
   $("rel").onclick = () => showOrders(status);
-  // Мөр бүр: төлвийг сонголтоор солино
-  $("ob").innerHTML = j.rows.length ? j.rows.map(o => `<tr>
-      <td><b>${esc(o.code)}</b><small>${dt(o.created_at)} · ${o.method === "qpay" ? "QPay" : "Данс"}</small></td>
-      <td>${esc(o.name)}<small>${esc(o.phone)} · ${esc(o.delivery)}${o.address ? ": " + esc(o.address) : ""}</small>${o.note ? `<small>📝 ${esc(o.note)}</small>` : ""}</td>
-      <td>${esc(o.items)}</td><td><b>${fmt(o.total)}</b>${o.paid_at ? `<small>Төлсөн: ${dt(o.paid_at)}</small>` : ""}</td>
-      <td><select data-code="${esc(o.code)}">${STATUSES.map(s => `<option ${s === o.status ? "selected" : ""}>${esc(s)}</option>`).join("")}</select></td>
-      <!-- ⋯ цэс: нуух / харуулах, устгах -->
-      <td class="mo"><details class="more"><summary aria-label="Бусад үйлдэл">⋯</summary><div class="menu">
-        <button type="button" data-hide="${esc(o.code)}" data-v="${o.hidden ? 0 : 1}">${o.hidden ? "👁 Буцааж харуулах" : "🙈 Нуух"}</button>
-        <button type="button" class="del" data-del="${esc(o.code)}">🗑 Устгах</button>
-      </div></details></td></tr>`).join("")
-    : `<tr><td colspan="6">${status === "hidden" ? "Нуусан захиалга алга." : "Захиалга алга."}</td></tr>`;
+  // Төлвийн өнгө: ногоон (төлсөн/хүргэсэн), шар (хүлээгдэж байна), саарал (цуцалсан)
+  const tone = st => /Цуцл/.test(st) ? "off" : /Төлөгдсөн|Хүргэгдсэн|Хүргэлтэнд|Бэлэн|Ирсэн/.test(st) ? "ok" : "wait";
+  // Огноо товчоор: 11.13 18:07
+  const sd = t => { const d = new Date(t); return `${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
+  // Барааны тоо: "; "-ээр тусгаарлагдсан мөрүүд (хөнгөлөлтийн мөрийг тоолохгүй)
+  const lines = o => String(o.items || "").split("; ").filter(Boolean);
+  $("ob").innerHTML = j.rows.length ? `<p class="mut ocount">${j.rows.length} захиалга · дарж дэлгэрэнгүйг харна</p>` + j.rows.map(o => `<details class="ord ${tone(o.status)}" data-ord="${esc(o.code)}">
+      <!-- Хураангуй мөр: дугаар, нэр, дүн, төлөв, огноо -->
+      <summary><span class="oc"><b>${esc(o.code)}</b><small>${sd(o.created_at)}</small></span>
+        <span class="on">${esc(o.name)}<small>${lines(o).filter(l => !/хөнгөлөлт/.test(l)).length} бараа · ${o.method === "qpay" ? "QPay" : "Данс"}</small></span>
+        <span class="ot">${fmt(o.total)}</span><span class="os"><i></i>${esc(String(o.status).replace(/\s*✅/, ""))}</span><span class="ochev" aria-hidden="true">›</span></summary>
+      <!-- Задарсан хэсэг -->
+      <div class="obody">
+        <div class="og">
+          <div><small>Харилцагч</small><b>${esc(o.name)}</b><a href="tel:${esc(o.phone)}">📞 ${esc(o.phone)}</a></div>
+          <div><small>Хүргэлт</small>${esc(o.delivery)}${o.address ? `<br>${esc(o.address)}` : ""}</div>
+          ${o.note ? `<div><small>Тайлбар</small>📝 ${esc(o.note)}</div>` : ""}
+          <div><small>Огноо</small>${dt(o.created_at)}${o.paid_at ? `<br><span class="okc">Төлсөн: ${dt(o.paid_at)}</span>` : ""}</div>
+        </div>
+        <div class="oitems"><small>Бараа</small><ul>${lines(o).map(l => `<li>${esc(l)}</li>`).join("")}</ul><div class="otot">Нийт <b>${fmt(o.total)}</b></div></div>
+        <div class="oact"><label>Төлөв<select data-code="${esc(o.code)}">${STATUSES.map(s => `<option ${s === o.status ? "selected" : ""}>${esc(s)}</option>`).join("")}</select></label>
+          <button type="button" class="btn" data-hide="${esc(o.code)}" data-v="${o.hidden ? 0 : 1}">${o.hidden ? "👁 Буцааж харуулах" : "🙈 Нуух"}</button>
+          <button type="button" class="btn del" data-del="${esc(o.code)}">🗑 Устгах</button></div>
+      </div></details>`).join("")
+    : `<p class="msg">${status === "hidden" ? "Нуусан захиалга алга." : "Захиалга алга."}</p>`;
+  // Нэгийг задлахад бусдыг хураана (жагсаалт цэгцтэй байна)
+  $("ob").querySelectorAll("details.ord").forEach(d => d.ontoggle = () => { if (d.open) $("ob").querySelectorAll("details.ord[open]").forEach(x => x !== d && (x.open = false)); });
   // Нэг цэс нээгдэхэд бусдыг хаана
   $("ob").querySelectorAll("details.more").forEach(d => d.ontoggle = () => { if (d.open) $("ob").querySelectorAll("details.more[open]").forEach(x => x !== d && (x.open = false)); });
   // Нуух / харуулах
@@ -608,7 +686,9 @@ async function showOrders(status){
   });
   // Төлөв өөрчлөхөд серверт хадгална
   $("ob").querySelectorAll("select").forEach(sel => sel.onchange = async () => {
-    try { await api({ action: "setStatus", code: sel.dataset.code, status: sel.value }); toast("Хадгаллаа"); } catch (e) { toast("Алдаа: " + e.message); }
+    try { await api({ action: "setStatus", code: sel.dataset.code, status: sel.value }); toast("Хадгаллаа");
+      const d = sel.closest("details.ord"); if (d) { d.className = "ord " + tone(sel.value); d.querySelector(".os").innerHTML = "<i></i>" + esc(sel.value.replace(/\s*✅/, "")); d.open = true; } }
+    catch (e) { toast("Алдаа: " + e.message); }
   });
 }
 
@@ -1318,7 +1398,8 @@ function productForm(p, isNew){
   const PAL = ["Хар", "Цагаан", "Саарал", "Бор", "Бэж", "Улаан", "Ягаан", "Улбар шар", "Шар", "Ногоон", "Хаки", "Цэнхэр", "Хөх", "Нил ягаан"];
   const SZ = { "Хувцас": ["XS", "S", "M", "L", "XL", "XXL", "3XL"], "Гутал": ["35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46"], "Бусад": ["Free"] };
   $("pform").innerHTML = `<form class="form" id="pf">
-    <div class="full row" style="justify-content:space-between"><h3 style="margin:0">${isNew ? "Шинэ бараа" : "Засах: " + esc(p.name)}</h3>
+    <!-- Гарчиг + товчнууд: утсанд нарийн бол доош шилжинэ -->
+    <div class="full row" style="justify-content:space-between;flex-wrap:wrap;gap:8px"><h3 style="margin:0;min-width:0;flex:1 1 180px">${isNew ? "Шинэ бараа" : "Засах: " + esc(p.name)}</h3>
       <span class="row" style="flex-wrap:nowrap">${isNew ? "" : '<button type="button" class="btn" id="pcopy" style="white-space:nowrap" title="Энэ бараатай адил шинэ бараа үүсгэнэ">⧉ Хуулбарлах</button>'}<button type="button" class="btn" id="pcancel" style="white-space:nowrap">Хаах</button></span></div>
 
     <!-- ① ЗУРАГ БА ӨНГӨ: 1) өнгөө дарж сонгоно 2) өнгө бүрийн картад зургаа хийнэ -->
@@ -1376,8 +1457,11 @@ function productForm(p, isNew){
     <div class="full row"><label class="row" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="p-pre" ${p.pre ? "checked" : ""} style="width:auto"> Захиалгаар (Солонгосоос)</label>
       <label class="row" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="p-active" ${p.active ? "checked" : ""} style="width:auto"> Сайтад харагдана</label></div>
     <!-- Хадгалах товч доод талд үргэлж харагдана -->
+    <!-- ⑤ САЙТАД ИНГЭЖ ХАРАГДАНА: бүх мэдээллийг оруулсны дараа шууд шинэчлэгдэнэ -->
+    <div class="full pfsec pvsec"><div class="pfh"><i>5</i><div><b>Сайтад ингэж харагдана</b><span>Хадгалахаас өмнө шалгаарай. Өнгө дээр дарж зураг солигдохыг үзэж болно.</span></div></div>
+      <div id="pfchk"></div><div class="pvwrap" id="pfpv"></div></div>
     <!-- Доод мөр: сайтад ямар харагдахыг жижгээр + Хадгалах (үргэлж харагдана) -->
-    <div class="full pfsave"><div class="pvw" id="pvw"></div><button class="btn dark" type="submit" id="psave">Хадгалах</button>${isNew ? "" : '<button class="btn red" type="button" id="pdel">Устгах</button>'}</div>
+    <div class="full pfsave"><div class="pvw" id="pvw"></div><button class="btn" type="button" id="pvgo" title="Сайтад ингэж харагдана">👁 Харах</button><button class="btn dark" type="submit" id="psave">Хадгалах</button>${isNew ? "" : '<button class="btn red" type="button" id="pdel">Устгах</button>'}</div>
   </form>`;
   // Оруулж байгаа зургуудын төлөв: { c: өнгө, s: "up" | "bad" }
   let pending = [];
@@ -1390,6 +1474,47 @@ function productForm(p, isNew){
   const summary = () => {
     const nm = ($("p-name") || {}).value || "Нэргүй бараа", pr = Number(($("p-price") || {}).value) || 0;
     $("pvw").innerHTML = `${images[0] ? `<img src="${esc(images[0])}" alt="">` : '<span class="ph">📷</span>'}<div><b>${esc(nm)}</b><span>${pr ? pr.toLocaleString("en-US").replace(/,/g, "'") + "₮" : "Үнэ —"} · ${images.length} зураг${colors.length ? ` · ${colors.length} өнгө` : ""}${sizes.length ? ` · ${sizes.length} хэмжээ` : ""}</span></div>`;
+    pvLater();
+  };
+  // ----- ⑤ Сайтад ингэж харагдана: жагсаалтын карт + барааны хуудас (утасны хэмжээгээр) -----
+  let pvT, pvColor = "";
+  const pvLater = () => { clearTimeout(pvT); pvT = setTimeout(drawPreview, 150); };
+  const drawPreview = () => {
+    const box = $("pfpv"); if (!box) return;
+    const v = id => (($(id) || {}).value || "").trim();
+    const nm = v("p-name"), pr = Number(v("p-price")) || 0, was = Number(v("p-was")) || 0, ser = v("p-series"), ds = v("p-descr");
+    const pre = ($("p-pre") || {}).checked, act = ($("p-active") || {}).checked;
+    const det = typeof detail !== "undefined" ? detail : [];
+    // Шалгах жагсаалт: дутуу зүйлсийг улаанаар, бэлэн нь ногооноор
+    const miss = colors.filter(c => !images.some(u => imgColor[u] === c));
+    const chk = [
+      [!!nm, "Нэр"], [pr > 0, "Үнэ"], [images.length > 0, `Зураг (${images.length})`],
+      ...(colors.length ? [[!miss.length, miss.length ? `Зураггүй өнгө: ${miss.join(", ")}` : `Өнгө бүр зурагтай (${colors.length})`]] : []),
+      [true, sizes.length ? `Хэмжээ: ${sizes.join(", ")}` : "Хэмжээгүй"],
+      [act, act ? "Сайтад харагдана" : "Сайтад НУУГДСАН (харагдахгүй)"]];
+    $("pfchk").innerHTML = `<ul class="pvchk">${chk.map(([ok, t]) => `<li class="${ok ? "ok" : "no"}">${ok ? "✓" : "✗"} ${esc(t)}</li>`).join("")}</ul>`;
+    const pct = was > pr && pr ? Math.round((1 - pr / was) * 100) : 0;
+    const price = `${pct ? `<s>${fmt(was)}</s>` : ""}<b>${pr ? fmt(pr) : "Үнэ —"}</b>${pct ? `<em>-${pct}%</em>` : ""}`;
+    // Өнгө сонгосон бол тэр өнгийн эхний зураг
+    const shown = (pvColor && images.find(u => imgColor[u] === pvColor)) || images[0];
+    box.innerHTML = `
+      <div class="pvcol"><small class="mut">Жагсаалтад (карт)</small>
+        <div class="pvcard"><div class="ph">${images[0] ? `<img src="${esc(images[0])}" alt="">` : "📷"}${pct ? `<i>-${pct}%</i>` : ""}</div>
+          <span>${esc(ser || "Брэнд")}</span><b>${esc(nm || "Барааны нэр")}</b><div class="pr">${price}</div><u>${pre ? "Захиалгаар" : "Бэлэн"}</u></div></div>
+      <div class="pvcol"><small class="mut">Барааны хуудас (утсаар)</small>
+        <div class="pvphone">
+          <div class="pvgal">${shown ? `<img src="${esc(shown)}" alt="">` : "<span>📷 Зураг алга</span>"}</div>
+          ${images.length > 1 ? `<div class="pvthumbs">${images.map(u => `<img src="${esc(u)}" class="${u === shown ? "on" : ""}" data-pvi="${esc(u)}" alt="">`).join("")}</div>` : ""}
+          <div class="pvb"><span class="ser">${esc(ser)}</span><h3>${esc(nm || "Барааны нэр")}</h3><div class="pr">${price}</div>
+            ${colors.length ? `<div class="pvo"><small>Өнгө</small><div>${colors.map(c => `<button type="button" data-pvc="${esc(c)}" aria-pressed="${c === pvColor}">${esc(c)}</button>`).join("")}</div></div>` : ""}
+            ${sizes.length ? `<div class="pvo"><small>Хэмжээ</small><div>${sizes.map(z => `<button type="button" disabled>${esc(z)}</button>`).join("")}</div></div>` : ""}
+            <div class="pvbtn">${colors.length || sizes.length ? "Сонголтоо хийнэ үү" : pre ? "Захиалах" : "Сагсанд хийх"}</div>
+            <ul class="pvm"><li>${pre ? "Захиалгаар · Солонгосоос ирнэ" : "Бэлэн бараа · 1–2 хоногт"}</li></ul></div>
+          ${det.length || ds ? `<div class="pvd"><h4>Барааны дэлгэрэнгүй</h4>${det.map(u => `<img src="${esc(u)}" alt="">`).join("")}${ds ? `<div class="rd-txt">${richDesc(ds)}</div>` : ""}</div>` : ""}
+        </div></div>`;
+    // Өнгө дээр дарахад тэр өнгийн зураг гарна (сайттай адил)
+    box.querySelectorAll("[data-pvc]").forEach(b => b.onclick = () => { pvColor = pvColor === b.dataset.pvc ? "" : b.dataset.pvc; drawPreview(); });
+    box.querySelectorAll("[data-pvi]").forEach(im => im.onclick = () => { pvColor = imgColor[im.dataset.pvi] || ""; const g = box.querySelector(".pvgal img"); if (g) g.src = im.dataset.pvi; box.querySelectorAll("[data-pvi]").forEach(x => x.classList.toggle("on", x === im)); });
   };
   // ----- Өнгө: бүх өнгө нэг мөрөнд, сонгосон нь тод (дахин дарвал хасна) -----
   const drawColors = () => {
@@ -1496,6 +1621,9 @@ function productForm(p, isNew){
   drawColors(); drawSizes(); drawThumbs();
   // Нэр, үнэ бичихэд доод мөрийн харагдацыг шинэчилнэ
   $("p-name").addEventListener("input", summary); $("p-price").addEventListener("input", summary);
+  // Бусад талбар (брэнд, хямдрал, дэлгэрэнгүй, чагт) өөрчлөгдөхөд ⑤-г шинэчилнэ
+  $("pf").addEventListener("input", pvLater); $("pf").addEventListener("change", pvLater);
+  $("pvgo").onclick = () => { drawPreview(); $("pfpv").closest(".pvsec").scrollIntoView({ behavior: "smooth", block: "start" }); };
   // Хуулбарлах: адил төстэй шинэ бараа (зураггүй, нэрийн ард "хуулбар")
   if ($("pcopy")) $("pcopy").onclick = () => {
     const ex = { ...(p.extra || {}) }; delete ex.imgColor; delete ex.labels;
@@ -1579,7 +1707,7 @@ function productForm(p, isNew){
       <div><button type="button" data-du="${i}" ${i ? "" : "disabled"} title="Дээш">↑</button><button type="button" data-dd="${i}" ${i < detail.length - 1 ? "" : "disabled"} title="Доош">↓</button><button type="button" data-dx="${i}" title="Хасах">×</button></div></div>`).join("");
     $("p-dthumbs").querySelectorAll("[data-du]").forEach(b => b.onclick = () => { const i = +b.dataset.du; [detail[i - 1], detail[i]] = [detail[i], detail[i - 1]]; drawD(); });
     $("p-dthumbs").querySelectorAll("[data-dd]").forEach(b => b.onclick = () => { const i = +b.dataset.dd; [detail[i + 1], detail[i]] = [detail[i], detail[i + 1]]; drawD(); });
-    $("p-dthumbs").querySelectorAll("[data-dx]").forEach(b => b.onclick = () => { detail.splice(+b.dataset.dx, 1); drawD(); }); };
+    $("p-dthumbs").querySelectorAll("[data-dx]").forEach(b => b.onclick = () => { detail.splice(+b.dataset.dx, 1); drawD(); }); pvLater(); };
   drawD();
   $("p-dfiles").onchange = async e => {
     const files = [...e.target.files]; e.target.value = ""; if (!files.length) return;

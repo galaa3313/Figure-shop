@@ -204,7 +204,10 @@ module.exports = async (req, res) => {
       const PAID = ["Төлөгдсөн ✅", "Хүргэлтэнд гарсан", "Хүргэгдсэн"];
       const spent = (orders || []).filter(o => PAID.includes(o.status)).reduce((a, o) => a + Number(o.total || 0), 0);
       return res.json({ ok: true, user: u, orders: orders || [], spent, reviews: (revs || []).length, favorites: (favs || []).length,
-        lastSignIn: au && au.last_sign_in_at || null, confirmed: !!(au && au.email_confirmed_at), provider: au && au.app_metadata && au.app_metadata.provider || "email" });
+        lastSignIn: au && au.last_sign_in_at || null, confirmed: !!(au && au.email_confirmed_at), provider: au && au.app_metadata && au.app_metadata.provider || "email",
+        // Facebook-ээр нэвтэрсэн бол Facebook дээрх нэр, профайл зураг (зөвхөн https холбоос)
+        fbName: String((au && au.user_metadata && (au.user_metadata.full_name || au.user_metadata.name)) || "").slice(0, 120) || null,
+        fbAvatar: (s => /^https:\/\/[^\s"'<>]+$/.test(s) ? s : null)(String((au && au.user_metadata && (au.user_metadata.avatar_url || au.user_metadata.picture)) || "")) });
     }
     // ----- Хэрэглэгчийг бүрмөсөн устгах (захиалгууд нь хадгалагдана) -----
     if (b.action === "deleteUser") {

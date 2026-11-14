@@ -86,6 +86,10 @@ nav{flex-wrap:wrap}
 .pc .btns .btn{flex:1;padding:6px 8px;font-size:12px}
 .thumbs figure{width:96px;height:128px}
 .thumbs figure.main{outline:2px solid var(--ink)}
+/* Зураг бүрийн доорх "аль өнгийнх вэ" сонголт */
+.thumbs .tw{display:flex;flex-direction:column;gap:4px;width:96px}
+.thumbs .tw select{width:100%;height:28px;padding:0 4px;font-size:11.5px}
+.thumbs .tw select.on{border-color:var(--ink);font-weight:700}
 .thumbs .tb{position:absolute;left:0;right:0;bottom:0;display:flex}
 .thumbs .tb button{position:static;flex:1;height:24px;border:0;background:rgba(0,0,0,.72);color:#fff;font-size:13px}
 .thumbs .tb button:disabled{opacity:.35}
@@ -1231,6 +1235,12 @@ async function showProducts(editId){
 function productForm(p, isNew){
   let images = [...(p.images || [])];
   const origImages = JSON.stringify(images);
+  // Зураг → өнгө холбоос: { "зургийн холбоос": "Улаан" } — сайтад өнгө сонгоход тэр зураг гарна
+  const imgColor = { ...((p.extra && p.extra.imgColor) || {}) };
+  // "Сонголтууд" талбараас өнгөний утгуудыг авна ("Өнгө"/"Color" нэртэй мөр, эс бөгөөс эхний мөр)
+  const colorVals = () => { const o = parseOpts(($("p-opts") || {}).value || ""); const c = o.find(x => /өнгө|color/i.test(x.label)) || o[0]; return c ? c.values : []; };
+  // Зургийг солиход (тайрах/буцаах) өнгөний холбоосыг шинэ зураг руу шилжүүлнэ
+  const moveColor = (from, to) => { if (imgColor[from]) { imgColor[to] = imgColor[from]; delete imgColor[from]; } };
   $("pform").innerHTML = `<form class="form" id="pf">
     <div class="full row" style="justify-content:space-between"><h3 style="margin:0">${isNew ? "Шинэ бараа" : "Засах: " + esc(p.name)}</h3><button type="button" class="btn" id="pcancel">Хаах</button></div>
     <div class="full"><label>Зургууд <span class="mut">(эхнийх нь гол зураг · ← → дарж дарааллыг солино · × устгана)</span></label>
@@ -1267,7 +1277,7 @@ function productForm(p, isNew){
         <div class="dthumbs" id="p-dthumbs"></div>
         <label class="btn" style="flex-direction:row;color:var(--ink);margin-top:6px">+ Зураг нэмэх<input type="file" id="p-dfiles" accept="image/*" multiple hidden></label> <span id="p-dmsg" class="mut" style="font-size:12.5px"></span></div>
     </div>
-    <label class="full">Сонголтууд (мөр бүрт нэг: <b>Өнгө: Хар, Цагаан</b> / <b>Хэмжээ: S, M, L, XL</b>)<textarea id="p-opts" rows="2">${esc(optsText(p.options))}</textarea></label>
+    <label class="full">Сонголтууд (мөр бүрт нэг: <b>Өнгө: Хар, Цагаан</b> / <b>Хэмжээ: S, M, L, XL</b>) <small class="mut">· «Өнгө» бичсний дараа дээрх зураг бүрийн доороос аль өнгийнх болохыг сонгоно</small><textarea id="p-opts" rows="2">${esc(optsText(p.options))}</textarea></label>
     <div class="full row"><label class="row" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="p-pre" ${p.pre ? "checked" : ""} style="width:auto"> Захиалгаар (Солонгосоос)</label>
       <label class="row" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="p-active" ${p.active ? "checked" : ""} style="width:auto"> Сайтад харагдана</label></div>
     <div class="full row"><button class="btn dark" type="submit" id="psave">Хадгалах</button>${isNew ? "" : '<button class="btn red" type="button" id="pdel" style="margin-left:auto">Устгах</button>'}</div>
@@ -1278,17 +1288,20 @@ function productForm(p, isNew){
   // Тайрсан зургийн өмнөх хувилбар: шинэ холбоос → хуучин холбоос эсвэл анхны файл (↶ Буцаах товчинд)
   const undo = {};
   const drawThumbs = () => {
-    $("thumbs").innerHTML = (images.map((u, i) => `<figure ${i === 0 ? 'class="main"' : ""}><img src="${esc(u)}" alt="">${undo[u] ? `<button type="button" class="undo" data-u="${i}" title="Тайрахаас өмнөх зураг руу буцаах">↶ Буцаах</button>` : ""}<div class="tb"><button type="button" data-l="${i}" ${i === 0 ? "disabled" : ""}>←</button><button type="button" data-r="${i}" ${i === images.length - 1 ? "disabled" : ""}>→</button><button type="button" class="cr" data-c="${i}" title="Тайрах">✂</button><button type="button" data-x="${i}">×</button></div>${i === 0 ? "<em>Гол</em>" : ""}</figure>`).join("") || (pending.length ? "" : '<p class="mut">Зураг алга.</p>')) + pending.map(x => `<figure class="up ${x === "bad" ? "bad" : ""}">${x === "bad" ? "⚠ Алдаа" : "<i></i>Оруулж байна"}</figure>`).join("");
+    const cv = colorVals();
+    $("thumbs").innerHTML = (images.map((u, i) => `<div class="tw"><figure ${i === 0 ? 'class="main"' : ""}><img src="${esc(u)}" alt="">${undo[u] ? `<button type="button" class="undo" data-u="${i}" title="Тайрахаас өмнөх зураг руу буцаах">↶ Буцаах</button>` : ""}<div class="tb"><button type="button" data-l="${i}" ${i === 0 ? "disabled" : ""}>←</button><button type="button" data-r="${i}" ${i === images.length - 1 ? "disabled" : ""}>→</button><button type="button" class="cr" data-c="${i}" title="Тайрах">✂</button><button type="button" data-x="${i}">×</button></div>${i === 0 ? "<em>Гол</em>" : ""}</figure>${cv.length ? `<select data-cl="${i}" class="${imgColor[u] ? "on" : ""}" title="Энэ зураг аль өнгийнх вэ"><option value="">— өнгө —</option>${cv.map(v => `<option ${imgColor[u] === v ? "selected" : ""}>${esc(v)}</option>`).join("")}</select>` : ""}</div>`).join("") || (pending.length ? "" : '<p class="mut">Зураг алга.</p>')) + pending.map(x => `<figure class="up ${x === "bad" ? "bad" : ""}">${x === "bad" ? "⚠ Алдаа" : "<i></i>Оруулж байна"}</figure>`).join("");
     $("thumbs").querySelectorAll("[data-l]").forEach(b => b.onclick = () => { const i = +b.dataset.l; [images[i - 1], images[i]] = [images[i], images[i - 1]]; drawThumbs(); });
     $("thumbs").querySelectorAll("[data-r]").forEach(b => b.onclick = () => { const i = +b.dataset.r; [images[i + 1], images[i]] = [images[i], images[i + 1]]; drawThumbs(); });
     $("thumbs").querySelectorAll("[data-x]").forEach(b => b.onclick = () => { images.splice(+b.dataset.x, 1); drawThumbs(); });
+    // Зураг бүрийн өнгө сонгох
+    $("thumbs").querySelectorAll("[data-cl]").forEach(sl => sl.onchange = () => { const u = images[+sl.dataset.cl]; if (sl.value) imgColor[u] = sl.value; else delete imgColor[u]; sl.classList.toggle("on", !!sl.value); });
     // ↶ Тайрахаас өмнөх зураг руу буцаана (хуучин холбоос бол шууд, анхны файл бол дахин оруулна)
     $("thumbs").querySelectorAll("[data-u]").forEach(b => b.onclick = async () => {
       const i = +b.dataset.u, cur = images[i], prev = undo[cur];
       if (!prev) return;
-      if (typeof prev === "string") { images[i] = prev; delete undo[cur]; drawThumbs(); $("pmsg").className = "ok"; $("pmsg").textContent = "↶ Өмнөх зураг руу буцлаа"; return; }
+      if (typeof prev === "string") { images[i] = prev; moveColor(cur, prev); delete undo[cur]; drawThumbs(); $("pmsg").className = "ok"; $("pmsg").textContent = "↶ Өмнөх зураг руу буцлаа"; return; }
       busy(+1); $("pmsg").className = "mut"; $("pmsg").textContent = "Анхны зургийг оруулж байна…";
-      try { images[i] = await upload(prev, $("p-id").value || "new"); delete undo[cur]; drawThumbs(); $("pmsg").className = "ok"; $("pmsg").textContent = "↶ Анхны зураг руу буцлаа"; }
+      try { images[i] = await upload(prev, $("p-id").value || "new"); moveColor(cur, images[i]); delete undo[cur]; drawThumbs(); $("pmsg").className = "ok"; $("pmsg").textContent = "↶ Анхны зураг руу буцлаа"; }
       catch (err) { $("pmsg").className = "err"; $("pmsg").textContent = "⚠ Алдаа: " + (err.message || err); }
       busy(-1);
     });
@@ -1297,12 +1310,14 @@ function productForm(p, isNew){
       const i = +b.dataset.c, r = await cropImage(images[i]);
       if (!r || r === "orig") return;
       busy(+1); $("pmsg").className = "mut"; $("pmsg").textContent = "Тайрсан зургийг оруулж байна…";
-      try { const old = images[i], nu = await upload(r, $("p-id").value || "new"); undo[nu] = old; images[i] = nu; drawThumbs(); $("pmsg").className = "ok"; $("pmsg").textContent = "✓ Зураг тайрагдлаа · ↶ дарж буцааж болно"; }
+      try { const old = images[i], nu = await upload(r, $("p-id").value || "new"); undo[nu] = old; images[i] = nu; moveColor(old, nu); drawThumbs(); $("pmsg").className = "ok"; $("pmsg").textContent = "✓ Зураг тайрагдлаа · ↶ дарж буцааж болно"; }
       catch (err) { $("pmsg").className = "err"; $("pmsg").textContent = "⚠ Алдаа: " + (err.message || err); }
       busy(-1);
     });
   };
   drawThumbs();
+  // Сонголт (өнгө) өөрчлөгдөхөд зурагны өнгөний цэсийг шинэчилнэ
+  $("p-opts").addEventListener("change", drawThumbs);
   // ID-г зөв хэлбэрт оруулна: жижиг латин үсэг, тоо, "-" (утас том үсгээр эхлүүлэх, кирилл бичихийг засна)
   const TR = { а:"a",б:"b",в:"v",г:"g",д:"d",е:"e",ё:"yo",ж:"j",з:"z",и:"i",й:"i",к:"k",л:"l",м:"m",н:"n",о:"o",ө:"u",п:"p",р:"r",с:"s",т:"t",у:"u",ү:"u",ф:"f",х:"h",ц:"ts",ч:"ch",ш:"sh",щ:"sh",ъ:"",ы:"y",ь:"",э:"e",ю:"yu",я:"ya" };
   const slug = v => String(v).toLowerCase().split("").map(c => TR[c] ?? c).join("").replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").replace(/-{2,}/g, "-").slice(0, 40);
@@ -1400,6 +1415,10 @@ function productForm(p, isNew){
     $("psave").disabled = true;
     // Зураг өөрчлөгдсөн бол галерейн хуучин нэрсийг (labels) хасна
     const extra = { ...(p.extra || {}) }; if (JSON.stringify(images) !== origImages) delete extra.labels;
+    // Зураг → өнгө: зөвхөн одоо байгаа зураг, одоо байгаа өнгөнүүдийг хадгална
+    const cvNow = colorVals(), ic = {};
+    images.forEach(u => { if (imgColor[u] && cvNow.includes(imgColor[u])) ic[u] = imgColor[u]; });
+    if (Object.keys(ic).length) extra.imgColor = ic; else delete extra.imgColor;
     // Дэлгэрэнгүйн урт зургууд
     if (detail.length) extra.detail = detail; else delete extra.detail;
     if (!$("p-id").value) $("p-id").value = makeId();

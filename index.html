@@ -1821,6 +1821,21 @@ function qtyOf(id){ return cart.filter(x => keyId(x) === id).length; }
 // Картын товчны бичгийг шийднэ: Сонгох / Захиалах / Сагслах / Сагсанд ✓
 function addLabel(id){ const p = byId(id), n = qtyOf(id); if (p.options) return n ? `Сагсанд ${n} · сонгох` : "Сонгох"; return p.pre ? (n ? `Сагсанд ${n} · +1` : "Захиалах") : (n ? "Сагсанд ✓" : "Сагслах"); }
 // Сагсан дахь ижил барааг бүлэглэж тоог нь гаргана
+// Сонгосон өнгө/хэмжээнд ("Улаан / M") тохирох зургийг олно; олдохгүй бол гол зураг
+function imgFor(p, opt){
+  if (!p) return "";
+  const parts = String(opt || "").split(" / ").map(s => s.trim()).filter(Boolean);
+  const map = p.imgColor || {};
+  for (const v of parts) {
+    // 1) Админы холбосон өнгө
+    const u = Object.keys(map).find(k => map[k] === v);
+    if (u) return u;
+    // 2) Галерейн зургийн нэрэнд тухайн өнгө орсон бол
+    const g = (p.gallery || []).find(x => x[1] && String(x[1]).toLowerCase().includes(v.toLowerCase()));
+    if (g) return g[0];
+  }
+  return p.img;
+}
 function groupCart(list){ return [...new Set(list)].map(k => ({ k, p: byId(k), opt: String(k).split("::")[1] || "", n: list.filter(x => x === k).length })); }
 // Барааны картуудыг зурна (шүүлт, хайлт, эрэмбийн дагуу)
 // ===== ХАДГАЛСАН (зүрх): нэвтэрсэн хэрэглэгчийн хадгалсан бараа =====
@@ -1876,7 +1891,7 @@ async function openOrders(){
       <!-- Дээд мөр: төлөв, огноо -->
       <div class="moh"><span class="pill ${tone(o.status)}"><i></i>${esc(o.status.replace(/\s*✅/, ""))}</span><time>${new Date(o.created_at).toLocaleDateString("mn-MN", { year: "numeric", month: "short", day: "numeric" })}</time></div>
       <!-- Бараанууд: зураг, нэр, сонголт, үнэ -->
-      <ul>${(lines.length ? lines : [{ name: o.items || "", opt: "", price: "" }]).map(x => `<li>${x.p ? `<img src="${esc(x.p.img)}" alt="">` : `<span class="ph">📦</span>`}<div><b>${esc(x.name)}</b><small>${[x.opt, x.pre ? "Захиалгаар" : ""].filter(Boolean).map(esc).join(" · ")}</small></div>${x.price ? `<em>${esc(x.price)}₮</em>` : ""}</li>`).join("")}</ul>
+      <ul>${(lines.length ? lines : [{ name: o.items || "", opt: "", price: "" }]).map(x => `<li>${x.p ? `<img src="${esc(imgFor(x.p, (String(x.opt).match(/\[([^\]]+)\]/) || [])[1]))}" alt="">` : `<span class="ph">📦</span>`}<div><b>${esc(x.name)}</b><small>${[x.opt, x.pre ? "Захиалгаар" : ""].filter(Boolean).map(esc).join(" · ")}</small></div>${x.price ? `<em>${esc(x.price)}₮</em>` : ""}</li>`).join("")}</ul>
       <!-- Доод мөр: дугаар, нийт дүн, хасах -->
       <div class="mof"><span class="no">№ ${esc(o.code)}</span><span class="tot"><small>Нийт</small>${fmt(o.total)}</span></div>
       <!-- Төлөгдөөгүй бол бусад газрынхтай ижил жижиг "Захиалга цуцлах" -->
@@ -2108,12 +2123,26 @@ function openModal(id){
   if (p.options){
     const sel = p.options.map(() => null);
     const ab = $("mAdd"); ab.textContent = "Сонголтоо хийнэ үү"; ab.disabled = true; ab.style.opacity = .55;
+    // Сонгосон өнгөний зургийг цомогт харуулна (зураг галерейд байхгүй бол эхний зургийг түр сольно)
+    const showVariant = v => {
+      const u = imgFor(p, v); if (!u || u === p.img && !(p.imgColor && Object.values(p.imgColor).includes(v))) return;
+      const car = $("car"); if (!car) return;
+      let i = pics.indexOf(u);
+      if (i < 0) { car.children[0].src = u; i = 0; }
+      // Галерейд байгаа зураг бол түр сольсон эхний зургийг буцаана
+      else if (car.children[0].getAttribute("src") !== pics[0]) car.children[0].src = pics[0];
+      const el = car.children[i];
+      if (el) car.scrollTo({ left: el.offsetLeft - car.offsetLeft, behavior: "smooth" });
+    };
     $("modal").querySelectorAll(".chips button").forEach(b => b.onclick = () => {
       const oi = +b.dataset.o; sel[oi] = b.textContent;
       b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+      showVariant(b.textContent);
       const ok = sel.every(Boolean); ab.disabled = !ok; ab.style.opacity = ok ? 1 : .55;
       ab.textContent = ok ? `Сагсанд нэмэх · ${sel.join(" / ")}` : "Сонголтоо хийнэ үү";
     });
+    // Ганц утгатай сонголтыг (жишээ нь "Хэмжээ: Free") автоматаар сонгоно
+    p.options.forEach((o, oi) => { if (o.values.length === 1) { const b = $("modal").querySelector(`.chips button[data-o="${oi}"]`); if (b) b.click(); } });
     ab.onclick = () => { if (!sel.every(Boolean)) return; toggle(id + "::" + sel.join(" / ")); ab.textContent = "Нэмэгдлээ ✓ · дахин нэмэх";
       $("mGo").hidden = false; $("mGo").querySelector("span").textContent = `(${cart.length})`; $("mRm").hidden = false; };
   } else {
@@ -2266,7 +2295,7 @@ function renderCart(){
   const sub = items.reduce((s, p) => s + p.price, 0), total = withDisc(sub);
   // Сагсны HTML: бараанууд, сануулга, нийт дүн, маягт
   $("sheetBody").innerHTML = `
-    <div class="items">${groupCart(cart).map(({ k, p, n, opt }) => `<div class="it"><img src="${p.img}" alt=""><div><div class="n">${esc(p.name)}</div>${opt ? `<div class="p">${esc(opt)}</div>` : ""}<div class="p">${fmt(p.price)}${n > 1 ? ` × ${n}` : ""}${p.pre ? " · захиалгаар" : ""}</div><button type="button" class="rm" data-id="${esc(k)}">Сагснаас хасах</button></div>${p.pre ? `<div class="qty"><button type="button" class="dec" data-id="${esc(k)}" aria-label="Хасах">−</button><b>${n}</b><button type="button" class="inc" data-id="${esc(k)}" aria-label="Нэмэх">+</button></div>` : ""}</div>`).join("")}</div>
+    <div class="items">${groupCart(cart).map(({ k, p, n, opt }) => `<div class="it"><img src="${esc(imgFor(p, opt))}" alt=""><div><div class="n">${esc(p.name)}</div>${opt ? `<div class="p">${esc(opt)}</div>` : ""}<div class="p">${fmt(p.price)}${n > 1 ? ` × ${n}` : ""}${p.pre ? " · захиалгаар" : ""}</div><button type="button" class="rm" data-id="${esc(k)}">Сагснаас хасах</button></div>${p.pre ? `<div class="qty"><button type="button" class="dec" data-id="${esc(k)}" aria-label="Хасах">−</button><b>${n}</b><button type="button" class="inc" data-id="${esc(k)}" aria-label="Нэмэх">+</button></div>` : ""}</div>`).join("")}</div>
     ${items.some(p => p.pre) ? `<div class="note">Захиалгаар ирэх бараа Солонгосоос ${SHOP.preDays}-т ирнэ. Төлбөрийг 100% урьдчилж төлнө.</div>` : ""}
     ${FIT_DISC ? `<div class="total" style="font-size:14px;font-weight:500"><span>FINN Fit гишүүний хөнгөлөлт −${FIT_DISC}%</span><span>−${fmt(sub - total)}</span></div>` : ""}
     <div class="total"><span>Нийт (${items.length})</span><span>${fmt(total)}</span></div>
@@ -2636,7 +2665,7 @@ function showConfirmed(code, text, sent, paid){
     <!-- Дараагийн алхмууд: төлбөр → бэлтгэх → хүргэлт -->
     <ol class="ok-steps"><li class="on"><i></i>${paid ? "Төлсөн" : "Захиалсан"}</li><li><i></i>Бэлтгэж байна</li><li><i></i>Хүргэлт</li></ol>
     <div class="ok-sum">
-      ${its.length ? its.map(({ p, n, opt }) => `<div class="ok-it"><img src="${esc(p.img)}" alt=""><div><b>${esc(p.name)}</b><span>${opt ? esc(opt) + " · " : ""}${n} ш${p.pre ? " · захиалгаар" : ""}</span></div><em>${fmt(p.price * n)}</em></div>`).join("")
+      ${its.length ? its.map(({ p, n, opt }) => `<div class="ok-it"><img src="${esc(imgFor(p, opt))}" alt=""><div><b>${esc(p.name)}</b><span>${opt ? esc(opt) + " · " : ""}${n} ш${p.pre ? " · захиалгаар" : ""}</span></div><em>${fmt(p.price * n)}</em></div>`).join("")
         : goods.map(g => `<div class="ok-item">${esc(g)}</div>`).join("")}
       ${totalRow ? `<div class="ok-row ok-total"><span>Нийт</span><b>${esc(totalRow.split(":")[1].trim())}</b></div>` : ""}
       ${rows.map(([k, v]) => `<div class="ok-row"><span>${esc(k)}</span><span>${esc(v)}</span></div>`).join("")}
@@ -3074,6 +3103,9 @@ async function loadDbProducts(){
     x.img = safeImg(x.img);
     // Дэлгэрэнгүйн урт зургууд (extra.detail) — мөн зөвхөн аюулгүй холбоос
     x.detail = Array.isArray(x.detail) ? x.detail.map(safeImg).filter(Boolean) : [];
+    // Зураг → өнгө ({ холбоос: "Улаан" }) — зөвхөн аюулгүй холбоос, богино нэр
+    x.imgColor = Object.fromEntries(Object.entries(x.imgColor && typeof x.imgColor === "object" ? x.imgColor : {})
+      .map(([u, c]) => [safeImg(u), String(c).slice(0, 40)]).filter(([u, c]) => u && c));
     // labels-ийг бараанд хуулахгүй
     delete x.labels;
     return { ...x, id: d.id, cat: d.cat, series: d.series || "", name: d.name, line: d.line || "", price: d.price, was: d.was || null,

@@ -1142,7 +1142,11 @@ async function slimAll(btn){
   showProducts();
 }
 // "Өнгө: Хар, Цагаан" мөрүүдийг [{label, values}] болгоно, эсрэгээр нь
-const parseOpts = t => t.split("\n").map(l => l.split(":")).filter(x => x.length === 2 && x[1].trim()).map(([l, v]) => ({ label: l.trim(), values: v.split(",").map(s => s.trim()).filter(Boolean) }));
+// Сонголт уншина: "Өнгө: Хар, Улаан". Хоёр цэггүй мөр ("Хар, Улаан") бол өнгө гэж үзнэ
+const parseOpts = t => t.split("\n").map(l => l.trim()).filter(Boolean)
+  .map(l => l.includes(":") ? l.split(":") : ["Өнгө", l])
+  .filter(x => x.length === 2 && x[1].trim())
+  .map(([l, v]) => ({ label: l.trim() || "Өнгө", values: v.split(/[,，、]/).map(s => s.trim()).filter(Boolean) }));
 const optsText = o => (o || []).map(x => `${x.label}: ${(x.values || []).join(", ")}`).join("\n");
 
 // ===== БАРАА: бүх барааны жагсаалт, засах, зураг солих =====
@@ -1277,7 +1281,8 @@ function productForm(p, isNew){
         <div class="dthumbs" id="p-dthumbs"></div>
         <label class="btn" style="flex-direction:row;color:var(--ink);margin-top:6px">+ Зураг нэмэх<input type="file" id="p-dfiles" accept="image/*" multiple hidden></label> <span id="p-dmsg" class="mut" style="font-size:12.5px"></span></div>
     </div>
-    <label class="full">Сонголтууд (мөр бүрт нэг: <b>Өнгө: Хар, Цагаан</b> / <b>Хэмжээ: S, M, L, XL</b>) <small class="mut">· «Өнгө» бичсний дараа дээрх зураг бүрийн доороос аль өнгийнх болохыг сонгоно</small><textarea id="p-opts" rows="2">${esc(optsText(p.options))}</textarea></label>
+    <label class="full"><span>Сонголтууд <span class="mut">— мөр бүрт нэг, таслалаар тусгаарлана. Өнгө бичээд дээрх зураг бүрийн доороос аль өнгийнх болохыг сонгоно.</span></span><textarea id="p-opts" rows="3" placeholder="Өнгө: Хар, Саарал, Улаан, Ягаан, Ногоон
+Хэмжээ: S, M, L, XL">${esc(optsText(p.options))}</textarea></label>
     <div class="full row"><label class="row" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="p-pre" ${p.pre ? "checked" : ""} style="width:auto"> Захиалгаар (Солонгосоос)</label>
       <label class="row" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="p-active" ${p.active ? "checked" : ""} style="width:auto"> Сайтад харагдана</label></div>
     <div class="full row"><button class="btn dark" type="submit" id="psave">Хадгалах</button>${isNew ? "" : '<button class="btn red" type="button" id="pdel" style="margin-left:auto">Устгах</button>'}</div>
@@ -1318,6 +1323,8 @@ function productForm(p, isNew){
   drawThumbs();
   // Сонголт (өнгө) өөрчлөгдөхөд зурагны өнгөний цэсийг шинэчилнэ
   $("p-opts").addEventListener("change", drawThumbs);
+  // Маягт хаагдсан бол (хадгалсны дараа) юу ч хийхгүй
+  let optT; $("p-opts").addEventListener("input", () => { clearTimeout(optT); optT = setTimeout(() => { if ($("thumbs")) drawThumbs(); }, 500); });
   // ID-г зөв хэлбэрт оруулна: жижиг латин үсэг, тоо, "-" (утас том үсгээр эхлүүлэх, кирилл бичихийг засна)
   const TR = { а:"a",б:"b",в:"v",г:"g",д:"d",е:"e",ё:"yo",ж:"j",з:"z",и:"i",й:"i",к:"k",л:"l",м:"m",н:"n",о:"o",ө:"u",п:"p",р:"r",с:"s",т:"t",у:"u",ү:"u",ф:"f",х:"h",ц:"ts",ч:"ch",ш:"sh",щ:"sh",ъ:"",ы:"y",ь:"",э:"e",ю:"yu",я:"ya" };
   const slug = v => String(v).toLowerCase().split("").map(c => TR[c] ?? c).join("").replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").replace(/-{2,}/g, "-").slice(0, 40);

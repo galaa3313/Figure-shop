@@ -86,6 +86,23 @@ nav{flex-wrap:wrap}
 .pc .btns .btn{flex:1;padding:6px 8px;font-size:12px}
 .thumbs figure{width:96px;height:128px}
 .thumbs figure.main{outline:2px solid var(--ink)}
+/* ===== Олноор сонгох: чагт, дээд мөр ===== */
+.selbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}
+.selbar.on{position:sticky;top:64px;z-index:6;background:#fff;padding:10px;border:1px solid var(--ink)}
+.selbar .btn{height:38px}.selbar .red{color:#fff;background:#d62828;border-color:#d62828}.selbar .red:disabled{opacity:.4}
+.selcnt{font-size:13.5px;margin-right:auto}
+.selw{display:none;align-items:center;justify-content:center;width:26px;height:26px;margin-right:8px;flex:none;vertical-align:middle}
+.selw input{width:20px;height:20px;margin:0;accent-color:#111}
+.selmode .selw{display:inline-flex}
+.selmode [data-row]{cursor:pointer}
+[data-row].picked{background:#eef4ff!important;outline:2px solid #1e6fff;outline-offset:-2px}
+.plist .pc{position:relative}.plist.selmode .pc .selw{position:absolute;left:6px;top:6px;z-index:2;background:#fff;border-radius:4px;margin:0;width:30px;height:30px}
+.ord .oc{display:flex;align-items:center;flex-wrap:wrap;column-gap:0}.ord .oc small{width:100%}
+.selmode .ord .oc small{padding-left:34px}
+/* Сэтгэгдэл: одны өнгө, бага үнэлгээ улаанаар */
+.rv2 .stars{color:#f5b301;letter-spacing:1px}.rv2.low .os{background:#fff0f0;color:#c62828}
+.rv2 .ot{font-weight:400}.rvb{grid-template-columns:1fr}
+.rvb .oact label{min-width:100%}.rvb textarea{width:100%}
 /* ===== Захиалгын жагсаалт: нэг мөр, дарахад задарна ===== */
 .olist{display:flex;flex-direction:column;border-top:1px solid var(--line)}
 .ocount{margin:8px 0;font-size:12.5px}
@@ -115,8 +132,10 @@ nav{flex-wrap:wrap}
   .ord summary{grid-template-columns:1fr auto 16px;grid-template-areas:"c t ch" "n s ch";gap:4px 10px;padding:12px 4px}
   .ord .oc{grid-area:c}.ord .on{grid-area:n;font-size:13px}.ord .ot{grid-area:t;text-align:right}.ord .os{grid-area:s;justify-self:end}.ochev{grid-area:ch}
   .ord .on small{display:none}
+  /* Сэтгэгдэлд утсан дээр ч хэрэглэгч, эхний үгс харагдана (1 мөрөөр тасална) */
+  .rv2 .on small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62vw}
   /* Утсанд огноог дугаарын хажууд нэг мөрөнд */
-  .ord .oc small{display:inline;margin-left:6px}
+  .ord .oc small{width:auto;display:inline;margin-left:6px}.selmode .ord .oc small{padding-left:0}
   .obody,.og{grid-template-columns:1fr}.oact label{min-width:100%}
 }
 /* ===== Барааны маягт: дугаартай алхам, өнгө, зургийн карт, хэмжээ ===== */
@@ -628,6 +647,48 @@ async function api(body, path = "/api/admin"){
 }
 
 // ===== ЗАХИАЛГА =====
+// ===== ОЛНООР СОНГОЖ УСТГАХ (захиалга, бараа, сэтгэгдэл) =====
+// root: жагсаалтын хайрцаг. Мөр бүр data-row, дотроо <label class="selw"><input class="selc" data-sel="ID"></label>
+// what: "захиалга" г.м., delOne(id): нэгийг устгах (алдаа бол throw), done(): дууссаны дараа дахин зурах
+function bulkSel(root, { what, delOne, done }){
+  const bar = document.createElement("div"); bar.className = "selbar"; root.before(bar);
+  const boxes = () => [...root.querySelectorAll(".selc")];
+  const ids = () => boxes().filter(c => c.checked).map(c => c.dataset.sel);
+  const mark = c => { const r = c.closest("[data-row]"); if (r) r.classList.toggle("picked", c.checked); };
+  const paint = () => {
+    const on = root.classList.contains("selmode"), n = ids().length, all = boxes().length;
+    bar.classList.toggle("on", on);
+    bar.innerHTML = on
+      ? `<button type="button" class="btn" data-sa>${n === all && all ? "☐ Бүгдийг болих" : "☑ Бүгдийг сонгох"}</button><span class="selcnt"><b>${n}</b> ${what} сонгосон</span>
+         <button type="button" class="btn red" data-sd ${n ? "" : "disabled"}>🗑 Устгах${n ? ` (${n})` : ""}</button><button type="button" class="btn" data-sx>Болих</button>`
+      : (all ? `<button type="button" class="btn" data-so>☑ Олноор сонгох</button>` : "");
+    const q = k => bar.querySelector(k);
+    if (q("[data-so]")) q("[data-so]").onclick = () => { root.classList.add("selmode"); paint(); };
+    if (q("[data-sx]")) q("[data-sx]").onclick = () => { root.classList.remove("selmode"); boxes().forEach(c => { c.checked = false; mark(c); }); paint(); };
+    if (q("[data-sa]")) q("[data-sa]").onclick = () => { const v = !(n === all); boxes().forEach(c => { c.checked = v; mark(c); }); paint(); };
+    if (q("[data-sd]")) q("[data-sd]").onclick = async () => {
+      const list = ids(); if (!list.length) return;
+      if (!confirm(`Сонгосон ${list.length} ${what}-г устгах уу?\n\n«Түүх» хэсгээс сэргээж болно.`)) return;
+      const b = q("[data-sd]"); b.disabled = true; let ok = 0, bad = 0;
+      for (const [i, id] of list.entries()) { b.textContent = `Устгаж байна… ${i + 1}/${list.length}`; try { await delOne(id); ok++; } catch (e) { bad++; } }
+      toast(bad ? `✓ ${ok} устгалаа · ⚠ ${bad} алдаатай` : `✓ ${ok} ${what} устгалаа`);
+      root.classList.remove("selmode"); done();
+    };
+  };
+  // Сонгох горимд мөр дээр дарахад сонгоно (задрахгүй); товч, холбоос, талбар өөрийнхөөрөө ажиллана
+  root.addEventListener("click", e => {
+    if (!root.classList.contains("selmode")) return;
+    const row = e.target.closest("[data-row]"); if (!row) return;
+    if (e.target.closest(".selw")) return;
+    if (e.target.closest("button,a,select,textarea,input") && !e.target.closest("summary")) return;
+    e.preventDefault(); const c = row.querySelector(".selc"); if (c) { c.checked = !c.checked; mark(c); paint(); }
+  }, true);
+  root.addEventListener("change", e => { if (e.target.classList.contains("selc")) { mark(e.target); paint(); } });
+  paint();
+}
+// Мөр бүрийн сонгох чагт
+const selBox = id => `<label class="selw" title="Сонгох"><input type="checkbox" class="selc" data-sel="${esc(id)}"></label>`;
+
 async function showOrders(status){
   const my = ++VIEW;
   $("main").innerHTML = `<div class="bar"><h2>Захиалга</h2><select id="fst" style="width:auto"><option value="">Бүх төлөв</option><option value="unpaid" ${status === "unpaid" ? "selected" : ""}>⏳ Төлөөгүй (эргэж залгах)</option><option value="hidden" ${status === "hidden" ? "selected" : ""}>🙈 Нуусан захиалга</option></select><button class="btn" id="rel">Шинэчлэх</button></div>
@@ -647,9 +708,9 @@ async function showOrders(status){
   const sd = t => { const d = new Date(t); return `${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
   // Барааны тоо: "; "-ээр тусгаарлагдсан мөрүүд (хөнгөлөлтийн мөрийг тоолохгүй)
   const lines = o => String(o.items || "").split("; ").filter(Boolean);
-  $("ob").innerHTML = j.rows.length ? `<p class="mut ocount">${j.rows.length} захиалга · дарж дэлгэрэнгүйг харна</p>` + j.rows.map(o => `<details class="ord ${tone(o.status)}" data-ord="${esc(o.code)}">
+  $("ob").innerHTML = j.rows.length ? `<p class="mut ocount">${j.rows.length} захиалга · дарж дэлгэрэнгүйг харна</p>` + j.rows.map(o => `<details class="ord ${tone(o.status)}" data-ord="${esc(o.code)}" data-row>
       <!-- Хураангуй мөр: дугаар, нэр, дүн, төлөв, огноо -->
-      <summary><span class="oc"><b>${esc(o.code)}</b><small>${sd(o.created_at)}</small></span>
+      <summary><span class="oc">${selBox(o.code)}<b>${esc(o.code)}</b><small>${sd(o.created_at)}</small></span>
         <span class="on">${esc(o.name)}<small>${lines(o).filter(l => !/хөнгөлөлт/.test(l)).length} бараа · ${o.method === "qpay" ? "QPay" : "Данс"}</small></span>
         <span class="ot">${fmt(o.total)}</span><span class="os"><i></i>${esc(String(o.status).replace(/\s*✅/, ""))}</span><span class="ochev" aria-hidden="true">›</span></summary>
       <!-- Задарсан хэсэг -->
@@ -666,6 +727,8 @@ async function showOrders(status){
           <button type="button" class="btn del" data-del="${esc(o.code)}">🗑 Устгах</button></div>
       </div></details>`).join("")
     : `<p class="msg">${status === "hidden" ? "Нуусан захиалга алга." : "Захиалга алга."}</p>`;
+  // Олноор сонгож устгах
+  if (j.rows.length) bulkSel($("ob"), { what: "захиалга", delOne: code => api({ action: "deleteOrder", code }), done: () => showOrders(status) });
   // Нэгийг задлахад бусдыг хураана (жагсаалт цэгцтэй байна)
   $("ob").querySelectorAll("details.ord").forEach(d => d.ontoggle = () => { if (d.open) $("ob").querySelectorAll("details.ord[open]").forEach(x => x !== d && (x.open = false)); });
   // Нэг цэс нээгдэхэд бусдыг хаана
@@ -1322,7 +1385,7 @@ async function showProducts(editId){
   // Жагсаалт зурах (хайлтаар шүүнэ)
   const draw = q => {
     const rows = list.filter(x => !q || (x.name + " " + (x.series || "")).toLowerCase().includes(q.toLowerCase()));
-    $("plist").innerHTML = rows.map(x => `<div class="pc ${x.active ? "" : "off"}">
+    $("plist").innerHTML = rows.map(x => `<div class="pc ${x.active ? "" : "off"}" data-row>${selBox(x.id)}
       <img src="${esc((x.images || [])[0] || "")}" alt="" loading="lazy">
       <div><b>${esc(x.name)}</b><br><span class="mut">${CATS[x.cat] || x.cat} · ${x.pre ? "Захиалгаар" : "Бэлэн"}</span><br>${x.was ? `<s class="mut">${fmt(x.was)}</s> ` : ""}<b>${fmt(x.price)}</b> ${x.active ? "" : '<span class="tag no">нуусан</span>'}</div>
       <div class="btns"><button class="btn" data-e="${esc(x.id)}">Засах</button><button class="btn" data-h="${esc(x.id)}">${x.active ? "Нуух" : "Харуулах"}</button></div></div>`).join("") || (list.length ? '<p class="msg">Олдсонгүй.</p>' : "");
@@ -1337,6 +1400,9 @@ async function showProducts(editId){
     });
   };
   draw(""); $("pq").oninput = e => draw(e.target.value);
+  // Олноор сонгож устгах (устгасан мөр буцаж ирээгүй бол алдаа гэж үзнэ)
+  if (list.length) bulkSel($("plist"), { what: "бараа", done: () => showProducts(),
+    delOne: async id => { const { data, error } = await sb.from("products").delete().eq("id", id).select("id"); if (error || !data || !data.length) throw new Error("fail"); } });
   $("pnew").onclick = () => showProducts("new");
   // Хуучин том зургуудыг шахах товч
   $("pslim").onclick = e => slimAll(e.currentTarget);
@@ -2077,13 +2143,23 @@ async function showReviews(){
   const pname = id => ((prods || []).find(x => x.id === id) || {}).name || id;
   const st = r => "★★★★★".slice(0, r) + "☆☆☆☆☆".slice(0, 5 - r);
   $("main").innerHTML = `<div class="bar"><h2>Сэтгэгдэл <small class="mut">(${list.length})</small></h2></div>
-    <div class="rvl">${list.map(r => `<div class="rvi ${r.hidden ? "off" : ""}">
-      <div class="row" style="justify-content:space-between;flex-wrap:wrap"><div><b>${esc(pname(r.product_id))}</b> · <span style="color:#f5b301">${st(r.rating)}</span> · ${esc(r.username)} ${r.verified ? '<span class="tag ok">Худалдан авсан</span>' : ""} ${r.hidden ? '<span class="tag no">нуусан</span>' : ""}</div><span class="mut">${dt(r.created_at)}</span></div>
-      <p style="white-space:pre-line;margin:8px 0">${esc(r.body)}</p>
-      ${(r.photos || []).filter(okPhoto).length ? `<div class="thumbs">${r.photos.filter(okPhoto).map(u => `<figure><a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt=""></a></figure>`).join("")}</div>` : ""}
-      <div class="row" style="margin-top:8px;align-items:flex-start"><textarea data-rp="${r.id}" rows="2" placeholder="FINN-ий хариулт (заавал биш)" style="flex:1">${esc(r.reply || "")}</textarea>
-        <button class="btn" data-save="${r.id}">Хариулт хадгалах</button><button class="btn" data-hide="${r.id}">${r.hidden ? "Харуулах" : "Нуух"}</button><button class="btn red" data-del="${r.id}">Устгах</button></div>
-    </div>`).join("") || '<p class="msg">Одоохондоо сэтгэгдэл алга.</p>'}</div>`;
+    <!-- Сэтгэгдэл бүр нэг мөр: дарахад бүтэн бичиг, зураг, хариулт харагдана -->
+    <div class="olist rvl2" id="rvl">${list.length ? `<p class="mut ocount">${list.length} сэтгэгдэл · дарж дэлгэрэнгүйг харна${list.filter(r => !r.reply).length ? ` · <b>${list.filter(r => !r.reply).length}</b> хариулаагүй` : ""}</p>` : ""}${list.map(r => `<details class="ord rv2 ${r.hidden ? "off" : r.rating <= 2 ? "low" : ""}" data-row>
+      <summary><span class="oc">${selBox(r.id)}<b class="stars">${st(r.rating)}</b><small>${dt(r.created_at)}</small></span>
+        <span class="on">${esc(pname(r.product_id))}<small>${esc(r.username)} · ${esc(String(r.body || "").slice(0, 70))}${String(r.body || "").length > 70 ? "…" : ""}</small></span>
+        <span class="ot">${(r.photos || []).filter(okPhoto).length ? "📷" : ""}</span>
+        <span class="os"><i></i>${r.hidden ? "Нуусан" : r.reply ? "Хариулсан" : "Хариулаагүй"}</span><span class="ochev" aria-hidden="true">›</span></summary>
+      <div class="obody rvb">
+        <div><small>${esc(r.username)} ${r.verified ? '<span class="tag ok">✓ Худалдан авсан</span>' : ""}</small><p style="white-space:pre-line;margin:6px 0">${esc(r.body)}</p>
+          ${(r.photos || []).filter(okPhoto).length ? `<div class="thumbs">${r.photos.filter(okPhoto).map(u => `<figure><a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt=""></a></figure>`).join("")}</div>` : ""}</div>
+        <div class="oact"><label>FINN-ий хариулт<textarea data-rp="${r.id}" rows="2" placeholder="Хариулт (заавал биш)">${esc(r.reply || "")}</textarea></label>
+          <button class="btn dark" data-save="${r.id}">Хариулт хадгалах</button><button class="btn" data-hide="${r.id}">${r.hidden ? "👁 Харуулах" : "🙈 Нуух"}</button><button class="btn del" data-del="${r.id}">🗑 Устгах</button></div>
+      </div></details>`).join("") || '<p class="msg">Одоохондоо сэтгэгдэл алга.</p>'}</div>`;
+  // Нэгийг задлахад бусдыг хураана
+  $("rvl").querySelectorAll("details.rv2").forEach(d => d.ontoggle = () => { if (d.open) $("rvl").querySelectorAll("details.rv2[open]").forEach(x => x !== d && (x.open = false)); });
+  // Олноор сонгож устгах
+  if (list.length) bulkSel($("rvl"), { what: "сэтгэгдэл", done: () => showReviews(),
+    delOne: async id => { const { data, error } = await sb.from("reviews").delete().eq("id", +id).select("id"); if (error || !data || !data.length) throw new Error("fail"); } });
   // Хариулт хадгалах
   $("main").querySelectorAll("[data-save]").forEach(b => b.onclick = async () => {
     const v = $("main").querySelector(`[data-rp="${b.dataset.save}"]`).value.trim();

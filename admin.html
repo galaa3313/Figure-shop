@@ -86,6 +86,67 @@ nav{flex-wrap:wrap}
 .pc .btns .btn{flex:1;padding:6px 8px;font-size:12px}
 .thumbs figure{width:96px;height:128px}
 .thumbs figure.main{outline:2px solid var(--ink)}
+/* ===== Барааны маягт: дугаартай алхам, өнгө, зургийн карт, хэмжээ ===== */
+#pf{gap:14px 16px}
+.pfsec{border:1px solid var(--line);background:#fff;padding:16px;display:flex;flex-direction:column;gap:12px}
+.pfsec-h{border:0;padding:8px 0 0;background:none}
+.pfh{display:flex;gap:12px;align-items:flex-start}
+.pfh>i{flex:none;width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;font-style:normal;font-weight:700;font-size:14px;display:grid;place-items:center}
+.pfh b{display:block;font-size:16px}.pfh span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+/* Өнгөний товч: дугуй + нэр, сонгосон нь хар */
+.pal{display:flex;flex-wrap:wrap;gap:6px}
+.cpk{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:13px;color:var(--ink)}
+.cpk[aria-pressed=true]{border-color:var(--ink);background:var(--ink);color:#fff;font-weight:700}
+.cpk .sw{width:16px;height:16px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+.cpk[aria-pressed=true] .sw{box-shadow:0 0 0 2px #fff}
+.pal-new input{height:36px}.pal-new .btn{height:36px}
+/* Зургийн картууд: өнгө бүр нэг карт */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.cg{border:1px solid var(--line);padding:12px;background:#fafafa;transition:border-color .2s,background .2s}
+.cg.gen{background:#fff;border-style:dashed}
+.cg.need{border-color:#f0b4b4;background:#fff7f7}
+.cg.over{border-color:#1e6fff;background:#eef4ff}
+.cgh{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.cgh b{font-size:14px}.cgh span{margin-left:auto;font-size:12px;color:var(--muted)}
+.cg.need .cgh span{color:#d62828}
+.cgh .sw{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+.tns{display:flex;flex-wrap:wrap;gap:8px}
+.tn{position:relative;width:78px;height:104px;padding:0;border:1px solid var(--line);background:#fff;overflow:hidden;cursor:pointer}
+.tn img{width:100%;height:100%;object-fit:cover;display:block}
+.tn.main{outline:2px solid var(--ink);outline-offset:1px}
+.tn em{position:absolute;left:0;top:0;background:var(--ink);color:#fff;font-style:normal;font-size:10px;padding:2px 6px}
+.tn u{position:absolute;right:3px;top:3px;text-decoration:none;background:#1e6fff;color:#fff;font-size:11px;padding:1px 5px}
+.tn:hover img{opacity:.85}
+.tn.add{border:1.5px dashed #b8b8b8;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--muted)}
+.tn.add b{font-size:26px;line-height:1;font-weight:300;color:var(--ink)}.tn.add span{font-size:11.5px}
+.tn.add:hover{border-color:var(--ink);color:var(--ink)}
+.tn.up{display:grid;place-items:center;cursor:default}.tn.up i{width:22px;height:22px;border:2px solid var(--line);border-top-color:var(--ink);border-radius:50%;animation:spin .8s linear infinite}
+.tn.up.bad{border-color:#e5172f;color:#e5172f}
+/* Зургийн цэс (утсанд доороос гарна) */
+.tmenu{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+.tm-box{background:#fff;width:min(560px,100%);display:grid;grid-template-columns:180px 1fr;gap:14px;padding:14px;max-height:90vh;overflow:auto}
+.tm-box>img{width:100%;aspect-ratio:3/4;object-fit:cover;background:#f2f2f2}
+.tm-acts{display:flex;flex-direction:column;gap:8px}
+.tm-acts>button,.tm-acts .row button{height:40px;border:1px solid var(--line);background:#fff;font-size:13.5px;text-align:left;padding:0 12px}
+.tm-acts .row{gap:8px}.tm-acts .row button{flex:1;text-align:center}
+.tm-acts button:disabled{opacity:.35}
+.tm-acts .red{color:#d62828;border-color:#f0b4b4}.tm-acts .ghost{border:0;color:var(--muted);text-align:center}
+.cpk{flex-direction:row;white-space:nowrap}
+.tm-col{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:4px 0}.tm-col>span{width:100%;font-size:12px}
+@media (max-width:560px){.tmenu{align-items:flex-end;padding:0}.tm-box{grid-template-columns:96px 1fr;width:100%}}
+/* Хэмжээ */
+.szc{height:36px;min-width:46px;padding:0 10px;border:1px solid var(--line);background:#fff;font-size:13px;color:var(--ink)}
+.szc[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.szg{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.szg>span{width:58px;font-size:12px;color:var(--muted)}
+.pfmore summary{cursor:pointer;font-size:12.5px;color:var(--muted);padding:4px 0}
+/* Доод мөр: жижиг харагдац + Хадгалах — үргэлж харагдана */
+.pfsave{position:sticky;bottom:0;z-index:5;background:#fff;padding:10px 0;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.pvw{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.pvw img,.pvw .ph{width:40px;height:52px;object-fit:cover;flex:none;background:#f2f2f2;display:grid;place-items:center}
+.pvw b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pvw span{display:block;font-size:12px;color:var(--muted)}
+.pfsave .btn{height:44px;padding:0 22px}
+/* Утсанд "Устгах"-ыг жижиг хогийн савны дүрсээр */
+@media (max-width:560px){.pfsave .btn.red{padding:0 12px;font-size:0}.pfsave .btn.red::before{content:"🗑";font-size:18px}.pfsave .btn{padding:0 16px}}
 /* Зураг бүрийн доорх "аль өнгийнх вэ" сонголт */
 .thumbs .tw{display:flex;flex-direction:column;gap:4px;width:96px}
 .thumbs .tw select{width:100%;height:28px;padding:0 4px;font-size:11.5px}
@@ -1241,27 +1302,58 @@ function productForm(p, isNew){
   const origImages = JSON.stringify(images);
   // Зураг → өнгө холбоос: { "зургийн холбоос": "Улаан" } — сайтад өнгө сонгоход тэр зураг гарна
   const imgColor = { ...((p.extra && p.extra.imgColor) || {}) };
-  // "Сонголтууд" талбараас өнгөний утгуудыг авна ("Өнгө"/"Color" нэртэй мөр, эс бөгөөс эхний мөр)
-  const colorVals = () => { const o = parseOpts(($("p-opts") || {}).value || ""); const c = o.find(x => /өнгө|color/i.test(x.label)) || o[0]; return c ? c.values : []; };
+  // ----- Сонголтуудыг 3 хэсэгт хуваана: өнгө, хэмжээ, бусад -----
+  const opts0 = p.options || [];
+  const isColor = l => /өнгө|color|colour/i.test(l), isSize = l => /хэмжээ|size|размер/i.test(l);
+  const cOpt = opts0.find(o => isColor(o.label)), sOpt = opts0.find(o => o !== cOpt && isSize(o.label));
+  let colors = cOpt ? [...cOpt.values] : [], sizes = sOpt ? [...sOpt.values] : [];
+  const otherOpts = opts0.filter(o => o !== cOpt && o !== sOpt);
+  const cLabel = cOpt ? cOpt.label : "Өнгө", sLabel = sOpt ? sOpt.label : "Хэмжээ";
+  // Хуучин сонголтын дараалал (захиалгын "Улаан / M" дараалал өөрчлөгдөхгүй)
+  const optOrder = opts0.map(o => o.label);
+  const colorVals = () => colors;
   // Зургийг солиход (тайрах/буцаах) өнгөний холбоосыг шинэ зураг руу шилжүүлнэ
   const moveColor = (from, to) => { if (imgColor[from]) { imgColor[to] = imgColor[from]; delete imgColor[from]; } };
+  // Бэлэн өнгө, хэмжээнүүд (нэг дарж сонгоно)
+  const PAL = ["Хар", "Цагаан", "Саарал", "Бор", "Бэж", "Улаан", "Ягаан", "Улбар шар", "Шар", "Ногоон", "Хаки", "Цэнхэр", "Хөх", "Нил ягаан"];
+  const SZ = { "Хувцас": ["XS", "S", "M", "L", "XL", "XXL", "3XL"], "Гутал": ["35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46"], "Бусад": ["Free"] };
   $("pform").innerHTML = `<form class="form" id="pf">
-    <div class="full row" style="justify-content:space-between"><h3 style="margin:0">${isNew ? "Шинэ бараа" : "Засах: " + esc(p.name)}</h3><button type="button" class="btn" id="pcancel">Хаах</button></div>
-    <div class="full"><label>Зургууд <span class="mut">(эхнийх нь гол зураг · ← → дарж дарааллыг солино · × устгана)</span></label>
-      <div class="thumbs" id="thumbs"></div><div class="upbar" id="upbar" hidden><b></b></div>
-      <div class="row" style="margin-top:8px"><label class="btn" style="flex-direction:row;color:var(--ink)">+ Зураг оруулах<input type="file" id="pfiles" accept="image/*" multiple hidden></label>
-      <input id="purl" placeholder="эсвэл зургийн холбоос (https://…)" style="flex:1"><button type="button" class="btn" id="paddurl">Нэмэх</button><span id="pmsg" class="mut"></span></div></div>
+    <div class="full row" style="justify-content:space-between"><h3 style="margin:0">${isNew ? "Шинэ бараа" : "Засах: " + esc(p.name)}</h3>
+      <span class="row" style="flex-wrap:nowrap">${isNew ? "" : '<button type="button" class="btn" id="pcopy" style="white-space:nowrap" title="Энэ бараатай адил шинэ бараа үүсгэнэ">⧉ Хуулбарлах</button>'}<button type="button" class="btn" id="pcancel" style="white-space:nowrap">Хаах</button></span></div>
+
+    <!-- ① ЗУРАГ БА ӨНГӨ: 1) өнгөө дарж сонгоно 2) өнгө бүрийн картад зургаа хийнэ -->
+    <div class="full pfsec"><div class="pfh"><i>1</i><div><b>Зураг ба өнгө</b><span>Өнгөө дарж сонгоод, тухайн өнгийн картад зургаа хийнэ. Өнгөгүй бол шууд «Зургууд» картад.</span></div></div>
+      <div class="pal" id="colbar"></div>
+      <div class="row pal-new"><input id="colnew" placeholder="Өөр өнгө бичих…" style="flex:1"><button type="button" class="btn" id="colnewb">+ Нэмэх</button></div>
+      <div class="cgrid" id="cgroups"></div>
+      <div class="upbar" id="upbar" hidden><b></b></div><span id="pmsg" class="mut"></span>
+      <details class="pfmore"><summary>Холбоосоор зураг нэмэх</summary><div class="row" style="margin-top:6px"><input id="purl" placeholder="https://…" style="flex:1"><button type="button" class="btn" id="paddurl">Нэмэх</button></div></details>
+      <input type="file" id="pfiles" accept="image/*" multiple hidden>
+    </div>
+
+    <!-- ② ҮНДСЭН МЭДЭЭЛЭЛ -->
+    <div class="full pfsec pfsec-h"><div class="pfh"><i>2</i><div><b>Нэр, үнэ</b><span>* тэмдэгтэй нь заавал</span></div></div></div>
     <input type="hidden" id="p-id" value="${esc(p.id)}">
+    <label class="full">Нэр *<textarea rows="1" class="one" id="p-name" required>${esc(p.name)}</textarea></label>
+    <label>Үнэ (₮) *<input id="p-price" type="number" min="1" inputmode="numeric" value="${esc(p.price)}" required></label>
     <label>Ангилал<select id="p-cat">${(p.cat && !CATS[p.cat] ? [[p.cat, p.cat + " (устсан ангилал)"]] : []).concat(Object.entries(CATS)).map(([k, v]) => `<option value="${k}" ${k === p.cat ? "selected" : ""}>${v}</option>`).join("")}</select></label>
-    <label class="full">Нэр<textarea rows="1" class="one" id="p-name" required>${esc(p.name)}</textarea></label>
     <label>Брэнд / цуврал<textarea rows="1" class="one" id="p-series">${esc(p.series || "")}</textarea></label>
-    <label>Үйлдвэрлэгч / нэмэлт<textarea rows="1" class="one" id="p-line">${esc(p.line || "")}</textarea></label>
-    <label>Үнэ (₮)<input id="p-price" type="number" min="1" value="${esc(p.price)}" required></label>
-    <label>Хямдралын өмнөх үнэ (заавал биш)<input id="p-was" type="number" min="0" value="${esc(p.was || "")}"></label>
-    <label>Тэмдэг<select id="p-badge">${["", "Шинэ", "Хит", "Хямдрал", "Онцлох"].map(b => `<option ${b === (p.badge || "") ? "selected" : ""}>${b}</option>`).join("")}</select></label>
-    <label>Эрэмбэ (их нь эхэнд)<input id="p-sort" type="number" value="${esc(p.sort || 0)}"></label>
-    <!-- Барааны дэлгэрэнгүй: хэрэгслийн мөр + бичих талбар + сайтад харагдах байдал -->
-    <div class="full rdbox"><b>Барааны дэлгэрэнгүй</b> <small class="mut">(сайтад зургийн доор, голлуулж харагдана)</small>
+    <label>Хямдралын өмнөх үнэ <span class="mut">(заавал биш)</span><input id="p-was" type="number" min="0" inputmode="numeric" value="${esc(p.was || "")}"></label>
+    <details class="full pfmore"><summary>Нэмэлт: үйлдвэрлэгч, тэмдэг, эрэмбэ</summary><div class="form" style="padding:8px 0 0;border:0">
+      <label>Үйлдвэрлэгч / нэмэлт<textarea rows="1" class="one" id="p-line">${esc(p.line || "")}</textarea></label>
+      <label>Тэмдэг<select id="p-badge">${["", "Шинэ", "Хит", "Хямдрал", "Онцлох"].map(b => `<option ${b === (p.badge || "") ? "selected" : ""}>${b}</option>`).join("")}</select></label>
+      <label>Эрэмбэ (их нь эхэнд)<input id="p-sort" type="number" value="${esc(p.sort || 0)}"></label></div></details>
+
+    <!-- ③ ХЭМЖЭЭ: товч дарж сонгоно -->
+    <div class="full pfsec"><div class="pfh"><i>3</i><div><b>Хэмжээ</b><span>Байгаа хэмжээгээ дарж сонгоно. Хэмжээгүй бараа бол алгасна.</span></div></div>
+      <div id="szbox"></div>
+      <div class="row" style="margin-top:6px"><input id="szadd" placeholder="Өөр хэмжээ (жишээ: 90, 95, 100)" style="flex:1"><button type="button" class="btn" id="szaddb">Нэмэх</button></div>
+      <details class="pfmore"><summary>Бусад сонголт (ховор: загвар, багц г.м.)</summary>
+        <textarea id="p-opts" rows="2" style="margin-top:6px;width:100%" placeholder="Загвар: Богино, Урт">${esc(optsText(otherOpts))}</textarea></details>
+    </div>
+
+    <!-- ④ ДЭЛГЭРЭНГҮЙ -->
+    <div class="full rdbox"><div class="pfh"><i>4</i><div><b>Барааны дэлгэрэнгүй</b><span>Сайтад зургийн доор голлуулж харагдана (заавал биш)</span></div></div>
       <div class="rdtools">
         <button type="button" class="btn" data-rw="**">Тод</button>
         <button type="button" class="btn" data-rw="!!" style="color:#e5172f;font-weight:700">Улаан</button>
@@ -1281,50 +1373,135 @@ function productForm(p, isNew){
         <div class="dthumbs" id="p-dthumbs"></div>
         <label class="btn" style="flex-direction:row;color:var(--ink);margin-top:6px">+ Зураг нэмэх<input type="file" id="p-dfiles" accept="image/*" multiple hidden></label> <span id="p-dmsg" class="mut" style="font-size:12.5px"></span></div>
     </div>
-    <label class="full"><span>Сонголтууд <span class="mut">— мөр бүрт нэг, таслалаар тусгаарлана. Өнгө бичээд дээрх зураг бүрийн доороос аль өнгийнх болохыг сонгоно.</span></span><textarea id="p-opts" rows="3" placeholder="Өнгө: Хар, Саарал, Улаан, Ягаан, Ногоон
-Хэмжээ: S, M, L, XL">${esc(optsText(p.options))}</textarea></label>
     <div class="full row"><label class="row" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="p-pre" ${p.pre ? "checked" : ""} style="width:auto"> Захиалгаар (Солонгосоос)</label>
       <label class="row" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="p-active" ${p.active ? "checked" : ""} style="width:auto"> Сайтад харагдана</label></div>
-    <div class="full row"><button class="btn dark" type="submit" id="psave">Хадгалах</button>${isNew ? "" : '<button class="btn red" type="button" id="pdel" style="margin-left:auto">Устгах</button>'}</div>
+    <!-- Хадгалах товч доод талд үргэлж харагдана -->
+    <!-- Доод мөр: сайтад ямар харагдахыг жижгээр + Хадгалах (үргэлж харагдана) -->
+    <div class="full pfsave"><div class="pvw" id="pvw"></div><button class="btn dark" type="submit" id="psave">Хадгалах</button>${isNew ? "" : '<button class="btn red" type="button" id="pdel">Устгах</button>'}</div>
   </form>`;
-  // Зургийн жижиг харагдац: ← → дараалал, × устгах
-  // Оруулж байгаа зургуудын төлөв: "up" = орж байна, "bad" = алдаа
+  // Оруулж байгаа зургуудын төлөв: { c: өнгө, s: "up" | "bad" }
   let pending = [];
   // Тайрсан зургийн өмнөх хувилбар: шинэ холбоос → хуучин холбоос эсвэл анхны файл (↶ Буцаах товчинд)
   const undo = {};
-  const drawThumbs = () => {
-    const cv = colorVals();
-    $("thumbs").innerHTML = (images.map((u, i) => `<div class="tw"><figure ${i === 0 ? 'class="main"' : ""}><img src="${esc(u)}" alt="">${undo[u] ? `<button type="button" class="undo" data-u="${i}" title="Тайрахаас өмнөх зураг руу буцаах">↶ Буцаах</button>` : ""}<div class="tb"><button type="button" data-l="${i}" ${i === 0 ? "disabled" : ""}>←</button><button type="button" data-r="${i}" ${i === images.length - 1 ? "disabled" : ""}>→</button><button type="button" class="cr" data-c="${i}" title="Тайрах">✂</button><button type="button" data-x="${i}">×</button></div>${i === 0 ? "<em>Гол</em>" : ""}</figure>${cv.length ? `<select data-cl="${i}" class="${imgColor[u] ? "on" : ""}" title="Энэ зураг аль өнгийнх вэ"><option value="">— өнгө —</option>${cv.map(v => `<option ${imgColor[u] === v ? "selected" : ""}>${esc(v)}</option>`).join("")}</select>` : ""}</div>`).join("") || (pending.length ? "" : '<p class="mut">Зураг алга.</p>')) + pending.map(x => `<figure class="up ${x === "bad" ? "bad" : ""}">${x === "bad" ? "⚠ Алдаа" : "<i></i>Оруулж байна"}</figure>`).join("");
-    $("thumbs").querySelectorAll("[data-l]").forEach(b => b.onclick = () => { const i = +b.dataset.l; [images[i - 1], images[i]] = [images[i], images[i - 1]]; drawThumbs(); });
-    $("thumbs").querySelectorAll("[data-r]").forEach(b => b.onclick = () => { const i = +b.dataset.r; [images[i + 1], images[i]] = [images[i], images[i + 1]]; drawThumbs(); });
-    $("thumbs").querySelectorAll("[data-x]").forEach(b => b.onclick = () => { images.splice(+b.dataset.x, 1); drawThumbs(); });
-    // Зураг бүрийн өнгө сонгох
-    $("thumbs").querySelectorAll("[data-cl]").forEach(sl => sl.onchange = () => { const u = images[+sl.dataset.cl]; if (sl.value) imgColor[u] = sl.value; else delete imgColor[u]; sl.classList.toggle("on", !!sl.value); });
-    // ↶ Тайрахаас өмнөх зураг руу буцаана (хуучин холбоос бол шууд, анхны файл бол дахин оруулна)
-    $("thumbs").querySelectorAll("[data-u]").forEach(b => b.onclick = async () => {
-      const i = +b.dataset.u, cur = images[i], prev = undo[cur];
-      if (!prev) return;
-      if (typeof prev === "string") { images[i] = prev; moveColor(cur, prev); delete undo[cur]; drawThumbs(); $("pmsg").className = "ok"; $("pmsg").textContent = "↶ Өмнөх зураг руу буцлаа"; return; }
-      busy(+1); $("pmsg").className = "mut"; $("pmsg").textContent = "Анхны зургийг оруулж байна…";
-      try { images[i] = await upload(prev, $("p-id").value || "new"); moveColor(cur, images[i]); delete undo[cur]; drawThumbs(); $("pmsg").className = "ok"; $("pmsg").textContent = "↶ Анхны зураг руу буцлаа"; }
-      catch (err) { $("pmsg").className = "err"; $("pmsg").textContent = "⚠ Алдаа: " + (err.message || err); }
-      busy(-1);
-    });
-    // ✂ Оруулсан зургийг дахин тайрч, шинэ зургаар сольно
-    $("thumbs").querySelectorAll("[data-c]").forEach(b => b.onclick = async () => {
-      const i = +b.dataset.c, r = await cropImage(images[i]);
-      if (!r || r === "orig") return;
-      busy(+1); $("pmsg").className = "mut"; $("pmsg").textContent = "Тайрсан зургийг оруулж байна…";
-      try { const old = images[i], nu = await upload(r, $("p-id").value || "new"); undo[nu] = old; images[i] = nu; moveColor(old, nu); drawThumbs(); $("pmsg").className = "ok"; $("pmsg").textContent = "✓ Зураг тайрагдлаа · ↶ дарж буцааж болно"; }
-      catch (err) { $("pmsg").className = "err"; $("pmsg").textContent = "⚠ Алдаа: " + (err.message || err); }
-      busy(-1);
+  // Өнгөний дугуй (сонгоход ойлгомжтой харагдана)
+  const SW = { "Хар": "#111", "Цагаан": "#fff", "Саарал": "#9a9a9a", "Бор": "#7a4b2a", "Бэж": "#dcc7a6", "Улаан": "#d62828", "Ягаан": "#f2a2bd", "Улбар шар": "#f28c28", "Шар": "#f3cf00", "Ногоон": "#2e8b57", "Хаки": "#8b8a5c", "Цэнхэр": "#3b7be0", "Хөх": "#1d2f6e", "Нил ягаан": "#7b3fa0" };
+  const dot = c => `<i class="sw" style="${SW[c] ? `background:${SW[c]}` : "background:conic-gradient(#e33,#fc0,#3c6,#39f,#c3f,#e33)"}"></i>`;
+  // Доод мөрийн жижиг харагдац: гол зураг, нэр, үнэ, тоо
+  const summary = () => {
+    const nm = ($("p-name") || {}).value || "Нэргүй бараа", pr = Number(($("p-price") || {}).value) || 0;
+    $("pvw").innerHTML = `${images[0] ? `<img src="${esc(images[0])}" alt="">` : '<span class="ph">📷</span>'}<div><b>${esc(nm)}</b><span>${pr ? pr.toLocaleString("en-US").replace(/,/g, "'") + "₮" : "Үнэ —"} · ${images.length} зураг${colors.length ? ` · ${colors.length} өнгө` : ""}${sizes.length ? ` · ${sizes.length} хэмжээ` : ""}</span></div>`;
+  };
+  // ----- Өнгө: бүх өнгө нэг мөрөнд, сонгосон нь тод (дахин дарвал хасна) -----
+  const drawColors = () => {
+    const list = [...PAL, ...colors.filter(c => !PAL.includes(c))];
+    $("colbar").innerHTML = list.map(c => `<button type="button" class="cpk" aria-pressed="${colors.includes(c)}" data-pc="${esc(c)}">${dot(c)}${esc(c)}${colors.includes(c) ? " ✓" : ""}</button>`).join("");
+    $("colbar").querySelectorAll("[data-pc]").forEach(b => b.onclick = () => {
+      const c = b.dataset.pc;
+      if (colors.includes(c)) {
+        const n = images.filter(u => imgColor[u] === c).length;
+        if (n && !confirm(`«${c}» өнгийг хасах уу?\nТүүний ${n} зураг «Зургууд» карт руу шилжинэ.`)) return;
+        colors = colors.filter(x => x !== c); images.forEach(u => { if (imgColor[u] === c) delete imgColor[u]; });
+      } else colors.push(c);
+      drawColors(); drawThumbs();
     });
   };
-  drawThumbs();
-  // Сонголт (өнгө) өөрчлөгдөхөд зурагны өнгөний цэсийг шинэчилнэ
-  $("p-opts").addEventListener("change", drawThumbs);
-  // Маягт хаагдсан бол (хадгалсны дараа) юу ч хийхгүй
-  let optT; $("p-opts").addEventListener("input", () => { clearTimeout(optT); optT = setTimeout(() => { if ($("thumbs")) drawThumbs(); }, 500); });
+  const addNew = () => { const v = $("colnew").value.trim().slice(0, 30); if (!v) return; if (!colors.includes(v)) colors.push(v); $("colnew").value = ""; drawColors(); drawThumbs(); };
+  $("colnewb").onclick = addNew; $("colnew").onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); addNew(); } };
+  // ----- Хэмжээ: бэлэн багцаас дарж сонгоно -----
+  const drawSizes = () => {
+    const all = Object.values(SZ).flat(), extra = sizes.filter(s => !all.includes(s));
+    $("szbox").innerHTML = Object.entries(SZ).map(([g, list]) => `<div class="szg"><span>${g}</span>${list.map(s => `<button type="button" class="szc" aria-pressed="${sizes.includes(s)}" data-sz="${esc(s)}">${esc(s)}</button>`).join("")}</div>`).join("")
+      + (extra.length ? `<div class="szg"><span class="mut">Өөр</span>${extra.map(s => `<button type="button" class="szc" aria-pressed="true" data-sz="${esc(s)}">${esc(s)} ×</button>`).join("")}</div>` : "");
+    $("szbox").querySelectorAll("[data-sz]").forEach(b => b.onclick = () => {
+      const s = b.dataset.sz;
+      if (sizes.includes(s)) sizes = sizes.filter(x => x !== s);
+      // Бэлэн багцын дарааллаар эрэмбэлнэ (S, M, L…)
+      else { sizes.push(s); sizes.sort((a, b) => (all.indexOf(a) < 0 ? 999 : all.indexOf(a)) - (all.indexOf(b) < 0 ? 999 : all.indexOf(b))); }
+      drawSizes(); summary();
+    });
+  };
+  const addSize = () => { $("szadd").value.split(/[,，、]/).map(s => s.trim().slice(0, 20)).filter(Boolean).forEach(s => { if (!sizes.includes(s)) sizes.push(s); }); $("szadd").value = ""; drawSizes(); summary(); };
+  $("szaddb").onclick = addSize; $("szadd").onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); addSize(); } };
+  // ----- Зургууд: өнгө бүр нэг карт (+ «Зургууд» ерөнхий карт) -----
+  const pend = c => pending.filter(x => x.c === c).map(x => `<div class="tn up ${x.s === "bad" ? "bad" : ""}">${x.s === "bad" ? "⚠" : "<i></i>"}</div>`).join("");
+  const card = (c, title) => {
+    const list = images.map((u, i) => [u, i]).filter(([u]) => c ? imgColor[u] === c : !imgColor[u] || !colors.includes(imgColor[u]));
+    return `<div class="cg ${c ? "" : "gen"} ${c && !list.length ? "need" : ""}" data-drop="${esc(c)}">
+      <div class="cgh">${c ? dot(c) : ""}<b>${esc(title)}</b><span>${list.length ? list.length + " зураг" : c ? "зураг хэрэгтэй" : ""}</span></div>
+      <div class="tns">${list.map(([u, i]) => `<button type="button" class="tn ${i === 0 ? "main" : ""}" data-t="${i}" title="Дарж засах">
+          <img src="${esc(u)}" alt="">${i === 0 ? "<em>Гол</em>" : ""}${undo[u] ? "<u>↶</u>" : ""}</button>`).join("")}${pend(c)}
+        <button type="button" class="tn add" data-up="${esc(c)}"><b>+</b><span>Зураг</span></button></div></div>`;
+  };
+  const drawThumbs = () => {
+    if (!$("cgroups")) return;
+    $("cgroups").innerHTML = colors.map(c => card(c, c)).join("") + card("", colors.length ? "Ерөнхий (бүх өнгөнд)" : "Зургууд");
+    const box = $("cgroups");
+    // "+ Зураг": аль өнгөнд оруулахыг тэмдэглээд файл сонгуулна
+    box.querySelectorAll("[data-up]").forEach(b => b.onclick = () => { upColor = b.dataset.up; $("pfiles").click(); });
+    // Зураг дээр дарахад үйлдлийн цэс
+    box.querySelectorAll("[data-t]").forEach(b => b.onclick = () => thumbMenu(+b.dataset.t));
+    // Компьютер дээр: зургийг картад чирж оруулж болно
+    box.querySelectorAll("[data-drop]").forEach(cg => {
+      cg.ondragover = e => { e.preventDefault(); cg.classList.add("over"); };
+      cg.ondragleave = () => cg.classList.remove("over");
+      cg.ondrop = e => { e.preventDefault(); cg.classList.remove("over"); const fs = [...e.dataTransfer.files].filter(f => /^image\//.test(f.type)); if (fs.length) { upColor = cg.dataset.drop; addFiles(fs); } };
+    });
+    summary();
+  };
+  // ----- Зургийн цэс: гол болгох, тайрах, өнгө солих, дараалал, устгах -----
+  const thumbMenu = i => {
+    const u = images[i]; if (!u) return;
+    const m = document.createElement("div"); m.className = "tmenu";
+    m.innerHTML = `<div class="tm-box" role="dialog" aria-label="Зураг засах">
+      <img src="${esc(u)}" alt="">
+      <div class="tm-acts">
+        ${i ? '<button type="button" data-a="main">★ Гол зураг болгох</button>' : '<p class="mut">★ Энэ бол гол зураг</p>'}
+        <button type="button" data-a="crop">✂ Тайрах</button>
+        ${undo[u] ? '<button type="button" data-a="undo">↶ Тайрахаас өмнөх рүү буцаах</button>' : ""}
+        ${colors.length ? `<div class="tm-col"><span class="mut">Аль өнгийнх вэ:</span>${colors.map(c => `<button type="button" class="cpk" aria-pressed="${imgColor[u] === c}" data-col="${esc(c)}">${dot(c)}${esc(c)}</button>`).join("")}<button type="button" class="cpk" aria-pressed="${!imgColor[u]}" data-col="">Ерөнхий</button></div>` : ""}
+        <div class="row"><button type="button" data-a="left" ${i ? "" : "disabled"}>← Өмнө</button><button type="button" data-a="right" ${i < images.length - 1 ? "" : "disabled"}>Хойно →</button></div>
+        <button type="button" data-a="del" class="red">× Устгах</button>
+        <button type="button" data-a="close" class="ghost">Хаах</button>
+      </div></div>`;
+    document.body.appendChild(m);
+    const close = () => m.remove();
+    m.onclick = e => { if (e.target === m) close(); };
+    m.querySelectorAll("[data-col]").forEach(b => b.onclick = () => { if (b.dataset.col) imgColor[u] = b.dataset.col; else delete imgColor[u]; close(); drawThumbs(); });
+    m.querySelectorAll("[data-a]").forEach(b => b.onclick = async () => {
+      const a = b.dataset.a; close();
+      if (a === "main") { images.splice(i, 1); images.unshift(u); drawThumbs(); }
+      else if (a === "left") { [images[i - 1], images[i]] = [images[i], images[i - 1]]; drawThumbs(); }
+      else if (a === "right") { [images[i + 1], images[i]] = [images[i], images[i + 1]]; drawThumbs(); }
+      else if (a === "del") { images.splice(i, 1); delete imgColor[u]; drawThumbs(); }
+      else if (a === "crop") {
+        // ✂ Оруулсан зургийг дахин тайрч, шинэ зургаар сольно
+        const r = await cropImage(u); if (!r || r === "orig") return;
+        busy(+1); $("pmsg").className = "mut"; $("pmsg").textContent = "Тайрсан зургийг оруулж байна…";
+        try { const nu = await upload(r, $("p-id").value || "new"); undo[nu] = u; images[i] = nu; moveColor(u, nu); drawThumbs(); $("pmsg").className = "ok"; $("pmsg").textContent = "✓ Зураг тайрагдлаа · зураг дээр дарж буцааж болно"; }
+        catch (err) { $("pmsg").className = "err"; $("pmsg").textContent = "⚠ Алдаа: " + (err.message || err); }
+        busy(-1);
+      } else if (a === "undo") {
+        // ↶ Тайрахаас өмнөх зураг руу буцаана (хуучин холбоос бол шууд, анхны файл бол дахин оруулна)
+        const prev = undo[u]; if (!prev) return;
+        if (typeof prev === "string") { images[i] = prev; moveColor(u, prev); delete undo[u]; drawThumbs(); return; }
+        busy(+1);
+        try { images[i] = await upload(prev, $("p-id").value || "new"); moveColor(u, images[i]); delete undo[u]; drawThumbs(); }
+        catch (err) { $("pmsg").className = "err"; $("pmsg").textContent = "⚠ Алдаа: " + (err.message || err); }
+        busy(-1);
+      }
+    });
+  };
+  // Аль өнгөнд зураг нэмж байгаа ("" = ерөнхий)
+  let upColor = "";
+  drawColors(); drawSizes(); drawThumbs();
+  // Нэр, үнэ бичихэд доод мөрийн харагдацыг шинэчилнэ
+  $("p-name").addEventListener("input", summary); $("p-price").addEventListener("input", summary);
+  // Хуулбарлах: адил төстэй шинэ бараа (зураггүй, нэрийн ард "хуулбар")
+  if ($("pcopy")) $("pcopy").onclick = () => {
+    const ex = { ...(p.extra || {}) }; delete ex.imgColor; delete ex.labels;
+    productForm({ ...p, id: "", name: p.name + " (хуулбар)", images: [], extra: ex, sort: (p.sort || 0) + 1 }, true);
+    toast("Хуулбар үүслээ — зураг, нэрээ солиод Хадгалах дарна уу"); $("pform").scrollIntoView({ behavior: "smooth" });
+  };
   // ID-г зөв хэлбэрт оруулна: жижиг латин үсэг, тоо, "-" (утас том үсгээр эхлүүлэх, кирилл бичихийг засна)
   const TR = { а:"a",б:"b",в:"v",г:"g",д:"d",е:"e",ё:"yo",ж:"j",з:"z",и:"i",й:"i",к:"k",л:"l",м:"m",н:"n",о:"o",ө:"u",п:"p",р:"r",с:"s",т:"t",у:"u",ү:"u",ф:"f",х:"h",ц:"ts",ч:"ch",ш:"sh",щ:"sh",ъ:"",ы:"y",ь:"",э:"e",ю:"yu",я:"ya" };
   const slug = v => String(v).toLowerCase().split("").map(c => TR[c] ?? c).join("").replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").replace(/-{2,}/g, "-").slice(0, 40);
@@ -1342,9 +1519,8 @@ function productForm(p, isNew){
   // Хэдэн зураг оруулж байгааг тоолно: дуустал "Хадгалах" товч идэвхгүй (зураггүй хадгалагдахаас сэргийлнэ)
   let uploading = 0;
   const busy = d => { uploading += d; $("psave").disabled = uploading > 0; $("psave").textContent = uploading > 0 ? "Зураг оруулж байна…" : "Хадгалах"; };
-  $("pfiles").onchange = async e => {
-    const picked = [...e.target.files]; e.target.value = "";
-    if (!picked.length) return;
+  $("pfiles").onchange = e => { const picked = [...e.target.files]; e.target.value = ""; if (picked.length) addFiles(picked); };
+  async function addFiles(picked){
     // Зураг бүрийг эхлээд тайрах цонхонд харуулна (тайрах / тайралгүй / болих)
     const files = []; let skipCrop = false;
     for (const [n, f] of picked.entries()) {
@@ -1361,12 +1537,13 @@ function productForm(p, isNew){
     const folder = $("p-id").value || (isNew && $("p-name").value.trim() ? makeId() : "") || "new";
     busy(+1); let ok = 0, bad = 0;
     // Сонгосон зураг бүрт "Оруулж байна" хайрцаг гаргана
-    pending = files.map(() => "up"); drawThumbs();
+    const toColor = upColor; upColor = "";
+    pending = files.map(() => ({ c: toColor, s: "up" })); drawThumbs();
     const bar = $("upbar"); bar.hidden = false; bar.firstElementChild.style.width = "4%";
     $("pmsg").className = "mut";
     for (const [n, f] of files.entries()) {
       $("pmsg").textContent = `Оруулж байна… ${n + 1}/${files.length}`;
-      try { const u = await upload(f, folder); if (f.__orig) undo[u] = f.__orig; images.push(u); ok++; pending.shift(); }
+      try { const u = await upload(f, folder); if (f.__orig) undo[u] = f.__orig; images.push(u); if (toColor) imgColor[u] = toColor; ok++; pending.shift(); }
       catch (err) { bad++; pending.shift(); toast("Зураг оруулахад алдаа: " + (err.message || err)); }
       // Явцын зураасыг ахиулна
       bar.firstElementChild.style.width = Math.round((n + 1) / files.length * 100) + "%";
@@ -1378,7 +1555,7 @@ function productForm(p, isNew){
     if (ok && !bad) { $("pmsg").className = "ok"; $("pmsg").textContent = `✓ ${ok} зураг амжилттай орлоо`; }
     else if (ok) { $("pmsg").className = "err"; $("pmsg").textContent = `✓ ${ok} орлоо · ⚠ ${bad} алдаатай — дахин оролдоно уу`; }
     else { $("pmsg").className = "err"; $("pmsg").textContent = "⚠ Зураг орсонгүй — дахин оролдоно уу"; }
-  };
+  }
   // ----- Барааны дэлгэрэнгүй: хэрэгсэл, урьдчилан харах, урт зургууд -----
   const ta = $("p-descr");
   const prev = () => { $("p-rdprev").innerHTML = richDesc(ta.value) || '<p class="mut">—</p>'; };
@@ -1413,12 +1590,24 @@ function productForm(p, isNew){
   };
   // Холбоосоор зураг нэмэх
   $("paddurl").onclick = () => { const u = $("purl").value.trim(); if (!/^(https:\/\/|\/)/.test(u)) return toast("https:// эсвэл /-ээр эхэлсэн холбоос"); images.push(u); $("purl").value = ""; drawThumbs(); };
+  // Өнгө + хэмжээ + бусад сонголтыг нэгтгэнэ (хуучин бараа бол хуучин дарааллаар)
+  const buildOpts = () => {
+    const list = [];
+    if (colors.length) list.push({ label: cLabel, values: colors });
+    if (sizes.length) list.push({ label: sLabel, values: sizes });
+    parseOpts($("p-opts").value).filter(o => !isColor(o.label) && !isSize(o.label)).forEach(o => list.push(o));
+    const pos = o => { const i = optOrder.indexOf(o.label); return i < 0 ? 100 + list.indexOf(o) : i; };
+    return list.sort((a, b) => pos(a) - pos(b));
+  };
   // Хадгалах
   $("pf").onsubmit = async e => {
     e.preventDefault();
     // Зураг оруулж дуусаагүй бол хүлээнэ
     if (uploading > 0 || dUp > 0) return toast("Зураг оруулж дуустал түр хүлээнэ үү");
     if (!$("p-name").value.trim()) return toast("Барааны нэрээ бичнэ үү");
+    if (!(Number($("p-price").value) > 0)) return toast("Үнээ бичнэ үү");
+    if (!images.length && !confirm("Зураггүй хадгалах уу? (Дараа нь Засах дарж зураг нэмж болно)")) return;
+    if (colors.length && colors.some(c => !images.some(u => imgColor[u] === c)) && !confirm("Зарим өнгөнд зураг ороогүй байна. Тэр өнгийг сонгоход гол зураг харагдана. Үргэлжлүүлэх үү?")) return;
     $("psave").disabled = true;
     // Зураг өөрчлөгдсөн бол галерейн хуучин нэрсийг (labels) хасна
     const extra = { ...(p.extra || {}) }; if (JSON.stringify(images) !== origImages) delete extra.labels;
@@ -1431,7 +1620,7 @@ function productForm(p, isNew){
     if (!$("p-id").value) $("p-id").value = makeId();
     const row = { id: $("p-id").value, cat: $("p-cat").value, name: $("p-name").value.trim(), series: $("p-series").value.trim(), line: $("p-line").value.trim(),
       price: Number($("p-price").value), was: Number($("p-was").value) || null, badge: $("p-badge").value || null, descr: $("p-descr").value.trim(),
-      options: parseOpts($("p-opts").value), pre: $("p-pre").checked, active: $("p-active").checked, sort: Number($("p-sort").value) || 0, images, extra };
+      options: buildOpts(), pre: $("p-pre").checked, active: $("p-active").checked, sort: Number($("p-sort").value) || 0, images, extra };
     const { error } = await sb.from("products").upsert(row);
     $("psave").disabled = false;
     if (error) return toast("Алдаа: " + error.message);

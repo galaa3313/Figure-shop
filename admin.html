@@ -604,7 +604,7 @@ async function showUsers(){
       const locked = self || sup || (u.role === "admin" && !SUP);
       return `<div class="uc ${u.blocked ? "off" : ""}">
         <div class="av">${esc((u.username || "?")[0].toUpperCase())}</div>
-        <div class="ui"><b>${esc(u.username)}${self ? ' <small class="mut">(та)</small>' : ""}</b><span>${esc(u.email)}${u.phone ? " · " + esc(u.phone) : ""}</span>
+        <div class="ui"><b>${esc(u.username)}${self ? ' <small class="mut">(та)</small>' : ""}</b><span>${/@no-email\.finn\.mn$/i.test(u.email || "") ? "Facebook-ээр нэвтэрсэн" : esc(u.email)}${u.phone ? " · " + esc(u.phone) : ""}</span>
           <span class="mut">Бүртгүүлсэн: ${dt(u.created_at)}</span>
           <span>${sup ? '<span class="tag sup">⭐ Супер админ</span>' : u.role === "admin" ? '<span class="tag adm">👑 Админ</span>' : ""}${pend ? '<span class="tag">⏳ Админ хүсэлт</span>' : ""}${u.blocked ? '<span class="tag no">🔒 Түр хаагдсан</span>' : '<span class="tag ok">Идэвхтэй</span>'}</span></div>
         <details class="more"><summary aria-label="Үйлдэл">⋯</summary><div class="menu">
@@ -667,7 +667,9 @@ async function userInfo(id){
     box.innerHTML = `<div class="udx">
       <div class="bar" style="margin:0"><h3 style="margin:0 auto 0 0">${esc(u.username)}</h3><button class="btn" type="button" id="udx">Хаах ✕</button></div>
       <div class="ug">
-        <div><small>Имэйл</small>${esc(u.email)} ${r.confirmed ? "✓" : '<span class="tag no">баталгаажаагүй</span>'}</div>
+        ${r.provider === "facebook" ? `<!-- Facebook бүртгэл: Facebook дээрх нэр, зураг -->
+        <div><small>Facebook</small><span style="display:flex;align-items:center;gap:8px">${r.fbAvatar ? `<img src="${esc(r.fbAvatar)}" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover">` : ""}<b>${esc(r.fbName || "—")}</b></span></div>` : ""}
+        <div><small>Имэйл</small>${/@no-email\.finn\.mn$/i.test(u.email || "") ? '<span class="mut">Facebook имэйл өгөөгүй</span>' : `${esc(u.email)} ${r.confirmed ? "✓" : '<span class="tag no">баталгаажаагүй</span>'}`}</div>
         <div><small>Утас</small>${esc(u.phone || "—")}</div>
         <div><small>Бүртгүүлсэн</small>${dt(u.created_at)} · ${esc(PROV[r.provider] || r.provider)}</div>
         <div><small>Сүүлд нэвтэрсэн</small>${r.lastSignIn ? dt(r.lastSignIn) : "—"}</div>

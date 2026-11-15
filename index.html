@@ -3132,16 +3132,18 @@ async function openInbox(tid){
 async function openThread(tid){
   const tk = ++IB_TK;
   openSheet("Мессеж"); $("sheetBody").innerHTML = `<p class="desc">Уншиж байна…</p>`;
-  const [{ data: t }, { data: items }] = await Promise.all([
+  let [{ data: t }, { data: items, error: ie }] = await Promise.all([
     sb.from("msg_threads").select("id,subject,kind,order_code,closed").eq("id", tid).maybeSingle(),
-    sb.from("msg_items").select("id,from_admin,body,created_at").eq("thread_id", tid).order("created_at", { ascending: true }).limit(300)]);
+    sb.from("msg_items").select("id,from_admin,body,created_at,edited_at").eq("thread_id", tid).order("created_at", { ascending: true }).limit(300)]);
+  // "засварласан" багана байхгүй бол (finn-inbox2.sql ажиллаагүй) энгийнээр уншина
+  if (ie) ({ data: items } = await sb.from("msg_items").select("id,from_admin,body,created_at").eq("thread_id", tid).order("created_at", { ascending: true }).limit(300));
   if (tk !== IB_TK) return;
   if (!t) { $("sheetBody").innerHTML = `<button class="link back" type="button" id="toIb">← Бүх мессеж</button><p class="desc">Мессеж олдсонгүй.</p>`; $("toIb").onclick = () => openInbox(); return; }
   // Уншсан болгоно (хонхны тоо буурна)
   sb.rpc("msg_read", { p_thread: tid }).then(pollNotif);
   $("sheetBody").innerHTML = `<button class="link back" type="button" id="toIb">← Бүх мессеж</button>
     <div class="ithead"><b>${esc(t.subject)}</b><span>${esc(MKIND[t.kind] || "")}${t.order_code ? " · 📦 " + esc(t.order_code) : ""}</span></div>
-    <div class="ichat">${(items || []).map(m => `<div class="bub ${m.from_admin ? "fn" : "me"}">${m.from_admin ? "<b>FINN</b>" : ""}<p>${esc(m.body)}</p><small>${dtm(m.created_at)}</small></div>`).join("")}</div>
+    <div class="ichat">${(items || []).map(m => `<div class="bub ${m.from_admin ? "fn" : "me"}">${m.from_admin ? "<b>FINN</b>" : ""}<p>${esc(m.body)}</p><small>${dtm(m.created_at)}${m.edited_at ? " · засварласан" : ""}</small></div>`).join("")}</div>
     <form class="acct irep" id="iRep"><textarea id="iTxt" maxlength="3000" rows="2" placeholder="Хариу бичих…" required></textarea><p class="aerr" id="aerr"></p><button class="primary" type="submit" id="iSend">Илгээх</button></form>`;
   $("toIb").onclick = () => openInbox();
   // Хамгийн сүүлийн мессеж рүү гүйлгэнэ

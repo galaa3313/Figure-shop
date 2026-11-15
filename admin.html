@@ -105,6 +105,15 @@ nav{flex-wrap:wrap}
 .nit .nt b{display:block;font-size:13.5px;font-weight:500}.nit.new .nt b{font-weight:700}
 .nit .nt>span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12.5px;color:var(--muted)}
 .nit time{font-size:11px;color:var(--muted);white-space:nowrap}
+/* ===== Хэн хариулсан, засах ===== */
+.whof{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-left:auto;white-space:nowrap}
+.whof select{height:34px;border:1px solid var(--line);background:#fff;padding:0 8px;font-size:13px}
+.who{font-style:normal;font-weight:600;color:#1e6fff;margin-right:2px}.who::after{content:":"}
+.rwho{flex:1 1 100%;margin:0 0 2px;font-size:13px;color:var(--muted)}.rwho b{color:var(--ink)}
+.bedit{border:0;background:none;color:inherit;text-decoration:underline;font-size:11px;padding:0;opacity:1;cursor:pointer}
+.bub.editing{width:100%;max-width:100%}
+.edta{width:100%;font:inherit;font-size:15px;padding:8px;border:0;border-radius:8px;color:#111;margin-top:4px}
+.edbt{display:flex;gap:6px;margin-top:6px}.edbt .btn{height:34px;background:#fff;color:#111}
 /* ===== Мессеж ===== */
 .ibar{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
 .ibar button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-size:13px}
@@ -2176,29 +2185,38 @@ async function showSettings(){
 }
 
 // ===== СЭТГЭГДЭЛ: бүх сэтгэгдэл, хариулах, нуух, устгах =====
+let RV_WHO = "";
 async function showReviews(){
   const my = ++VIEW;
-  const [{ data: list, error }, { data: prods }] = await Promise.all([
+  let [{ data: list, error }, { data: prods }] = await Promise.all([
     sb.from("reviews").select("*").order("created_at", { ascending: false }).limit(300),
-    sb.from("products").select("id,name")
+    sb.from("products").select("id,name"), loadAdmins()
   ]);
+  // Аль админ хариулсан (finn-inbox2.sql) — хүснэгт байхгүй бол хоосон
+  const { data: logs } = await sb.from("review_reply_log").select("review_id,admin_id,replied_at,edited");
+  const LOG = {}; (logs || []).forEach(l => LOG[l.review_id] = l);
   if (my !== VIEW) return;
   if (error) { $("main").innerHTML = `<p class="msg">Алдаа: ${esc(error.message)}<br>Supabase-д finn-reviews.sql-ийг ажиллуулсан эсэхээ шалгана уу.</p>`; return; }
   const pname = id => ((prods || []).find(x => x.id === id) || {}).name || id;
+  // "Хэн хариулсан" шүүлтүүр
+  const all = list; list = all.filter(r => !RV_WHO || (LOG[r.id] && LOG[r.id].admin_id === RV_WHO));
+  const who = r => LOG[r.id] && r.reply ? LOG[r.id] : null;
   const st = r => "★★★★★".slice(0, r) + "☆☆☆☆☆".slice(0, 5 - r);
-  $("main").innerHTML = `<div class="bar"><h2>Сэтгэгдэл <small class="mut">(${list.length})</small></h2></div>
+  $("main").innerHTML = `<div class="bar"><h2>Сэтгэгдэл <small class="mut">(${all.length})</small></h2>${whoSel(RV_WHO, "rvWho")}</div>
     <!-- Сэтгэгдэл бүр нэг мөр: дарахад бүтэн бичиг, зураг, хариулт харагдана -->
     <div class="olist rvl2" id="rvl">${list.length ? `<p class="mut ocount">${list.length} сэтгэгдэл · дарж дэлгэрэнгүйг харна${list.filter(r => !r.reply).length ? ` · <b>${list.filter(r => !r.reply).length}</b> хариулаагүй` : ""}</p>` : ""}${list.map(r => `<details class="ord rv2 ${r.hidden ? "off" : r.rating <= 2 ? "low" : ""}" data-row>
       <summary><span class="oc">${selBox(r.id)}<b class="stars">${st(r.rating)}</b><small>${dt(r.created_at)}</small></span>
         <span class="on">${esc(pname(r.product_id))}<small>${esc(r.username)} · ${esc(String(r.body || "").slice(0, 70))}${String(r.body || "").length > 70 ? "…" : ""}</small></span>
         <span class="ot">${(r.photos || []).filter(okPhoto).length ? "📷" : ""}</span>
-        <span class="os"><i></i>${r.hidden ? "Нуусан" : r.reply ? "Хариулсан" : "Хариулаагүй"}</span><span class="ochev" aria-hidden="true">›</span></summary>
+        <span class="os"><i></i>${r.hidden ? "Нуусан" : r.reply ? `Хариулсан${who(r) ? " · " + esc(aname(who(r).admin_id)) : ""}` : "Хариулаагүй"}</span><span class="ochev" aria-hidden="true">›</span></summary>
       <div class="obody rvb">
         <div><small>${esc(r.username)} ${r.verified ? '<span class="tag ok">✓ Худалдан авсан</span>' : ""}</small><p style="white-space:pre-line;margin:6px 0">${esc(r.body)}</p>
           ${(r.photos || []).filter(okPhoto).length ? `<div class="thumbs">${r.photos.filter(okPhoto).map(u => `<figure><a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt=""></a></figure>`).join("")}</div>` : ""}</div>
-        <div class="oact"><label>FINN-ий хариулт<textarea data-rp="${r.id}" rows="2" placeholder="Хариулт (заавал биш)">${esc(r.reply || "")}</textarea></label>
+        <div class="oact">${who(r) ? `<p class="rwho">✍ <b>${esc(aname(who(r).admin_id))}</b> хариулсан · ${dt(who(r).replied_at)}${who(r).edited ? " · засварласан" : ""}</p>` : ""}<label>FINN-ий хариулт<textarea data-rp="${r.id}" rows="2" placeholder="Хариулт (заавал биш)">${esc(r.reply || "")}</textarea></label>
           <button class="btn dark" data-save="${r.id}">Хариулт илгээх</button><a class="btn" href="/#p/${encodeURIComponent(r.product_id)}/rv" target="_blank" rel="noopener" title="Сайт дээрх сэтгэгдэл хэсэг рүү">🔗 Сайтад харах</a><button class="btn" data-hide="${r.id}">${r.hidden ? "👁 Харуулах" : "🙈 Нуух"}</button><button class="btn del" data-del="${r.id}">🗑 Устгах</button></div>
       </div></details>`).join("") || '<p class="msg">Одоохондоо сэтгэгдэл алга.</p>'}</div>`;
+  // "Хэн хариулсан" шүүлтүүр солиход
+  $("rvWho").onchange = e => { RV_WHO = e.target.value; showReviews(); };
   // Нэгийг задлахад бусдыг хураана
   $("rvl").querySelectorAll("details.rv2").forEach(d => d.ontoggle = () => { if (d.open) $("rvl").querySelectorAll("details.rv2[open]").forEach(x => x !== d && (x.open = false)); });
   // Олноор сонгож устгах
@@ -2211,7 +2229,10 @@ async function showReviews(){
     if (error) return toast("Алдаа: " + error.message);
     // Хариулт илгээгдвэл хэрэглэгчид 🔔 мэдэгдэл автоматаар очно (finn-inbox.sql)
     toast(v ? "✓ Хариулт илгээлээ · хэрэглэгчид мэдэгдэл очлоо" : "Хариултыг арилгалаа");
-    const row = b.closest("details"); if (row && !row.classList.contains("off")) row.querySelector(".os").innerHTML = `<i></i>${v ? "Хариулсан" : "Хариулаагүй"}`;
+    // Хэн хариулсныг шууд харуулна
+    const rw = b.closest(".oact"), me = aname(ADMIN_UID);
+    if (rw) { let el = rw.querySelector(".rwho"); if (v) { if (!el) { el = document.createElement("p"); el.className = "rwho"; rw.prepend(el); } el.innerHTML = `✍ <b>${esc(me)}</b> хариулсан · дөнгөж сая`; } else if (el) el.remove(); }
+    const row = b.closest("details"); if (row && !row.classList.contains("off")) row.querySelector(".os").innerHTML = `<i></i>${v ? "Хариулсан · " + esc(aname(ADMIN_UID)) : "Хариулаагүй"}`;
   });
   // Нуух / харуулах
   $("main").querySelectorAll("[data-hide]").forEach(b => b.onclick = async () => {
@@ -2908,32 +2929,47 @@ async function openNPanel(){
   });
 }
 
+// ===== АДМИНУУДЫН НЭР: хэн хариулсныг харуулахад =====
+let ADMINS = null;
+async function loadAdmins(){
+  if (ADMINS) return ADMINS;
+  const { data } = await sb.from("profiles").select("id,username").eq("role", "admin");
+  ADMINS = {}; (data || []).forEach(a => ADMINS[a.id] = a.username);
+  return ADMINS;
+}
+// uuid → админы нэр (олдохгүй бол "админ")
+const aname = id => (ADMINS && ADMINS[id]) || "админ";
+// "Хэн хариулсан" шүүлтүүр (бүх админ / тодорхой админ)
+const whoSel = (cur, id) => `<label class="whof">✍ Хариулсан<select id="${id}"><option value="">Бүх админ</option>${Object.entries(ADMINS || {}).map(([k, v]) => `<option value="${esc(k)}" ${cur === k ? "selected" : ""}>${esc(v)}</option>`).join("")}</select></label>`;
+
 // ===== МЕССЕЖ: хэрэглэгчийн санал хүсэлт, асуулт — имэйл шиг ирсэн / илгээсэн =====
 const MKIND = { feedback: "Санал хүсэлт", question: "Асуулт", order: "Захиалга", other: "Бусад" };
-let IB_F = "all";
+let IB_F = "all", IB_WHO = "";
 // f: шүүлтүүр, openId: шууд задлах харилцаа
 async function showInbox(f, openId){
   if (f) IB_F = f;
   const my = ++VIEW;
-  const { data: list, error } = await sb.from("msg_threads").select("*").order("last_at", { ascending: false }).limit(300);
+  const [{ data: list, error }] = await Promise.all([sb.from("msg_threads").select("*").order("last_at", { ascending: false }).limit(300), loadAdmins()]);
   if (my !== VIEW) return;
   if (error) { $("main").innerHTML = `<p class="msg">Мессеж ажиллахгүй байна: ${esc(error.message)}<br>Supabase-д <b>finn-inbox.sql</b>-ийг ажиллуулна уу.</p>`; return; }
   // Шүүлтүүр: Бүгд · Ирсэн (хэрэглэгчээс, хариу хүлээж буй) · Илгээсэн (FINN хариулсан) · Хаасан
   const F = { all: t => true, in: t => t.last_from === "user" && !t.closed, out: t => t.last_from === "admin" && !t.closed, closed: t => t.closed };
-  const rows = list.filter(F[IB_F]);
+  // Сүүлд хариулсан админаар шүүнэ
+  const rows = list.filter(F[IB_F]).filter(t => !IB_WHO || (t.last_from === "admin" && t.last_by === IB_WHO));
   const unread = list.filter(t => t.admin_unread > 0).length;
   const st = t => t.closed ? ["off", "Хаасан"] : t.admin_unread ? ["wait", `${t.admin_unread} шинэ`] : t.last_from === "user" ? ["wait", "Хариулаагүй"] : ["ok", "Хариулсан"];
   $("main").innerHTML = `<div class="bar"><h2>Мессеж <small class="mut">(${list.length})</small></h2><button class="btn dark" type="button" id="ibNew">✏️ Шинэ мессеж</button></div>
     <div id="ibComp"></div>
     <div class="ibar">${[["all", "Бүгд", list.length], ["in", "Ирсэн", list.filter(F.in).length], ["out", "Илгээсэн", list.filter(F.out).length], ["closed", "Хаасан", list.filter(F.closed).length]]
-      .map(([k, l, c]) => `<button type="button" data-f="${k}" aria-pressed="${IB_F === k}">${l} <small>${c}</small></button>`).join("")}</div>
+      .map(([k, l, c]) => `<button type="button" data-f="${k}" aria-pressed="${IB_F === k}">${l} <small>${c}</small></button>`).join("")}${whoSel(IB_WHO, "ibWho")}</div>
     <div class="olist" id="ibl">${rows.length ? `<p class="mut ocount">${rows.length} харилцаа · дарж уншина${unread ? ` · <b>${unread}</b> уншаагүй` : ""}</p>` : ""}${rows.map(t => { const [tn, tl] = st(t); return `<details class="ord ib ${tn} ${t.admin_unread ? "unr" : ""}" data-row data-th="${t.id}">
       <summary><span class="oc">${selBox(t.id)}<b>${esc(t.username)}</b><small>${ago(t.last_at)}</small></span>
-        <span class="on">${esc(t.subject)}<small>${t.last_from === "admin" ? "FINN: " : ""}${esc(t.last_text)}</small></span>
+        <span class="on">${esc(t.subject)}<small>${t.last_from === "admin" ? `<em class="who">${esc(t.last_by ? aname(t.last_by) : "FINN")}</em> ` : ""}${esc(t.last_text)}</small></span>
         <span class="ot"><span class="tag">${esc(MKIND[t.kind] || "")}</span></span>
         <span class="os"><i></i>${tl}</span><span class="ochev" aria-hidden="true">›</span></summary>
       <div class="obody ibb"><p class="mut">Уншиж байна…</p></div></details>`; }).join("") || '<p class="msg">Энд мессеж алга.</p>'}</div>`;
   $("main").querySelectorAll("[data-f]").forEach(b => b.onclick = () => showInbox(b.dataset.f));
+  $("ibWho").onchange = e => { IB_WHO = e.target.value; showInbox(); };
   $("ibNew").onclick = () => ibCompose();
   // Задлахад харилцааг ачаалж, уншсан болгоно; бусдыг хураана
   $("ibl").querySelectorAll("details.ib").forEach(d => d.ontoggle = () => {
@@ -2949,14 +2985,38 @@ async function showInbox(f, openId){
 // Нэг харилцааны мессежүүд (чат хэлбэр) + хариу бичих, хаах, устгах
 async function ibThread(d, t){
   const box = d.querySelector(".ibb");
-  const { data: items } = await sb.from("msg_items").select("id,from_admin,author_name,body,created_at").eq("thread_id", t.id).order("created_at", { ascending: true }).limit(300);
+  let { data: items, error } = await sb.from("msg_items").select("id,from_admin,author,author_name,body,created_at,edited_at,edited_by").eq("thread_id", t.id).order("created_at", { ascending: true }).limit(300);
+  // finn-inbox2.sql ажиллаагүй бол хуучин багануудаар уншина
+  if (error) ({ data: items } = await sb.from("msg_items").select("id,from_admin,author,author_name,body,created_at").eq("thread_id", t.id).order("created_at", { ascending: true }).limit(300));
   if (t.admin_unread) { sb.rpc("msg_read", { p_thread: t.id }).then(pollAdmin); t.admin_unread = 0; d.classList.remove("unr"); }
+  // Засах эрх: өөрийн мессеж, эсвэл супер админ бол бүх админы мессеж
+  const canEdit = m => m.from_admin && "edited_at" in m && (m.author === ADMIN_UID || ME_SUPER);
   box.innerHTML = `<div class="ithead"><b>${esc(t.subject)}</b><span class="mut">${esc(t.username)} · ${esc(MKIND[t.kind] || "")}${t.order_code ? ` · 📦 ${esc(t.order_code)}` : ""} · эхэлсэн ${dt(t.created_at)}</span></div>
-    <div class="ichat">${(items || []).map(m => `<div class="bub ${m.from_admin ? "me" : "fn"}"><b>${m.from_admin ? "FINN" : esc(m.author_name)}</b><p>${esc(m.body)}</p><small>${dt(m.created_at)}</small></div>`).join("") || '<p class="mut">Мессеж алга.</p>'}</div>
+    <div class="ichat">${(items || []).map(m => `<div class="bub ${m.from_admin ? "me" : "fn"}" data-mi="${m.id}">
+      <!-- Админы мессеж: "FINN · нэр" (хэрэглэгчид зөвхөн FINN гэж харагдана) -->
+      <b>${m.from_admin ? `FINN · ${esc(aname(m.author))}` : esc(m.author_name)}</b><p>${esc(m.body)}</p>
+      <small>${dt(m.created_at)}${m.edited_at ? ` · засварласан${m.edited_by && m.edited_by !== m.author ? ` (${esc(aname(m.edited_by))})` : ""}` : ""}${canEdit(m) ? ` · <button type="button" class="bedit" data-ed="${m.id}">✏️ Засах</button>` : ""}</small></div>`).join("") || '<p class="mut">Мессеж алга.</p>'}</div>
     <div class="oact"><label style="flex:1 1 100%">Хариу бичих<textarea data-ib rows="2" maxlength="3000" placeholder="Хэрэглэгчид илгээх хариу (🔔 мэдэгдэл очно)"></textarea></label>
       <button type="button" class="btn dark" data-ibs>Илгээх</button>
       <button type="button" class="btn" data-ibc>${t.closed ? "↩ Дахин нээх" : "✓ Хаах"}</button>
       <button type="button" class="btn del" data-ibd>🗑 Устгах</button></div>`;
+  // ✏️ Засах: мессежийн бичгийг талбар болгоод хадгална
+  box.querySelectorAll("[data-ed]").forEach(btn => btn.onclick = () => {
+    const m = items.find(x => x.id === +btn.dataset.ed), bub = box.querySelector(`[data-mi="${m.id}"]`);
+    bub.classList.add("editing");
+    bub.querySelector("p").outerHTML = `<textarea class="edta" rows="3" maxlength="3000">${esc(m.body)}</textarea><span class="edbt"><button type="button" class="btn" data-sv>Хадгалах</button><button type="button" class="btn" data-cx>Болих</button></span>`;
+    bub.querySelector("small").hidden = true;
+    const ta2 = bub.querySelector(".edta"); ta2.focus(); fitTA(ta2);
+    bub.querySelector("[data-cx]").onclick = () => ibThread(d, t);
+    bub.querySelector("[data-sv]").onclick = async e => {
+      const v = ta2.value.trim(); if (!v) return ta2.focus();
+      if (v === m.body) return ibThread(d, t);
+      e.target.disabled = true; e.target.textContent = "Хадгалж байна…";
+      const { error } = await sb.rpc("msg_edit", { p_item: m.id, p_body: v });
+      if (error) { e.target.disabled = false; e.target.textContent = "Хадгалах"; return toast(/not allowed/.test(error.message) ? "Зөвхөн өөрийнхөө мессежийг засна" : "Алдаа: " + error.message); }
+      toast("✓ Засварлалаа"); ibThread(d, t);
+    };
+  });
   const ta = box.querySelector("[data-ib]");
   box.querySelector("[data-ibs]").onclick = async e => {
     const v = ta.value.trim(); if (!v) return ta.focus();

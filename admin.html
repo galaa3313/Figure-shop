@@ -89,6 +89,35 @@ nav{flex-wrap:wrap}
 /* Өөр бүртгэлээр нэвтэрсэн анхааруулга */
 .swacc{position:sticky;top:0;z-index:30;background:#fff3cd;border-bottom:2px solid #e0a800;color:#5c4400;padding:12px max(16px,3vw);font-size:14px;line-height:1.5}
 .swacc small{display:block;opacity:.8;margin-top:2px}.swacc a{color:inherit;font-weight:700}
+/* ===== Хэсгийг сайт дээр урьдчилан харах ===== */
+.pvbtn{margin-left:auto;align-self:center;height:36px;font-size:13px;white-space:nowrap;flex:none}
+.pvwrap{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px}
+.pvwrap[hidden]{display:none}
+.pvbox{background:#fff;width:min(1100px,100%);height:min(92vh,980px);display:flex;flex-direction:column;border-radius:14px;overflow:hidden}
+.pvhead{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.pvhead b{margin-right:auto;font-size:15px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:7px 12px;font-size:13px}.seg button[aria-pressed=true]{background:#111;color:#fff}
+.pvstage{flex:1;overflow:hidden;background:#e9e9e6;display:flex;justify-content:center;position:relative}
+.pvstage iframe{border:0;background:#fff;transform-origin:top center;flex:none;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.pvnote{margin:0;padding:8px 12px;font-size:12px}
+@media (max-width:760px){ .pvwrap{padding:0} .pvbox{border-radius:0;height:100%} .pvbtn{height:32px;padding:0 10px;font-size:12px}
+  /* Утсан дээр толгой нэг мөрөнд багтана */
+  .pvhead{flex-wrap:nowrap;padding:8px} .pvhead b{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0} .pvhead .btn{height:34px;width:34px;padding:0;justify-content:center} .seg button{padding:6px 9px;font-size:12px} }
+/* ===== Гүйдэг тууз (тохиргоо) ===== */
+.mqprev{overflow:hidden;white-space:nowrap;border:1px solid var(--line);border-radius:10px;background:#fff}
+.mqtrack{display:inline-flex;gap:44px;padding:14px 0;font-size:20px;animation:mqa 20s linear infinite}
+@keyframes mqa{to{transform:translateX(-33.333%)}}
+.mqprev:hover .mqtrack{animation-play-state:paused}
+.mqi{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.mqi img{height:1.7em;width:auto;max-width:160px;object-fit:contain}.mqi i,.mqi em{font-style:normal}
+.mqrow{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#fff}
+.mqth{width:56px;height:56px;border-radius:8px;background:#f3f3f1;display:grid;place-items:center;overflow:hidden;font-size:22px}
+.mqth img{width:100%;height:100%;object-fit:contain}
+.mqf{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:6px;align-items:center}
+.mqf select{height:38px;max-width:150px}.mqf .btn.sm{height:38px;flex-direction:row}
+.mqt{font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--muted);text-transform:uppercase}
+@media (max-width:760px){ .mqf{grid-template-columns:auto 1fr} .mqf textarea,.mqf [data-ql]{grid-column:1/-1;max-width:none} }
 /* ===== Мэдэгдлийн хонх ба жагсаалт ===== */
 .abell{position:relative;border:0;background:none;padding:6px;color:var(--ink);display:grid;place-items:center;margin-left:auto}
 .abell svg{width:24px;height:24px}
@@ -1934,7 +1963,7 @@ async function showSettings(){
     <!-- Хэсэг рүү үсрэх товчнууд -->
     <div class="slay">
     <div class="snav" id="snav">
-      <a href="#s-notice">📢 Мэдээ</a><a href="#s-slides">🖼 Слайд</a><a href="#s-promos">🧩 Постер</a><a href="#s-hero">🏠 Нүүр</a><a href="#s-cats">🏷 Ангилал</a>
+      <a href="#s-notice">📢 Мэдээ</a><a href="#s-slides">🖼 Слайд</a><a href="#s-promos">🧩 Постер</a><a href="#s-hero">🏠 Нүүр</a><a href="#s-cats">🏷 Ангилал</a><a href="#s-mq">🎞 Гүйдэг тууз</a>
       <a href="#s-how">🧾 Захиалах</a><a href="#s-faq">❓ Асуулт</a><a href="#s-perks">🚚 Үйлчилгээ</a><a href="#s-contact">📞 Холбоо барих</a><a href="#s-login">🔐 Нэвтрэх</a><a href="#s-style">🎨 Загвар</a><a href="#s-foot">⬇ Хөл</a>
     </div>
     <div id="sf">
@@ -1970,6 +1999,21 @@ async function showSettings(){
         <p class="full mut">↑ ↓ товчоор дарааллыг солино. Бараатай ангиллыг устгахгүй — эхлээд барааг өөр ангилалд шилжүүлнэ.</p>
         <div class="full" id="catList"></div>
         <div class="full row"><textarea rows="1" class="one" id="catNew" placeholder="Шинэ ангиллын нэр (жишээ: Спорт хувцас)" style="flex:1"></textarea><button type="button" class="btn" id="catAdd">+ Нэмэх</button></div>
+      </section>
+      <section class="form scard" id="s-mq">
+        ${head("🎞", "Гүйдэг тууз", "Нүүрний слайдын доор зүүн тийш гүйдэг тууз. Хоосон бол ангиллын нэрс автоматаар гүйнэ.")}
+        <!-- Шууд харагдах жишээ -->
+        <div class="full mqprev"><div class="mqtrack" id="mqPrev"></div></div>
+        <p class="full mut">Мөр бүр: <b>текст</b> (урд нь дүрс/emoji) эсвэл <b>зураг · GIF · лого</b>. Ангилалтай холбовол сайт дээр дарахад тэр ангилал шүүгдэнэ. Ил тод (PNG) эсвэл GIF зөвлөнө, 4MB хүртэл.</p>
+        <div class="full" id="mqList"></div>
+        <div class="full row" style="flex-wrap:wrap;gap:8px">
+          <button type="button" class="btn add" id="mqAddT">+ Текст</button>
+          <label class="btn add" style="flex-direction:row;display:inline-flex">+ Зураг / GIF / лого<input type="file" id="mqFile" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden></label>
+          <button type="button" class="btn" id="mqFromCats">Ангиллаас бөглөх</button>
+          <button type="button" class="btn" id="mqClear">Бүгдийг арилгах</button>
+          <label class="mut" style="margin-left:auto;flex-direction:row;display:inline-flex;align-items:center;gap:6px">Хурд<select id="mqSpeed">
+            <option value="slow" ${S.mqSpeed === "slow" ? "selected" : ""}>Удаан</option><option value="normal" ${!S.mqSpeed || S.mqSpeed === "normal" ? "selected" : ""}>Дунд</option><option value="fast" ${S.mqSpeed === "fast" ? "selected" : ""}>Хурдан</option></select></label>
+        </div>
       </section>
       <section class="form scard" id="s-how">
         ${head("🧾", "Хэрхэн захиалах", "Барааны жагсаалтын доор 01–04 дугаартай алхмууд. ☰ цэс → Хэрхэн захиалах.")}
@@ -2022,6 +2066,14 @@ async function showSettings(){
       </section>
     </div>
     </div>
+    <!-- Хэсгийг сайт дээр урьдчилан харах цонх -->
+    <div class="pvwrap" id="pvw" hidden><div class="pvbox">
+      <div class="pvhead"><b>👁 <span id="pvTitle"></span></b>
+        <span class="seg"><button type="button" data-pvw="390">📱 Утас</button><button type="button" data-pvw="1280">🖥 Компьютер</button></span>
+        <button type="button" class="btn" id="pvRe" title="Дахин ачаалах">↻</button><button type="button" class="btn" id="pvX" aria-label="Хаах">✕</button></div>
+      <div class="pvstage" id="pvStage"><iframe id="pvFrame" title="Сайтын урьдчилсан харагдац"></iframe></div>
+      <p class="mut pvnote">Хадгалаагүй өөрчлөлт ч энд харагдана — сайтад <b>Хадгалах</b> дарсны дараа л бусдад харагдана.</p>
+    </div></div>
     <!-- Доод талд үргэлж харагдах хадгалах мөр -->
     <div class="savebar"><span id="dirty" class="mut">✓ Бүх өөрчлөлт хадгалагдсан</span><button class="btn dark" id="ssave">Хадгалах</button></div>`;
   // ----- Үйлчилгээний мөрүүд (☰ цэс): нэмэх, засах, дараалал, устгах -----
@@ -2102,6 +2154,66 @@ async function showSettings(){
       if (n) return toast(`"${cats[i].label}" ангилалд ${n} бараа байна — эхлээд шилжүүлнэ үү`); cats.splice(i, 1); drawCats(); });
   };
   drawCats();
+  // ----- ГҮЙДЭГ ТУУЗ: текст, дүрс, зураг/GIF — нэмэх, засах, солих, дараалал, устгах -----
+  const MQIC = ["", "✦", "★", "✨", "🔥", "⚡", "❤️", "🎁", "🚚", "🆕", "💥", "🛍", "👕", "🧢", "🎌", "🇰🇷"];
+  let mq = (Array.isArray(S.marquee) ? S.marquee : []).map(x => ({ type: x.type === "img" ? "img" : "text", text: x.text || "", icon: x.icon || "", img: x.img || "", link: x.link || "" }));
+  // Ангиллын сонголт (холбоос)
+  const mqLink = cur => `<option value="">Холбоосгүй</option>${cats.map(c => `<option value="${esc(c.id)}" ${cur === c.id ? "selected" : ""}>→ ${esc(c.label)}</option>`).join("")}`;
+  // Нэг мөрийн HTML (жишээнд ч ашиглана)
+  const mqHtml = x => `<span class="mqi">${x.type === "img" && x.img ? `<img src="${esc(x.img)}" alt="">` : ""}${x.icon ? `<i>${esc(x.icon)}</i>` : ""}${x.text ? `<em>${esc(x.text)}</em>` : ""}</span>`;
+  // Шууд жишээ: хоосон бол ангиллын нэрс
+  const drawMqPrev = () => { const src = mq.length ? mq : cats.map(c => ({ type: "text", text: c.label })); const one = src.map(mqHtml).join(""); $("mqPrev").innerHTML = one + one + one;
+    $("mqPrev").style.animationDuration = Math.max(14, src.length * ({ slow: 7, normal: 4.5, fast: 2.6 }[$("mqSpeed") ? $("mqSpeed").value : "normal"])) + "s"; };
+  // Зураг/GIF оруулах: GIF-ийг хөдөлгөөнтэй нь (шахахгүй), бусдыг жижигрүүлж
+  const upMq = async f => {
+    if (!/^image\/(png|jpeg|webp|gif)$/.test(f.type)) throw new Error("PNG, JPG, WEBP, GIF л болно");
+    if (f.size > 4 * 1024 * 1024) throw new Error("4MB-аас бага файл оруулна уу");
+    if (f.type === "image/gif") {
+      const path = `marquee/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.gif`;
+      const { error } = await sb.storage.from("products").upload(path, f, { contentType: "image/gif", cacheControl: "31536000" });
+      if (error) throw error; return sb.storage.from("products").getPublicUrl(path).data.publicUrl;
+    }
+    return putImg(await shrink(f, 600), "marquee");
+  };
+  const drawMq = () => {
+    $("mqList").innerHTML = mq.length ? mq.map((x, i) => `<div class="mqrow">
+      <div class="mqth">${x.type === "img" ? (x.img ? `<img src="${esc(x.img)}" alt="">` : "🖼") : `<span>${esc(x.icon || "Aa")}</span>`}</div>
+      <div class="mqf">
+        <span class="mqt">${x.type === "img" ? "Зураг / GIF" : "Текст"}</span>
+        ${x.type === "text" ? `<select data-qi="${i}" aria-label="Дүрс">${MQIC.map(ic => `<option value="${ic}" ${ic === x.icon ? "selected" : ""}>${ic || "Дүрсгүй"}</option>`).join("")}</select>` : `<label class="btn sm">Солих<input type="file" data-qf="${i}" accept="image/png,image/jpeg,image/webp,image/gif" hidden></label>`}
+        <textarea rows="1" class="one" data-qt="${i}" placeholder="${x.type === "img" ? "Хажууд нь бичих үг (заавал биш)" : "Бичвэр (жишээ: Шинэ ирсэн)"}">${esc(x.text)}</textarea>
+        <select data-ql="${i}" aria-label="Холбоос">${mqLink(x.link)}</select>
+      </div>
+      <div class="tb"><button type="button" data-qu="${i}" ${i ? "" : "disabled"} aria-label="Дээш">↑</button><button type="button" data-qd="${i}" ${i < mq.length - 1 ? "" : "disabled"} aria-label="Доош">↓</button><button type="button" data-qx="${i}" aria-label="Устгах">×</button></div>
+    </div>`).join("") : `<p class="mut mqempty">Мөр алга — сайт дээр ангиллын нэрс гүйнэ.</p>`;
+    const L = $("mqList"), q = (a, i) => L.querySelector(`[data-q${a}="${i}"]`);
+    mq.forEach((x, i) => {
+      q("t", i).oninput = e => { x.text = e.target.value; drawMqPrev(); };
+      q("l", i).onchange = e => { x.link = e.target.value; };
+      if (q("i", i)) q("i", i).onchange = e => { x.icon = e.target.value; drawMq(); };
+      // Зургийг тус бүрд нь солих
+      if (q("f", i)) q("f", i).onchange = async e => { const f = e.target.files[0]; if (!f) return;
+        try { toast("Оруулж байна…"); x.img = await upMq(f); drawMq(); toast("Солигдлоо — Хадгалах дарна уу"); } catch (err) { toast("Алдаа: " + err.message); } };
+      q("u", i).onclick = () => { [mq[i - 1], mq[i]] = [mq[i], mq[i - 1]]; drawMq(); };
+      q("d", i).onclick = () => { [mq[i + 1], mq[i]] = [mq[i], mq[i + 1]]; drawMq(); };
+      q("x", i).onclick = () => { mq.splice(i, 1); drawMq(); };
+    });
+    drawMqPrev();
+  };
+  drawMq();
+  $("mqSpeed").onchange = drawMqPrev;
+  // Текст мөр нэмэх
+  $("mqAddT").onclick = () => { if (mq.length >= 40) return toast("40 хүртэл мөр"); mq.push({ type: "text", text: "", icon: "", img: "", link: "" }); drawMq(); const t = $("mqList").querySelectorAll("[data-qt]"); t[t.length - 1].focus(); };
+  // Зураг/GIF мөрүүд нэмэх (хэд хэдийг зэрэг)
+  $("mqFile").onchange = async e => {
+    for (const f of e.target.files) { if (mq.length >= 40) break;
+      try { toast("Оруулж байна… " + f.name); mq.push({ type: "img", text: "", icon: "", img: await upMq(f), link: "" }); } catch (err) { toast("Алдаа: " + err.message); } }
+    e.target.value = ""; drawMq(); markDirty(); toast("Орлоо — Хадгалах дарна уу");
+  };
+  // Ангиллын нэрсээр бөглөх (засахад эхлэл болгоно)
+  $("mqFromCats").onclick = () => { mq = cats.map(c => ({ type: "text", text: c.label, icon: "", img: "", link: c.id })); drawMq(); };
+  $("mqClear").onclick = () => { if (!mq.length || !confirm("Туузны бүх мөрийг арилгах уу? (Ангиллын нэрс гүйнэ)")) return; mq = []; drawMq(); };
+
   // Шинэ ангилал нэмэх
   $("catAdd").onclick = () => { const v = $("catNew").value.trim(); if (!v) return toast("Ангиллын нэрээ бичнэ үү");
     cats.push({ id: catId(v), label: v }); $("catNew").value = ""; drawCats(); toast("Нэмэгдлээ — Хадгалах дарна уу"); };
@@ -2165,7 +2277,8 @@ async function showSettings(){
   };
   imgField("heroFile", "heroPrev", "heroClr", "heroImage"); imgField("logoFile", "logoPrev", "logoClr", "logoUrl"); imgField("footFile", "footPrev", "footClr", "footerImage");
   // Хадгалах
-  $("ssave").onclick = async () => {
+  // Талбаруудаас бүх тохиргоог цуглуулна (хадгалах, урьдчилан харахад)
+  const collect = () => {
     readLists();
     const out = { ...S };
     $("main").querySelectorAll("[data-k]").forEach(el => out[el.dataset.k] = el.value.trim());
@@ -2177,10 +2290,46 @@ async function showSettings(){
     readPerks(); out.perks = perks.map(x => ({ i: x.i, t: x.t.trim(), d: x.d.trim() })).filter(x => x.t || x.d);
     // Ангилал: нэргүйг хасна
     out.cats = cats.map(x => ({ id: x.id, label: (x.label || "").trim() })).filter(x => x.label);
-    if (!out.cats.length) return toast("Дор хаяж нэг ангилал байх ёстой");
+    // Гүйдэг тууз: хоосон мөрийг хасна
+    out.marquee = mq.filter(x => x.type === "img" ? x.img : (x.text.trim() || x.icon)).map(x => ({ type: x.type, text: x.text.trim(), icon: x.icon, img: x.type === "img" ? x.img : "", link: x.link }));
+    out.mqSpeed = $("mqSpeed").value;
     // Слайд ба постерууд
     const clean = x => ({ img: x.img, link: x.link || "", title: (x.title || "").trim(), body: (x.body || "").trim(), start: x.start || "", end: x.end || "", products: x.products || [] });
     out.slides = slides.filter(x => x.img).map(clean); out.promos = promos.filter(x => x.img).map(clean);
+    return out;
+  };
+  // ----- ХЭСЭГ БҮРИЙГ САЙТ ДЭЭР ХАРАХ (хадгалахаас өмнө) -----
+  // Хэсэг бүрийн толгойд "👁 Сайт дээр харах" товч нэмнэ
+  $("sf").querySelectorAll("section.scard").forEach(sec => {
+    const h = sec.querySelector(".shead"); if (!h) return;
+    h.insertAdjacentHTML("beforeend", `<button type="button" class="btn pvbtn" data-pv="${sec.id.replace(/^s-/, "")}">👁 Сайт дээр харах</button>`);
+  });
+  let PV_KEY = "", PV_W = innerWidth < 760 ? 390 : 1280, pvT = 0;
+  // Урьдчилан харах цонхонд одоогийн (хадгалаагүй ч) тохиргоог илгээнэ
+  const pvSend = () => { const f = $("pvFrame"); if (!f || !f.contentWindow) return; try { f.contentWindow.postMessage({ type: "finn-preview", settings: collect(), focus: PV_KEY }, location.origin); } catch (e) {} };
+  // Iframe-ийг хайрцагт багтаана (компьютерийн өргөнийг жижигрүүлж)
+  const pvFit = () => { const st = $("pvStage"), f = $("pvFrame"); if (!st || !f) return;
+    const sc = Math.min(1, st.clientWidth / PV_W); f.style.width = PV_W + "px"; f.style.height = (st.clientHeight / sc) + "px"; f.style.transform = `scale(${sc})`;
+    $("pvw").querySelectorAll("[data-pvw]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.pvw === PV_W)); };
+  const openPv = key => {
+    PV_KEY = key; const sec = $("s-" + key);
+    $("pvTitle").textContent = sec ? sec.querySelector("h3").textContent : "Сайт";
+    $("pvw").hidden = false; document.body.style.overflow = "hidden"; pvFit();
+    // Анх удаа ачаална; дараа нь зөвхөн тохиргоог дахин илгээнэ
+    const f = $("pvFrame");
+    if (!f.getAttribute("src")) { f.onload = () => [300, 1200, 2500].forEach(t => setTimeout(pvSend, t)); f.src = "/?preview=1"; } else pvSend();
+  };
+  $("sf").addEventListener("click", e => { const b = e.target.closest("[data-pv]"); if (b) { e.preventDefault(); e.stopPropagation(); openPv(b.dataset.pv); } }, true);
+  // Засах бүрт нээлттэй урьдчилан харахыг шинэчилнэ
+  const pvLive = () => { if ($("pvw").hidden) return; clearTimeout(pvT); pvT = setTimeout(pvSend, 600); };
+  $("sf").addEventListener("input", pvLive); $("sf").addEventListener("change", pvLive);
+  $("pvw").querySelectorAll("[data-pvw]").forEach(b => b.onclick = () => { PV_W = +b.dataset.pvw; pvFit(); setTimeout(pvSend, 200); });
+  $("pvRe").onclick = pvSend;
+  $("pvX").onclick = () => { $("pvw").hidden = true; document.body.style.overflow = ""; };
+  onresize = () => { if ($("pvw") && !$("pvw").hidden) pvFit(); };
+  $("ssave").onclick = async () => {
+    const out = collect();
+    if (!out.cats.length) return toast("Дор хаяж нэг ангилал байх ёстой");
     $("ssave").disabled = true;
     const { data: u } = await sb.auth.getUser();
     const { error } = await sb.from("settings").upsert({ id: "site", data: out, updated_at: new Date().toISOString(), updated_by: u && u.user ? u.user.id : null });
@@ -2298,7 +2447,7 @@ const ACT = { request: "Админ эрх хүссэн", approve: "Админ э
 const ENT = { order: "Захиалга", product: "Бараа", review: "Сэтгэгдэл", settings: "Тохиргоо", user: "Хэрэглэгч" };
 // Тохиргоо, барааны талбаруудын монгол нэр (юу өөрчлөгдсөнийг харуулахад)
 const KEYN = { notice: "Дээд мэдээ", slides: "Слайд", promos: "Постер", heroEyebrow: "Нүүр", heroTitle: "Нүүр", heroText: "Нүүр", heroButton: "Нүүр", heroImage: "Нүүрний зураг",
-  cats: "Ангилал", how: "Хэрхэн захиалах", faq: "Асуулт", perks: "Үйлчилгээ", phone: "Утас", instagram: "Instagram", facebook: "Facebook", address: "Хаяг", preDays: "Хугацаа",
+  cats: "Ангилал", marquee: "Гүйдэг тууз", mqSpeed: "Туузны хурд", how: "Хэрхэн захиалах", faq: "Асуулт", perks: "Үйлчилгээ", phone: "Утас", instagram: "Instagram", facebook: "Facebook", address: "Хаяг", preDays: "Хугацаа",
   colors: "Өнгө", logoUrl: "Лого", footerText: "Хөлийн уриа", footerImage: "Хөлийн зураг", fbLogin: "Facebook нэвтрэлт",
   name: "Нэр", price: "Үнэ", was: "Хуучин үнэ", images: "Зураг", descr: "Тайлбар", options: "Сонголт", cat: "Ангилал", series: "Брэнд", line: "Үйлдвэрлэгч", badge: "Тэмдэг", pre: "Захиалгаар", active: "Харагдах", sort: "Эрэмбэ", extra: "Нэмэлт" };
 const chg = d => [...new Set((d && d.changed || []).map(k => KEYN[k] || k))].join(", ");

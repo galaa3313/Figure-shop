@@ -1310,6 +1310,17 @@ footer{padding:44px 0 26px!important;border-top:1px solid var(--line)!important;
 .foot-bot{border-top:0!important;margin-top:22px!important;padding-top:0!important;font-size:11.5px!important;letter-spacing:.02em!important;text-transform:none}
 @media (max-width:860px){ footer{padding:36px 0 calc(22px + env(safe-area-inset-bottom,0px))!important} }
 
+/* Админы урьдчилан харахад тухайн хэсгийг тодруулна */
+.pvhl{animation:pvhl 2.2s ease}
+@keyframes pvhl{0%,60%{outline:3px solid #1e6fff;outline-offset:-3px}100%{outline:3px solid transparent;outline-offset:-3px}}
+/* Гүйдэг туузын мөр: зураг/GIF, дүрс, текст нэг мөрөнд */
+.track .mqi{display:inline-flex;align-items:center;gap:10px;color:inherit;text-decoration:none;white-space:nowrap}
+.track .mqi img{height:1.7em;width:auto;max-width:180px;object-fit:contain;display:block}
+.track .mqi i{font-style:normal}
+.track .mqi em{font-style:normal}
+.track a.mqi{cursor:pointer}.track a.mqi:hover em{text-decoration:underline}
+/* Хулгана дээр нь очиход зогсоно (уншихад амар) */
+.marquee:hover .track{animation-play-state:paused}
 /* Харанхуй горимд гүйдэг тууз цагаан дэвсгэртэй тул бичгийг хар болгоно */
 :root[data-theme="dark"] .marquee .track{color:#111}
 /* ----- "Бүх бараа" гарчиг ба хайлтын мөрийг нууна: шүүлтүүр товчнуудаас шууд эхэлнэ ----- */
@@ -1842,10 +1853,37 @@ const inSection = (p, id) => id === "all" || (id === "drops" ? p.badge === "Ши
 const SERIES = ["Бүгд", ...new Set(PRODUCTS.map(p => p.series))];
 // Нүүрний "13 бараа · 6 цуврал · ...₮-өөс" статистик
 $("stats").innerHTML = `<div><b>${PRODUCTS.length}</b><span>бараа</span></div><div><b>${SECTIONS.filter(x => x.id !== "all" && x.id !== "drops" && PRODUCTS.some(p => p.cat === x.id)).length}</b><span>ангилал</span></div><div><b>${fmt(Math.min(...PRODUCTS.map(p => p.price)))}</b><span>-оос эхэлнэ</span></div>`;
-// Гүйдэг туузын нэрс
-const mq = SECTIONS.slice(1).map(x => `<span>${esc(x.label)}</span>`).join("");
-// Тасралтгүй гүйхийн тулд 4 удаа давтана
-$("track").innerHTML = mq + mq + mq + mq;
+// ===== ГҮЙДЭГ ТУУЗ =====
+// Админаас оруулсан мөрүүд (текст, дүрс, зураг/GIF) байвал тэдгээрийг, үгүй бол ангиллын нэрсийг гүйлгэнэ
+let MQ_ITEMS = null, MQ_SPEED = "normal";
+// Зөвхөн https зураг зөвшөөрнө
+const okUrl = u => /^https:\/\/[^\s"'<>`]+$/.test(String(u || ""));
+function renderMarquee(){
+  const items = MQ_ITEMS && MQ_ITEMS.length ? MQ_ITEMS : SECTIONS.slice(1).map(x => ({ type: "text", text: x.label, link: x.id }));
+  const one = items.map(x => {
+    const img = x.type === "img" && okUrl(x.img) ? `<img src="${esc(x.img)}" alt="" loading="lazy" decoding="async">` : "";
+    const icon = x.icon ? `<i>${esc(x.icon)}</i>` : "";
+    const txt = x.text ? `<em>${esc(x.text)}</em>` : "";
+    if (!img && !txt && !icon) return "";
+    // Ангилалтай холбосон бол дарахад тэр ангилал шүүгдэнэ
+    return x.link && SECTIONS.some(s2 => s2.id === x.link)
+      ? `<a class="mqi" href="#shop" data-mq="${esc(x.link)}" tabindex="-1">${img}${icon}${txt}</a>`
+      : `<span class="mqi">${img}${icon}${txt}</span>`;
+  }).join("");
+  // Тасралтгүй гүйхийн тулд 4 удаа давтана
+  $("track").innerHTML = one + one + one + one;
+  // Хурд: мөрийн тоогоор тооцно (удаан / дунд / хурдан)
+  const per = { slow: 7, normal: 4.5, fast: 2.6 }[MQ_SPEED] || 4.5;
+  $("track").style.animationDuration = Math.max(14, items.length * per) + "s";
+}
+renderMarquee();
+// Туузан дээрх ангилал дарахад тухайн ангиллыг шүүж бараа руу гүйлгэнэ
+$("track").addEventListener("click", e => {
+  const a = e.target.closest("[data-mq]"); if (!a) return; e.preventDefault();
+  const b = $("filters").querySelector(`[data-s="${CSS.escape(a.dataset.mq)}"]`);
+  if (b && !b.disabled) b.click();
+  $("shop").scrollIntoView({ behavior: "smooth", block: "start" });
+});
 // Хөлд утас, Instagram, Facebook, хаяг бичнэ (хоосон бол нууна)
 function renderContact(){
   // Утас: харагдах бичиг ба залгах холбоос (зөвхөн тоо, + тэмдэг)
@@ -2861,14 +2899,21 @@ function applySettings(st){
   if (!st || typeof st !== "object") return;
   // Холбоо барих
   for (const k of ["phone", "instagram", "facebook", "address", "preDays"]) if (typeof st[k] === "string") SHOP[k] = st[k];
+  // Гүйдэг тууз: админаас тусад нь тохируулсан бол (текст, дүрс, зураг/GIF)
+  if (Array.isArray(st.marquee)) {
+    MQ_ITEMS = st.marquee.filter(x => x && typeof x === "object").slice(0, 40).map(x => ({
+      type: x.type === "img" ? "img" : "text", text: String(x.text || "").slice(0, 80), icon: String(x.icon || "").slice(0, 8),
+      img: okUrl(x.img) ? String(x.img) : "", link: String(x.link || "").slice(0, 60) }));
+  }
+  if (typeof st.mqSpeed === "string") MQ_SPEED = st.mqSpeed;
+  renderMarquee();
   // Ангилал: админаас өөрчилсөн бол шүүлтүүр товч, гүйдэг туузыг шинэчилнэ
   if (Array.isArray(st.cats) && st.cats.length) {
     const cats = st.cats.filter(x => x && x.id && x.label).map(x => ({ id: String(x.id), label: String(x.label) }));
     if (cats.length) {
       // "Бүгд"-ийг үлдээгээд бусдыг солино
       SECTIONS.splice(1, SECTIONS.length - 1, ...cats);
-      const m = cats.map(x => `<span>${esc(x.label)}</span>`).join("");
-      $("track").innerHTML = m + m + m + m;
+      renderMarquee();
       // Сонгосон ангилал устсан бол "Бүгд" рүү буцна
       if (!SECTIONS.some(x => x.id === filter)) filter = "all";
       renderFilters(); renderGrid();
@@ -2944,9 +2989,36 @@ setTimeout(heroDone, 3000);
 async function loadSettings(){
   try {
     const { data } = await sb.from("settings").select("data").eq("id", "site").maybeSingle();
-    if (data && data.data) { applySettings(data.data); try { localStorage.setItem("finn-settings", JSON.stringify(data.data)); } catch (e) {} }
+    // Урьдчилан харах үед админы (хадгалаагүй) тохиргоог дарж бичихгүй, кэшлэхгүй
+    if (PREVIEW && PV_DATA) return;
+    if (data && data.data) { applySettings(data.data); if (!PREVIEW) try { localStorage.setItem("finn-settings", JSON.stringify(data.data)); } catch (e) {} }
   } finally { heroDone(); }
 }
+
+// ===== АДМИНЫ УРЬДЧИЛАН ХАРАХ (/?preview=1): тохиргооны хэсгийг хадгалахаас өмнө харуулна =====
+// Зөвхөн ижил домэйны эцэг цонхноос (admin.html) ирсэн тохиргоог хүлээн авна
+const PREVIEW = new URLSearchParams(location.search).has("preview") && window.parent !== window;
+let PV_DATA = null;
+// Тохиргооны хэсэг бүр сайтын аль хэсэгт гардаг вэ
+const PV_FOCUS = { notice: "#notice", slides: "#lookbook", hero: "#lookbook", promos: "#promos", cats: "#filters", mq: ".marquee", how: "#how", contact: "#contact", foot: "#contact" };
+function pvFocus(key){
+  closeAll();
+  if (key === "faq") return openFaq();
+  if (key === "perks") return menu(true);
+  if (key === "login") return openAcct("login");
+  if (key === "style") return scrollTo({ top: 0 });
+  const el = document.querySelector(PV_FOCUS[key] || "body"); if (!el) return;
+  if (el.hidden) { scrollTo({ top: 0 }); return; }
+  el.scrollIntoView({ block: key === "notice" ? "start" : "center" });
+  // Тухайн хэсгийг 2 секунд тодруулна
+  el.classList.remove("pvhl"); void el.offsetWidth; el.classList.add("pvhl");
+}
+if (PREVIEW) addEventListener("message", e => {
+  if (e.origin !== location.origin || e.source !== window.parent || !e.data || e.data.type !== "finn-preview") return;
+  PV_DATA = e.data.settings;
+  try { applySettings(PV_DATA); } catch (err) {}
+  pvFocus(String(e.data.focus || ""));
+});
 
 // =====================================================================
 // ХЭРЭГЛЭГЧИЙН БҮРТГЭЛ, НЭВТРЭЛТ (Supabase)

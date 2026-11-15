@@ -113,7 +113,8 @@ nav{flex-wrap:wrap}
 .bedit{border:0;background:none;color:inherit;text-decoration:underline;font-size:11px;padding:0;opacity:1;cursor:pointer}
 .bub.editing{width:100%;max-width:100%}
 .edta{width:100%;font:inherit;font-size:15px;padding:8px;border:0;border-radius:8px;color:#111;margin-top:4px}
-.edbt{display:flex;gap:6px;margin-top:6px}.edbt .btn{height:34px;background:#fff;color:#111}
+.edbt{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.edbt .btn{height:34px;background:#fff;color:#111}
+.edbt .edel{margin-left:auto;color:#d62828;border-color:#f0b4b4}
 /* ===== Мессеж ===== */
 .ibar{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
 .ibar button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-size:13px}
@@ -3004,10 +3005,18 @@ async function ibThread(d, t){
   box.querySelectorAll("[data-ed]").forEach(btn => btn.onclick = () => {
     const m = items.find(x => x.id === +btn.dataset.ed), bub = box.querySelector(`[data-mi="${m.id}"]`);
     bub.classList.add("editing");
-    bub.querySelector("p").outerHTML = `<textarea class="edta" rows="3" maxlength="3000">${esc(m.body)}</textarea><span class="edbt"><button type="button" class="btn" data-sv>Хадгалах</button><button type="button" class="btn" data-cx>Болих</button></span>`;
+    bub.querySelector("p").outerHTML = `<textarea class="edta" rows="3" maxlength="3000">${esc(m.body)}</textarea><span class="edbt"><button type="button" class="btn" data-sv>Хадгалах</button><button type="button" class="btn" data-cx>Болих</button><button type="button" class="btn edel" data-dl>🗑 Устгах</button></span>`;
     bub.querySelector("small").hidden = true;
     const ta2 = bub.querySelector(".edta"); ta2.focus(); fitTA(ta2);
     bub.querySelector("[data-cx]").onclick = () => ibThread(d, t);
+    // 🗑 Энэ нэг мессежийг устгах (андуурч дарахаас сэргийлж 2 удаа дарна)
+    bub.querySelector("[data-dl]").onclick = async e => { const b = e.target;
+      if (b.dataset.sure !== "1") { b.dataset.sure = "1"; b.textContent = "Дахин дар"; return setTimeout(() => { if (b.isConnected) { b.dataset.sure = ""; b.textContent = "🗑 Устгах"; } }, 3000); }
+      b.disabled = true;
+      const { error } = await sb.rpc("msg_delete", { p_item: m.id });
+      if (error) { b.disabled = false; return toast(/not allowed/.test(error.message) ? "Зөвхөн өөрийнхөө мессежийг устгана" : /msg_delete/.test(error.message) ? "finn-inbox2.sql-ийг дахин ажиллуулна уу" : "Алдаа: " + error.message); }
+      toast("Мессежийг устгалаа"); ibThread(d, t);
+    };
     bub.querySelector("[data-sv]").onclick = async e => {
       const v = ta2.value.trim(); if (!v) return ta2.focus();
       if (v === m.body) return ibThread(d, t);

@@ -86,6 +86,9 @@ nav{flex-wrap:wrap}
 .pc .btns .btn{flex:1;padding:6px 8px;font-size:12px}
 .thumbs figure{width:96px;height:128px}
 .thumbs figure.main{outline:2px solid var(--ink)}
+/* Өөр бүртгэлээр нэвтэрсэн анхааруулга */
+.swacc{position:sticky;top:0;z-index:30;background:#fff3cd;border-bottom:2px solid #e0a800;color:#5c4400;padding:12px max(16px,3vw);font-size:14px;line-height:1.5}
+.swacc small{display:block;opacity:.8;margin-top:2px}.swacc a{color:inherit;font-weight:700}
 /* ===== Мэдэгдлийн хонх ба жагсаалт ===== */
 .abell{position:relative;border:0;background:none;padding:6px;color:var(--ink);display:grid;place-items:center;margin-left:auto}
 .abell svg{width:24px;height:24px}
@@ -640,6 +643,9 @@ nav button .rq[hidden]{display:none}
   <button type="button" class="abell" id="abell" aria-label="Мэдэгдэл" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9a6 6 0 1 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9Z"/><path d="M10.2 20.5a2 2 0 0 0 3.6 0"/></svg><b id="abellN" hidden></b></button>
   <span id="whoami" style="color:var(--muted);font-size:13px"></span>
 </header>
+<!-- Өөр бүртгэлээр нэвтэрсэн үед анхааруулга -->
+<div class="swacc" id="swacc" hidden>⚠ Энэ хөтөч дээр одоо <b>өөр (админ биш) бүртгэлээр</b> нэвтэрсэн байна — сайт дээр хэрэглэгчээр туршсан бол админ хэсэг шинэ зүйл харахгүй.
+  <a href="/">Сайт руу орж</a> гараад админ бүртгэлээрээ дахин нэвтэрнэ үү. <small>Зөвлөгөө: хэрэглэгчээр туршихдаа өөр хөтөч эсвэл нууц цонх (Private) ашиглаарай.</small></div>
 <!-- Мэдэгдлийн жагсаалт (хонх дарахад) -->
 <div class="npanel" id="npanel" hidden></div>
 <main id="main"><p class="msg">Шалгаж байна…</p></main>
@@ -2824,23 +2830,60 @@ let AN_LAST = -1;
 const ago = s => { const m = Math.round((Date.now() - new Date(s)) / 60000); return m < 1 ? "дөнгөж сая" : m < 60 ? m + " мин" : m < 1440 ? Math.round(m / 60) + " цаг" : dt(s); };
 const NICON = { review: "⭐", message: "💬", order: "📦", info: "🔔" };
 // Уншаагүй мэдэгдэл ба хариулаагүй мессежийн тоог шалгана
+let ADMIN_UID = "", AN_UNREAD = [];
+// Таб дээр улаан тоо тавина (0 бол нууна)
+function tabBadge(t, n){
+  const tab = document.querySelector(`[data-t="${t}"]`); if (!tab) return;
+  let dot = tab.querySelector(".rq"); if (!dot) { dot = document.createElement("b"); dot.className = "rq"; tab.appendChild(dot); }
+  dot.textContent = n > 99 ? "99+" : (n || ""); dot.hidden = !n;
+}
+// Энэ хөтөч дээр өөр (админ биш) бүртгэлээр нэвтэрсэн эсэхийг шалгана.
+// Сайт ба админ нэг нэвтрэлт хуваалцдаг тул сайт дээр хэрэглэгчээр нэвтэрвэл админ хэсэг юу ч харахгүй болдог.
+async function sameAdmin(){
+  let uid = "";
+  try { const { data } = await sb.auth.getSession(); uid = data && data.session && data.session.user ? data.session.user.id : ""; } catch (e) {}
+  const ok = !!uid && uid === ADMIN_UID;
+  $("swacc").hidden = ok;
+  return ok;
+}
+// Уншаагүй мэдэгдэл ба хариулаагүй мессежийн тоог шалгана; табууд дээр тоо тавина
 async function pollAdmin(){
   try {
-    const [{ data: ns }, { data: th }] = await Promise.all([
-      sb.from("notifications").select("id,title").eq("to_admin", true).eq("read", false).order("created_at", { ascending: false }).limit(99),
-      sb.from("msg_threads").select("id,admin_unread").order("last_at", { ascending: false }).limit(300)]);
-    const n = (ns || []).length, m = (th || []).filter(t => t.admin_unread > 0).length;
+    if (!(await sameAdmin())) return;
+    const [{ data: ns, error }, { data: th }] = await Promise.all([
+      sb.from("notifications").select("id,title,link").eq("to_admin", true).eq("read", false).order("created_at", { ascending: false }).limit(99),
+      sb.from("msg_threads").select("id,admin_unread,last_at").order("last_at", { ascending: false }).limit(300)]);
+    // SQL ажиллаагүй бол хонх дээр "!" гаргана
+    if (error) { $("abellN").textContent = "!"; $("abellN").hidden = false; return; }
+    AN_UNREAD = ns || [];
+    const n = AN_UNREAD.length, m = (th || []).filter(t => t.admin_unread > 0).length;
     $("abellN").textContent = n > 98 ? "99+" : n; $("abellN").hidden = !n;
-    // "Мессеж" таб дээр хариулаагүйн тоо
-    const tab = document.querySelector('[data-t="inbox"]');
-    let dot = tab.querySelector(".rq"); if (!dot) { dot = document.createElement("b"); dot.className = "rq"; tab.appendChild(dot); }
-    dot.textContent = m || ""; dot.hidden = !m;
+    // Табууд дээр: шинэ захиалга, шинэ сэтгэгдэл (уншаагүй мэдэгдлээр), хариулаагүй мессеж
+    tabBadge("orders", AN_UNREAD.filter(x => x.link === "orders").length);
+    tabBadge("reviews", AN_UNREAD.filter(x => x.link === "reviews").length);
+    tabBadge("inbox", m);
     document.title = (n ? `(${n}) ` : "") + document.title.replace(/^\(\d+\+?\) /, "");
-    // Шинэ мэдэгдэл ирсэн бол дуудлага
-    if (AN_LAST >= 0 && n > AN_LAST && ns[0]) { toast("🔔 " + ns[0].title); $("abell").classList.remove("ring"); void $("abell").offsetWidth; $("abell").classList.add("ring"); }
+    // Шинэ мэдэгдэл ирсэн бол дуудлага + нээлттэй жагсаалтыг шинэчилнэ
+    if (AN_LAST >= 0 && n > AN_LAST && AN_UNREAD[0]) {
+      toast("🔔 " + AN_UNREAD[0].title); $("abell").classList.remove("ring"); void $("abell").offsetWidth; $("abell").classList.add("ring");
+      refreshOpenView();
+    }
     AN_LAST = n;
   } catch (e) {}
 }
+// Одоо нээлттэй байгаа таб (Захиалга/Сэтгэгдэл/Мессеж)-ыг, юу ч задлаагүй, бичээгүй бол дахин ачаална
+function refreshOpenView(){
+  const cur = document.querySelector('#tabs button[aria-pressed="true"]'); if (!cur) return;
+  if (!["orders", "reviews", "inbox"].includes(cur.dataset.t)) return;
+  if ($("main").querySelector("details[open], .selmode, .ibcomp")) return;
+  cur.click();
+}
+// Таб нээхэд тухайн төрлийн мэдэгдлийг уншсан болгоно (тоо арилна)
+$("tabs").addEventListener("click", e => {
+  const b = e.target.closest("[data-t]"); if (!b || !["orders", "reviews"].includes(b.dataset.t)) return;
+  const ids = AN_UNREAD.filter(x => x.link === b.dataset.t).map(x => x.id);
+  if (ids.length) sb.rpc("notif_read", { p_ids: ids, p_admin: true }).then(pollAdmin);
+});
 // Хонх дарахад жагсаалт нээгдэнэ / хаагдана
 $("abell").onclick = e => { e.stopPropagation(); $("npanel").hidden ? openNPanel() : ($("npanel").hidden = true); };
 document.addEventListener("click", e => { if (!$("npanel").hidden && !e.target.closest("#npanel")) $("npanel").hidden = true; });
@@ -2992,13 +3035,18 @@ $("asw").addEventListener("click", e => { const b = e.target.closest("[data-m]")
     const { data: p } = await sb.from("profiles").select("username,role").eq("id", data.user.id).maybeSingle();
     if (!p || p.role !== "admin") { $("main").innerHTML = `<p class="msg">Танд админ эрх байхгүй байна.</p>`; return; }
     $("whoami").textContent = p.username; $("tabs").hidden = false; $("asw").hidden = false;
+    ADMIN_UID = data.user.id;
+    // Нэвтрэлт өөрчлөгдвөл (жишээ нь сайт дээр өөр бүртгэлээр орвол) шууд анхааруулна
+    sb.auth.onAuthStateChange(() => sameAdmin());
     // Супер админ бол хүлээгдэж буй админ хүсэлтийг шалгаж мэдэгдэнэ (1 минут тутам шинэчилнэ)
     refreshReqBadge(); setInterval(refreshReqBadge, 60000);
     // Мэдэгдэл, мессежийн тоог 45 секунд тутам шалгана
     $("abell").hidden = false; pollAdmin(); setInterval(() => { if (!document.hidden) pollAdmin(); }, 45000);
     document.addEventListener("visibilitychange", () => { if (!document.hidden) pollAdmin(); });
+    // admin.html#inbox — шууд "Мессеж" таб (сайтаас холбоосоор ирэхэд)
+    if (location.hash === "#inbox" || location.hash === "#notif") { setMode("shop", false); document.querySelector('[data-t="inbox"]').click(); if (location.hash === "#notif") setTimeout(openNPanel, 300); }
     // Сүүлд ашигласан хэсгийн (SHOP эсвэл FIT) эхний табыг нээнэ
-    setMode(MODE);
+    else setMode(MODE);
   } catch (e) { $("main").innerHTML = `<p class="msg">${esc(e.message)}</p>`; }
 })();
 

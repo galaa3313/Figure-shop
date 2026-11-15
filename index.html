@@ -919,7 +919,15 @@ footer{background:var(--bg);border-top:1px solid var(--line)}
 .irep{padding-top:4px}
 .acct textarea,.acct select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:0;padding:12px;width:100%;resize:vertical}
 .acct textarea:focus,.acct select:focus{border-color:var(--ink);outline:none}
-.unr{color:#e5172f;font-weight:700;font-size:12px}
+/* Админд: хэрэглэгчдийн мессеж админ хэсэгт байна гэсэн холбоос */
+.admhint{display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding:12px 14px;margin-bottom:14px;background:#fff3cd;color:#5c4400;border:1px solid #e0b84a;font-size:13.5px;line-height:1.5;text-decoration:none}
+.admhint i{margin-left:auto;font-style:normal;font-size:18px}
+/* Профайлын товч дээрх тоо (улаан дугуй) */
+.cnt{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 7px;margin-left:6px;border-radius:999px;background:#e5172f;color:#fff;font-size:12px;font-weight:700;vertical-align:middle;line-height:1}
+.cnt[hidden]{display:none}
+/* Идэвхтэй захиалгын тоо — хар (уншаагүй биш тул улаан биш) */
+.cnt.dk{background:var(--ink);color:var(--bg)}
+.cntt{font-size:12px;color:var(--muted);font-weight:500}
 .acctbtn{position:relative}.acctbtn.on::after{content:"";position:absolute;right:4px;bottom:4px;width:7px;height:7px;border-radius:50%;background:var(--green)}
 /* Маягт */
 .acct{display:flex;flex-direction:column;gap:12px}
@@ -3040,6 +3048,7 @@ async function openNotif(){
     <div class="nlist">${list.map(x => `<button type="button" class="nitem ${x.read ? "" : "new"}" data-n="${x.id}"><span class="ni">${NICON[x.kind] || "🔔"}</span><span class="nt"><b>${esc(x.title)}</b><span>${esc(x.body)}</span></span><time>${ago(x.created_at)}</time></button>`).join("")
       || `<p class="desc nempty">Одоогоор мэдэгдэл алга.<br>FINN танд хариулах, захиалгын төлөв өөрчлөгдөхөд энд ирнэ.</p>`}</div>`;
   $("nToMsg").onclick = () => openInbox();
+  admHint("notif");
   if ($("nAll")) $("nAll").onclick = async () => { await sb.rpc("notif_read", { p_ids: null }); pollNotif(); openNotif(); };
   // Мэдэгдэл дээр дарахад уншсан болгож, холбогдох газар руу нь очно
   $("sheetBody").querySelectorAll("[data-n]").forEach(b => b.onclick = () => {
@@ -3066,6 +3075,23 @@ function hashRoute(){
 }
 // Барааны цонхонд "Хэрэглэгчийн сэтгэгдэл" хэсэг рүү гүйлгэнэ (зураг ачаалагдсаны дараа дахин)
 function toReviews(){ [400, 1300].forEach(t => setTimeout(() => { const r = $("reviews"); if (r && !$("modal").hidden) r.scrollIntoView({ behavior: "smooth", block: "start" }); }, t)); }
+
+// ===== АДМИН ХЭРЭГЛЭГЧИД: хэрэглэгчдийн мессеж админ хэсэгт байдгийг сануулна =====
+// Хэрэглэгчдээс ирсэн уншаагүй мессеж ба админы уншаагүй мэдэгдлийн тоо
+async function admCounts(){
+  try {
+    const [{ data: th }, { data: ns }] = await Promise.all([
+      sb.from("msg_threads").select("id").gt("admin_unread", 0).limit(100),
+      sb.from("notifications").select("id").eq("to_admin", true).eq("read", false).limit(100)]);
+    return (th || []).length + (ns || []).length;
+  } catch (e) { return 0; }
+}
+// Сайтын "Мессеж" нь админы өөрийн (хэрэглэгчийн) мессеж; хэрэглэгчдийнх админ хэсэгт байна
+async function admHint(where){
+  if (!me || me.role !== "admin") return;
+  const n = await admCounts(), box = $("sheetBody"); if (!box || box.querySelector(".admhint")) return;
+  box.insertAdjacentHTML("afterbegin", `<a class="admhint" href="/admin.html#${where}">🛠 Хэрэглэгчдийн ${where === "inbox" ? "илгээсэн мессеж" : "захиалга, сэтгэгдэл, мессежийн мэдэгдэл"} <b>Админ хэсэг → ${where === "inbox" ? "Мессеж" : "🔔"}</b> дотор байна${n ? ` <span class="cnt">${n}</span>` : ""}<i>→</i></a>`);
+}
 
 // ===== МЕССЕЖ: дэлгүүрт санал хүсэлт илгээх, FINN-ий хариуг харах (имэйл шиг) =====
 const MKIND = { feedback: "Санал хүсэлт", question: "Асуулт", order: "Захиалгын талаар", other: "Бусад" };
@@ -3098,6 +3124,7 @@ async function openInbox(tid){
     $("iNew").onclick = () => composeMsg();
     $("sheetBody").querySelectorAll("[data-f]").forEach(b => b.onclick = () => { IB_F = b.dataset.f; draw(); });
     $("sheetBody").querySelectorAll("[data-th]").forEach(b => b.onclick = () => openThread(+b.dataset.th));
+    admHint("inbox");
   };
   draw();
 }
@@ -3236,15 +3263,15 @@ function acctView(v, email){
     const fbOnly = /@no-email\.finn\.mn$/i.test(me.email || "");
     B.innerHTML = `<div class="acct">
       <div class="who"><b>${esc(me.username)}</b><span>${fbOnly ? "Facebook-ээр нэвтэрсэн" : esc(me.email)}</span></div>
-      ${me.role === "admin" ? `<a class="primary" href="/admin.html" style="text-align:center;text-decoration:none">Админ хэсэг</a>` : ""}
+      ${me.role === "admin" ? `<a class="primary" href="/admin.html" style="text-align:center;text-decoration:none">Админ хэсэг <span id="admN" class="cnt" hidden></span></a>` : ""}
       <!-- Хадгалсан бараа -->
       <button class="ghost" type="button" id="myFavs">♡ Хадгалсан бараа (${favs.size})</button>
       <!-- Миний захиалгууд: тусдаа цонхонд нээгдэнэ -->
       <button class="ghost" type="button" id="myOrd">📦 Миний захиалгууд <span id="myOrdN"></span></button>
       <!-- Мессеж: дэлгүүрт санал хүсэлт, асуулт илгээх, FINN-ий хариуг унших -->
-      <button class="ghost" type="button" id="myMsg">✉️ Мессеж / Санал хүсэлт <span id="myMsgN" class="unr"></span></button>
+      <button class="ghost" type="button" id="myMsg">✉️ Мессеж / Санал хүсэлт <span id="myMsgN" class="cnt" hidden></span></button>
       <!-- Мэдэгдэл (🔔) -->
-      <button class="ghost" type="button" id="myNotif">🔔 Мэдэгдэл</button>
+      <button class="ghost" type="button" id="myNotif">🔔 Мэдэгдэл <span id="myNotifN" class="cnt" hidden></span></button>
       <!-- Нууц үгээ солих (нэвтэрсэн үед имэйлгүйгээр шууд солино) -->
       ${fbOnly ? "" : `<button class="ghost" type="button" id="chpw">Нууц үг солих</button>`}
       <button class="ghost" type="button" id="logout">Гарах</button></div>`;
@@ -3255,10 +3282,20 @@ function acctView(v, email){
     $("logout").onclick = async () => { await sb.auth.signOut(); me = null; $("openAcct").classList.remove("on"); startNotif(); closeAll(); toast("Гарлаа"); };
     $("myOrd").onclick = openOrders;
     $("myMsg").onclick = () => openInbox(); $("myNotif").onclick = openNotif;
+    // Тоо харуулах туслах: 0 бол нууна
+    const putN = (id, n) => { const e = $(id); if (e) { e.textContent = n > 99 ? "99+" : n; e.hidden = !n; } };
+    // Админ бол: хэрэглэгчдээс ирсэн уншаагүй мессеж + мэдэгдлийн тоо "Админ хэсэг" дээр
+    if (me.role === "admin") admCounts().then(n => putN("admN", n));
     // Уншаагүй хариутай мессежийн тоо
-    sb.from("msg_threads").select("user_unread").eq("user_id", me.id).then(({ data }) => { const n = (data || []).filter(t => t.user_unread > 0).length; if ($("myMsgN") && n) $("myMsgN").textContent = n + " шинэ"; });
+    sb.from("msg_threads").select("user_unread").eq("user_id", me.id).then(({ data }) => putN("myMsgN", (data || []).filter(t => t.user_unread > 0).length));
+    // Уншаагүй мэдэгдлийн тоо
+    sb.from("notifications").select("id").eq("to_admin", false).eq("read", false).limit(100).then(({ data }) => putN("myNotifN", (data || []).length));
     // Захиалгын тоог товчин дээр харуулна (цуцалсныг тоолохгүй)
-    sb.from("orders").select("code", { count: "exact", head: true }).eq("user_id", me.id).neq("status", "Цуцлагдсан").then(({ count }) => { if ($("myOrdN") && count) $("myOrdN").textContent = `(${count})`; });
+    // Захиалга: идэвхтэй (цуцлагдаагүй, хүргэгдээгүй) захиалгын тоо, байхгүй бол нийт тоо
+    sb.from("orders").select("status").eq("user_id", me.id).limit(500).then(({ data }) => {
+      const all = data || [], act = all.filter(o => !/Цуцлагдсан|Хүргэгдсэн/.test(o.status || "")).length, e = $("myOrdN");
+      if (e && all.length) e.innerHTML = act ? `<span class="cnt dk">${act}</span> <small class="cntt">идэвхтэй</small>` : `(${all.length})`;
+    });
     return;
   }
   // Холбоос товчнууд (Бүртгүүлэх, Нэвтрэх, Мартсан…)

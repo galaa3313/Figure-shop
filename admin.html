@@ -115,6 +115,11 @@ nav{flex-wrap:wrap}
 .edta{width:100%;font:inherit;font-size:15px;padding:8px;border:0;border-radius:8px;color:#111;margin-top:4px}
 .edbt{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.edbt .btn{height:34px;background:#fff;color:#111}
 .edbt .edel{margin-left:auto;color:#d62828;border-color:#f0b4b4}
+/* Сэтгэгдлийн хариулт */
+.rvrep{display:flex;flex-direction:column;gap:8px}.rvrep .bub.me{align-self:flex-end}
+.rvnew{display:grid;gap:4px;font-size:13px;color:var(--muted)}.rvnew textarea{width:100%}
+.rvrep [data-rsend]{align-self:flex-start}
+.rvb .ichat{max-height:none}
 /* ===== Мессеж ===== */
 .ibar{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
 .ibar button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-size:13px}
@@ -2186,7 +2191,17 @@ async function showSettings(){
 }
 
 // ===== СЭТГЭГДЭЛ: бүх сэтгэгдэл, хариулах, нуух, устгах =====
-let RV_WHO = "";
+let RV_WHO = "", RV_LOG = {};
+// Сэтгэгдлийн FINN хариулт: байвал хар бөмбөлөг (засах), байхгүй бол хариу бичих талбар
+function rvReply(r){
+  const L = r.reply ? RV_LOG[r.id] : null;
+  // Засах эрх: өөрийн хариулт, хэн бичсэн нь тодорхойгүй (хуучин) хариулт, эсвэл супер админ
+  const can = !L || L.admin_id === ADMIN_UID || ME_SUPER;
+  if (r.reply) return `<div class="bub me"><b>FINN${L ? " · " + esc(aname(L.admin_id)) : ""}</b><p>${esc(r.reply)}</p>
+    <small>${L ? dt(L.replied_at) : "хариулсан"}${L && L.edited ? " · засварласан" : ""}${can ? ` · <button type="button" class="bedit" data-red>✏️ Засах</button>` : ""}</small></div>`;
+  return `<label class="rvnew">Хариу бичих<textarea class="rvta" rows="2" maxlength="2000" placeholder="Хэрэглэгчид харагдах FINN-ий хариулт (🔔 мэдэгдэл очно)"></textarea></label>
+    <button type="button" class="btn dark" data-rsend>Хариулт илгээх</button>`;
+}
 async function showReviews(){
   const my = ++VIEW;
   let [{ data: list, error }, { data: prods }] = await Promise.all([
@@ -2195,7 +2210,7 @@ async function showReviews(){
   ]);
   // Аль админ хариулсан (finn-inbox2.sql) — хүснэгт байхгүй бол хоосон
   const { data: logs } = await sb.from("review_reply_log").select("review_id,admin_id,replied_at,edited");
-  const LOG = {}; (logs || []).forEach(l => LOG[l.review_id] = l);
+  const LOG = RV_LOG = {}; (logs || []).forEach(l => LOG[l.review_id] = l);
   if (my !== VIEW) return;
   if (error) { $("main").innerHTML = `<p class="msg">Алдаа: ${esc(error.message)}<br>Supabase-д finn-reviews.sql-ийг ажиллуулсан эсэхээ шалгана уу.</p>`; return; }
   const pname = id => ((prods || []).find(x => x.id === id) || {}).name || id;
@@ -2210,11 +2225,14 @@ async function showReviews(){
         <span class="on">${esc(pname(r.product_id))}<small>${esc(r.username)} · ${esc(String(r.body || "").slice(0, 70))}${String(r.body || "").length > 70 ? "…" : ""}</small></span>
         <span class="ot">${(r.photos || []).filter(okPhoto).length ? "📷" : ""}</span>
         <span class="os"><i></i>${r.hidden ? "Нуусан" : r.reply ? `Хариулсан${who(r) ? " · " + esc(aname(who(r).admin_id)) : ""}` : "Хариулаагүй"}</span><span class="ochev" aria-hidden="true">›</span></summary>
-      <div class="obody rvb">
-        <div><small>${esc(r.username)} ${r.verified ? '<span class="tag ok">✓ Худалдан авсан</span>' : ""}</small><p style="white-space:pre-line;margin:6px 0">${esc(r.body)}</p>
-          ${(r.photos || []).filter(okPhoto).length ? `<div class="thumbs">${r.photos.filter(okPhoto).map(u => `<figure><a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt=""></a></figure>`).join("")}</div>` : ""}</div>
-        <div class="oact">${who(r) ? `<p class="rwho">✍ <b>${esc(aname(who(r).admin_id))}</b> хариулсан · ${dt(who(r).replied_at)}${who(r).edited ? " · засварласан" : ""}</p>` : ""}<label>FINN-ий хариулт<textarea data-rp="${r.id}" rows="2" placeholder="Хариулт (заавал биш)">${esc(r.reply || "")}</textarea></label>
-          <button class="btn dark" data-save="${r.id}">Хариулт илгээх</button><a class="btn" href="/#p/${encodeURIComponent(r.product_id)}/rv" target="_blank" rel="noopener" title="Сайт дээрх сэтгэгдэл хэсэг рүү">🔗 Сайтад харах</a><button class="btn" data-hide="${r.id}">${r.hidden ? "👁 Харуулах" : "🙈 Нуух"}</button><button class="btn del" data-del="${r.id}">🗑 Устгах</button></div>
+      <div class="obody rvb" data-rv="${r.id}">
+        <!-- Хэрэглэгчийн сэтгэгдэл (чат шиг зүүн талд) -->
+        <div class="ichat"><div class="bub fn"><b>${esc(r.username)} ${r.verified ? '<span class="tag ok">✓ Худалдан авсан</span>' : ""}</b><p>${esc(r.body)}</p>
+          ${(r.photos || []).filter(okPhoto).length ? `<div class="thumbs">${r.photos.filter(okPhoto).map(u => `<figure><a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt=""></a></figure>`).join("")}</div>` : ""}
+          <small>${st(r.rating)} · ${dt(r.created_at)}</small></div>
+          <!-- FINN-ий хариулт эсвэл хариу бичих талбар -->
+          <div class="rvrep">${rvReply(r)}</div></div>
+        <div class="oact"><a class="btn" href="/#p/${encodeURIComponent(r.product_id)}/rv" target="_blank" rel="noopener" title="Сайт дээрх сэтгэгдэл хэсэг рүү">🔗 Сайтад харах</a><button class="btn" data-hide="${r.id}">${r.hidden ? "👁 Харуулах" : "🙈 Нуух"}</button><button class="btn del" data-del="${r.id}">🗑 Сэтгэгдэл устгах</button></div>
       </div></details>`).join("") || '<p class="msg">Одоохондоо сэтгэгдэл алга.</p>'}</div>`;
   // "Хэн хариулсан" шүүлтүүр солиход
   $("rvWho").onchange = e => { RV_WHO = e.target.value; showReviews(); };
@@ -2223,18 +2241,43 @@ async function showReviews(){
   // Олноор сонгож устгах
   if (list.length) bulkSel($("rvl"), { what: "сэтгэгдэл", done: () => showReviews(),
     delOne: async id => { const { data, error } = await sb.from("reviews").delete().eq("id", +id).select("id"); if (error || !data || !data.length) throw new Error("fail"); } });
-  // Хариулт хадгалах
-  $("main").querySelectorAll("[data-save]").forEach(b => b.onclick = async () => {
-    const v = $("main").querySelector(`[data-rp="${b.dataset.save}"]`).value.trim();
-    const { error } = await sb.from("reviews").update({ reply: v || null }).eq("id", +b.dataset.save);
-    if (error) return toast("Алдаа: " + error.message);
-    // Хариулт илгээгдвэл хэрэглэгчид 🔔 мэдэгдэл автоматаар очно (finn-inbox.sql)
-    toast(v ? "✓ Хариулт илгээлээ · хэрэглэгчид мэдэгдэл очлоо" : "Хариултыг арилгалаа");
-    // Хэн хариулсныг шууд харуулна
-    const rw = b.closest(".oact"), me = aname(ADMIN_UID);
-    if (rw) { let el = rw.querySelector(".rwho"); if (v) { if (!el) { el = document.createElement("p"); el.className = "rwho"; rw.prepend(el); } el.innerHTML = `✍ <b>${esc(me)}</b> хариулсан · дөнгөж сая`; } else if (el) el.remove(); }
-    const row = b.closest("details"); if (row && !row.classList.contains("off")) row.querySelector(".os").innerHTML = `<i></i>${v ? "Хариулсан · " + esc(aname(ADMIN_UID)) : "Хариулаагүй"}`;
-  });
+  // Хариулт хэсгийн үйлдлүүд (хариулт илгээх, засах, устгах)
+  $("rvl").querySelectorAll(".rvb").forEach(box => bindRv(box, list.find(x => x.id === +box.dataset.rv)));
+  function bindRv(box, r){
+    const R = box.querySelector(".rvrep"), row = box.closest("details");
+    // Хариулт хадгалах (v хоосон бол хариултыг устгана)
+    const saveReply = async (v, btn) => {
+      if (btn) { btn.disabled = true; btn.textContent = "Хадгалж байна…"; }
+      // Өмнө нь хариулт байсан эсэх (засвар уу, шинэ үү)
+      const had = !!r.reply;
+      const { error } = await sb.from("reviews").update({ reply: v || null }).eq("id", r.id);
+      if (error) { if (btn) btn.disabled = false; return toast("Алдаа: " + error.message); }
+      // Хариулт илгээгдвэл хэрэглэгчид 🔔 мэдэгдэл автоматаар очно (finn-inbox.sql)
+      toast(!v ? "Хариултыг устгалаа" : had ? "✓ Засварлалаа · хэрэглэгчид мэдэгдэл очлоо" : "✓ Хариулт илгээлээ · хэрэглэгчид мэдэгдэл очлоо");
+      LOG[r.id] = v ? { review_id: r.id, admin_id: ADMIN_UID, replied_at: new Date().toISOString(), edited: had } : undefined;
+      r.reply = v || null;
+      if (!row.classList.contains("off")) row.querySelector(".os").innerHTML = `<i></i>${v ? "Хариулсан · " + esc(aname(ADMIN_UID)) : "Хариулаагүй"}`;
+      R.innerHTML = rvReply(r); bindRv(box, r);
+    };
+    // Хариулаагүй: илгээх
+    const send = R.querySelector("[data-rsend]");
+    if (send) send.onclick = () => { const v = R.querySelector(".rvta").value.trim(); if (!v) return R.querySelector(".rvta").focus(); saveReply(v, send); };
+    // ✏️ Засах: хариултыг талбар болгоно
+    const ed = R.querySelector("[data-red]");
+    if (ed) ed.onclick = () => {
+      const bub = R.querySelector(".bub"); bub.classList.add("editing");
+      bub.querySelector("p").outerHTML = `<textarea class="edta" rows="3" maxlength="2000">${esc(r.reply)}</textarea><span class="edbt"><button type="button" class="btn" data-sv>Хадгалах</button><button type="button" class="btn" data-cx>Болих</button><button type="button" class="btn edel" data-dl>🗑 Устгах</button></span>`;
+      bub.querySelector("small").hidden = true;
+      const ta = bub.querySelector(".edta"); ta.focus(); fitTA(ta);
+      bub.querySelector("[data-cx]").onclick = () => { R.innerHTML = rvReply(r); bindRv(box, r); };
+      bub.querySelector("[data-sv]").onclick = e => { const v = ta.value.trim(); if (!v) return ta.focus(); if (v === r.reply) return bub.querySelector("[data-cx]").click(); saveReply(v, e.target); };
+      // 🗑 Хариултыг устгах (2 удаа дарна) — сэтгэгдэл өөрөө үлдэнэ
+      bub.querySelector("[data-dl]").onclick = e => { const b = e.target;
+        if (b.dataset.sure !== "1") { b.dataset.sure = "1"; b.textContent = "Дахин дар"; return setTimeout(() => { if (b.isConnected) { b.dataset.sure = ""; b.textContent = "🗑 Устгах"; } }, 3000); }
+        saveReply("", null);
+      };
+    };
+  }
   // Нуух / харуулах
   $("main").querySelectorAll("[data-hide]").forEach(b => b.onclick = async () => {
     const r = list.find(x => x.id === +b.dataset.hide);
@@ -2243,7 +2286,7 @@ async function showReviews(){
   });
   // Устгах (2 удаа дарна)
   $("main").querySelectorAll("[data-del]").forEach(b => b.onclick = async () => {
-    if (b.dataset.sure !== "1") { b.dataset.sure = "1"; b.textContent = "Дахин дар"; return setTimeout(() => { if (b.isConnected) { b.dataset.sure = ""; b.textContent = "Устгах"; } }, 3000); }
+    if (b.dataset.sure !== "1") { b.dataset.sure = "1"; b.textContent = "Дахин дар"; return setTimeout(() => { if (b.isConnected) { b.dataset.sure = ""; b.textContent = "🗑 Сэтгэгдэл устгах"; } }, 3000); }
     const { error } = await sb.from("reviews").delete().eq("id", +b.dataset.del);
     if (error) return toast("Алдаа: " + error.message); toast("Устгалаа"); showReviews();
   });

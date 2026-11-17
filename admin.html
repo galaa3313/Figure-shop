@@ -2583,7 +2583,7 @@ async function fitPrograms(my){
   if (my !== VIEW) return;
   $("fbody").innerHTML = `<div class="bar"><span class="mut">${list.length} хөтөлбөр</span><button class="btn dark" id="fpnew" style="margin-left:auto">+ Шинэ хөтөлбөр</button></div>
     <div class="tbl"><table><thead><tr><th>Нэр</th><th>Түвшин / газар</th><th>Төрөл</th><th>Төлөв</th><th></th></tr></thead><tbody>
-    ${list.map(p => `<tr><td><b>${esc(p.title)}</b><small>${esc(p.id)}</small></td><td>${esc(p.level)}<small>${esc(p.place)}</small></td><td>${p.premium ? "Гишүүдэд" : "Үнэгүй"}</td>
+    ${list.map(p => `<tr><td><b>${esc(p.title)}</b><small>${esc(p.id)}</small></td><td>${esc(p.level)}<small>${esc(p.place)}</small></td><td>🔒 Гишүүдэд</td>
       <td>${p.active ? '<span class="tag ok">Идэвхтэй</span>' : '<span class="tag no">Нуусан</span>'}</td><td><button class="btn" data-fpe="${esc(p.id)}">Засах</button></td></tr>`).join("") || '<tr><td colspan="5">Хөтөлбөр алга. "+ Шинэ хөтөлбөр" дарна уу.</td></tr>'}</tbody></table></div>`;
   $("fpnew").onclick = () => fitProgForm(null, list);
   $("fbody").querySelectorAll("[data-fpe]").forEach(b => b.onclick = () => fitProgForm(list.find(x => x.id === b.dataset.fpe), list));
@@ -2599,7 +2599,7 @@ function fitProgForm(p, list){
     <label>Нүүр зураг<input type="file" id="fp-file" accept="image/*"></label>
     <div><img id="fp-img" src="${esc(p.cover || "")}" alt="" style="max-width:220px;${p.cover ? "" : "display:none"}"></div>
     ${ff("fp-sort", "Эрэмбэ (их нь эхэнд)", p.sort, "number")}
-    <div class="full row">${ff("fp-prem", "Гишүүдэд (үнэгүй гэж тэмдэглэсэн хичээлээс бусад нь түгжээтэй)", p.premium, "check")}${ff("fp-act", "Сайтад харуулах", p.active, "check")}</div>
+    <div class="full row">${ff("fp-act", "Сайтад харуулах", p.active, "check")}</div>
     <div class="full row"><button class="btn dark" type="submit" id="fpsave">Хадгалах</button><button class="btn" type="button" id="fpx">Болих</button>
       ${isNew ? "" : '<button class="btn red" type="button" id="fpdel" style="margin-left:auto">Устгах</button>'}</div></form>`;
   let cover = p.cover || "";
@@ -2610,7 +2610,7 @@ function fitProgForm(p, list){
     e.preventDefault();
     if (!fv("fp-id")) $("fp-id").value = fslug(fv("fp-title"));
     const row = { id: fv("fp-id"), title: fv("fp-title"), level: $("fp-level").value, place: $("fp-place").value, descr: $("fp-descr").value.trim(), cover: cover || null,
-      premium: $("fp-prem").checked, active: $("fp-act").checked, sort: Number(fv("fp-sort")) || 0 };
+      premium: true, active: $("fp-act").checked, sort: Number(fv("fp-sort")) || 0 };
     if (!/^[a-z0-9][a-z0-9-]{1,39}$/.test(row.id)) return toast("ID буруу: латин жижиг үсэг, тоо, зураас");
     const b = $("fpsave"); fbusy(b, true);
     const r = isNew ? await sb.from("fit_programs").insert(row) : await sb.from("fit_programs").update(row).eq("id", p.id);
@@ -2644,7 +2644,7 @@ async function fitLessons(my){
     <p class="flhint">${list.length ? `<b>${list.length}</b> хичээл · <b>${list.length - noV}</b> видеотой${noV ? ` · <b class="red">${noV}</b> видеогүй` : ""} · ` : ""}Видео оруулах: хичээлийн <b>«🎬 Видео оруулах»</b> товч → видеогоо чирж оруулах эсвэл сонгох.</p>
     <div class="flist">${list.map(l => `<div class="flrow ${l.active ? "" : "off"}" data-fle="${l.id}">
       <span class="fln">${l.n}</span>
-      <span class="flt"><b>${esc(l.title)}</b>${l.active ? "" : ' <span class="tag no">нуусан</span>'}<small>${l.minutes} мин · ${l.free ? "Үнэгүй" : "Гишүүдэд"} · ${(l.exercises || []).length} дасгал · ${(l.products || []).length} бараа</small></span>
+      <span class="flt"><b>${esc(l.title)}</b>${l.active ? "" : ' <span class="tag no">нуусан</span>'}<small>${l.minutes} мин · ${(l.exercises || []).length} дасгал · ${(l.products || []).length} бараа</small></span>
       ${vtag(l)}
       <span class="flb"><button class="btn ${l.bunny_id ? "" : "dark"}" type="button" data-flv="${l.id}">🎬 ${l.bunny_id ? "Видео солих" : "Видео оруулах"}</button><button class="btn" type="button" data-fle2="${l.id}">Засах</button></span>
     </div>`).join("") || `<p class="msg">Энэ хөтөлбөрт хичээл алга. <b>«+ Шинэ хичээл»</b> дарж эхний хичээлээ нэмнэ үү.</p>`}</div>`;
@@ -2658,7 +2658,7 @@ async function fitLessons(my){
 }
 async function fitLessonForm(l, list, toVideo){
   let isNew = !l;
-  l = l || { n: (list.length ? Math.max(...list.map(x => x.n)) + 1 : 1), title: "", minutes: 20, free: list.length < 3, body: "", exercises: [], products: [], video_url: "", active: true };
+  l = l || { n: (list.length ? Math.max(...list.map(x => x.n)) + 1 : 1), title: "", minutes: 20, free: false, body: "", exercises: [], products: [], video_url: "", active: true };
   // Дэлгүүрийн бараанууд (хичээлд холбохоор)
   const prods = must(await sb.from("products").select("id,name").eq("active", true).order("sort", { ascending: false }));
   const exText = (l.exercises || []).map(e => e.sets ? `${e.name} | ${e.sets}` : e.name).join("\n");
@@ -2687,7 +2687,8 @@ async function fitLessonForm(l, list, toVideo){
     <div class="full"><span class="mut" style="font-size:12px">Энэ хичээлд хэрэгтэй бараа (сурагчид шууд сагсална)</span>
       <div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px;max-height:160px;overflow:auto;border:1px solid var(--line);padding:8px">
       ${prods.map(p => `<label style="flex-direction:row;display:flex;gap:6px;align-items:center;font-size:13px;color:var(--ink)"><input type="checkbox" value="${esc(p.id)}" data-flp ${(l.products || []).includes(p.id) ? "checked" : ""} style="width:auto">${esc(p.name)}</label>`).join("") || '<span class="mut">Бараа алга</span>'}</div></div>
-    <div class="full row">${ff("fl-free", "Үнэгүй (гишүүн биш хүн ч үзнэ)", l.free, "check")}${ff("fl-act", "Сайтад харуулах", l.active, "check")}</div>
+    <!-- Үнэгүй хичээл байхгүй: бүх хичээлийг зөвхөн төлбөр төлсөн гишүүд үзнэ -->
+    <div class="full row">${ff("fl-act", "Сайтад харуулах", l.active, "check")}<span class="mut" style="font-size:12.5px;align-self:center">🔒 Зөвхөн төлбөр төлсөн гишүүд үзнэ</span></div>
     <div class="full row"><button class="btn dark" type="submit" id="flsave">Хадгалах</button><button class="btn" type="button" id="flx">Болих</button>
       ${isNew ? "" : '<button class="btn red" type="button" id="fldel" style="margin-left:auto">Устгах</button>'}</div></form>`;
   $("flx").onclick = () => { $("fform").innerHTML = ""; };
@@ -2724,7 +2725,7 @@ async function fitLessonForm(l, list, toVideo){
     const ex = $("fl-ex").value.split("\n").map(s => s.trim()).filter(Boolean).slice(0, 40).map(s => { const [n, ...r] = s.split("|"); return { name: n.trim().slice(0, 80), sets: r.join("|").trim().slice(0, 80) }; });
     const vu = fv("fl-video");
     return { program_id: FIT_PROG, n: Number(fv("fl-n")), title: fv("fl-title"), minutes: Number(fv("fl-min")) || 20, body: $("fl-body").value.trim(),
-      exercises: ex, products: [...document.querySelectorAll("[data-flp]:checked")].map(x => x.value), video_url: vu && /^https:\/\//.test(vu) ? vu : null, free: $("fl-free").checked, active: $("fl-act").checked };
+      exercises: ex, products: [...document.querySelectorAll("[data-flp]:checked")].map(x => x.value), video_url: vu && /^https:\/\//.test(vu) ? vu : null, free: false, active: $("fl-act").checked };
   };
   let uploading = false;
   // Оруулж байх үед хуудсыг хаахаас сэрэмжлүүлнэ

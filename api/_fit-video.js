@@ -1,5 +1,5 @@
 // FINN Fit — хичээлийн Bunny видеог тоглуулах ХУГАЦААТАЙ холбоос гаргана.
-// Үзэх эрхтэй хүнд л (үнэгүй хичээл, эсвэл идэвхтэй гишүүн, эсвэл админ) холбоос өгнө.
+// Үзэх эрхтэй хүнд л (идэвхтэй, төлбөр төлсөн гишүүн эсвэл админ) холбоос өгнө.
 // Холбоосыг хуулж бусдад өгсөн ч 3 цагийн дараа ажиллахаа болино.
 const crypto = require("node:crypto");
 const L = require("./_lib.js");
@@ -18,8 +18,8 @@ module.exports = async (req, res) => {
     const r = await SB.rest(`fit_lessons?id=eq.${id}&active=eq.true&select=id,free,bunny_id,program_id,fit_programs(premium,active)`);
     const l = r && r[0];
     if (!l || !l.bunny_id || !l.fit_programs || !l.fit_programs.active) return res.status(404).json({ ok: false });
-    // Үнэгүй биш бол гишүүн эсэхийг шалгана
-    if (!l.free && l.fit_programs.premium) {
+    // Үнэгүй хичээл байхгүй: үргэлж нэвтэрсэн, хугацаа нь дуусаагүй гишүүн (эсвэл админ) байх ёстой
+    {
       const me = await SB.userFrom(req).catch(() => null);
       if (!me) return res.status(401).json({ ok: false, error: "login" });
       if (me.role !== "admin") {

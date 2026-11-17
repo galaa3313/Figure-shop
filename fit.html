@@ -531,7 +531,7 @@ async function vHome(_, my){
 }
 // Хөтөлбөрийн карт
 const progCard = p => `<a class="card prog" href="#program/${esc(p.id)}">
-  <div class="cv" ${okImg(p.cover) ? `style="background-image:url('${esc(okImg(p.cover))}')"` : ""}>${okImg(p.cover) ? "" : "FINN FIT"}<span class="tag">${esc(p.level)}</span>${p.premium ? `<span class="tag red">ГИШҮҮН</span>` : `<span class="tag red" style="background:var(--green)">ҮНЭГҮЙ</span>`}</div>
+  <div class="cv" ${okImg(p.cover) ? `style="background-image:url('${esc(okImg(p.cover))}')"` : ""}>${okImg(p.cover) ? "" : "FINN FIT"}<span class="tag">${esc(p.level)}</span><span class="tag red">ГИШҮҮН</span></div>
   <div class="bd"><b>${esc(p.title)}</b><span class="sm mut">${esc(p.place)}</span></div></a>`;
 
 // ===== МЭДЭЭ =====
@@ -566,7 +566,8 @@ async function vPrograms(_, my){
   if (stale(my)) return;
   const all = data || [];
   let f = "Бүгд";
-  const F = ["Бүгд", "Эхлэгч", "Дунд", "Ахисан", "Гэртээ", "Заалд", "Үнэгүй"];
+  // Шүүлтүүр (үнэгүй хөтөлбөр байхгүй)
+  const F = ["Бүгд", "Эхлэгч", "Дунд", "Ахисан", "Гэртээ", "Заалд"];
   const draw = () => {
     const list = all.filter(p => f === "Бүгд" || p.level === f || p.place === f || (f === "Үнэгүй" && !p.premium) || (p.level === "Бүх түвшин" && ["Эхлэгч", "Дунд", "Ахисан"].includes(f)));
     $("main").innerHTML = `<h1 style="font-size:24px;font-weight:900;margin-bottom:14px">Хөтөлбөрүүд</h1>
@@ -592,10 +593,10 @@ async function vProgram(id, my){
       <div class="bd"><h1 style="font-size:22px;font-weight:900">${esc(p.title)}</h1><span class="sm mut">${esc(p.place)} · ${L.length} хичээл</span>
       ${p.descr ? `<p class="body" style="margin:6px 0 0">${esc(p.descr)}</p>` : ""}
       ${me && L.length ? `<div style="margin-top:8px;display:flex;flex-direction:column;gap:6px"><span class="sm">${doneN}/${L.length} дууссан</span><div class="bar4"><b style="width:${Math.round(doneN / L.length * 100)}%"></b></div></div>` : ""}</div></div>
-    ${locked ? `<div class="sec">${lockBox("Үлдсэн хичээлүүд гишүүдэд нээлттэй", "Үнэгүй хичээлүүдээр туршаад, таалагдвал гишүүн болоорой.")}</div>` : ""}
+    ${locked ? `<div class="sec">${lockBox("Хичээлүүд зөвхөн гишүүдэд нээлттэй", "Гишүүн болж бүх хичээл, видео, дасгалыг үзээрэй. Гишүүн болоорой.")}</div>` : ""}
     <section class="sec"><div class="sechd"><h2>Хичээлүүд</h2></div>
       ${L.length ? L.map(l => `<a class="lrow ${l.done ? "done" : ""}" href="${l.locked ? "#join" : "#lesson/" + l.id}">
-        <div class="num">${l.done ? "✓" : l.n}</div><div class="t"><b>${esc(l.title)}</b><span class="sm mut">${l.minutes} мин${l.free && p.premium ? " · үнэгүй" : ""}</span></div>
+        <div class="num">${l.done ? "✓" : l.n}</div><div class="t"><b>${esc(l.title)}</b><span class="sm mut">${l.minutes} мин</span></div>
         ${l.locked ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9a9a9a" stroke-width="1.8" aria-label="Түгжээтэй"><rect x="5" y="11" width="14" height="10"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>` : `<span aria-hidden="true">›</span>`}</a>`).join("") : `<div class="empty">Хичээл удахгүй нэмэгдэнэ.</div>`}
     </section>`;
 }

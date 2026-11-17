@@ -1,0 +1,19 @@
+# FINN — өдөр бүр /api/keepalive дуудна (Supabase-ийг сэрүүн байлгаж, хуучин түүхийг цэвэрлэнэ)
+name: keepalive
+on:
+  schedule:
+    # Өдөр бүр UTC 03:17 (Улаанбаатарын 11:17)
+    - cron: "17 3 * * *"
+  # Гараар ажиллуулах товч
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call keepalive
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $CRON_SECRET" https://finn.mn/api/keepalive)
+          echo "HTTP $code"
+          test "$code" = "200"

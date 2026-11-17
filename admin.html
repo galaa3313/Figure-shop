@@ -89,6 +89,29 @@ nav{flex-wrap:wrap}
 /* Өөр бүртгэлээр нэвтэрсэн анхааруулга */
 .swacc{position:sticky;top:0;z-index:30;background:#fff3cd;border-bottom:2px solid #e0a800;color:#5c4400;padding:12px max(16px,3vw);font-size:14px;line-height:1.5}
 .swacc small{display:block;opacity:.8;margin-top:2px}.swacc a{color:inherit;font-weight:700}
+/* ===== FIT хичээл: жагсаалт ба видео ===== */
+.flprog{display:inline-flex;align-items:center;gap:8px;font-size:13px}
+.flhint{font-size:13px;color:var(--muted);margin:2px 0 12px;line-height:1.6}.flhint .red{color:#d62828}
+.flist{display:flex;flex-direction:column;border:1px solid var(--line);background:#fff}
+.flrow{display:grid;grid-template-columns:40px minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.flrow:last-child{border-bottom:0}.flrow:hover{background:#f7f7f5}.flrow.off{opacity:.6}
+.fln{font-size:18px;font-weight:700;color:var(--muted);text-align:center}
+.flt b{display:block}.flt small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.flb{display:flex;gap:6px}
+.vt{font-size:12px;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.vt.ok{background:#e7f6ec;color:#1b7a3d}.vt.yt{background:#fff6dc;color:#8a6100}.vt.no{background:#fff0f0;color:#c62828}
+@media (max-width:760px){ .flrow{grid-template-columns:32px minmax(0,1fr) auto} .flb{grid-column:1/-1} .flb .btn{flex:1} }
+.vbox{border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:10px;border-radius:10px;background:#fafaf8}
+.vbox.pulse{animation:vpulse 1s ease 2}
+@keyframes vpulse{50%{box-shadow:0 0 0 4px #1e6fff55}}
+.vhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.vhead .mut{font-size:12px}
+.vdrop{border:2px dashed #c9c9c4;border-radius:10px;padding:22px 14px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;cursor:pointer;background:#fff;transition:.15s}
+.vdrop:hover,.vdrop.over{border-color:#1e6fff;background:#f3f7ff}
+.vdrop.busy{pointer-events:none;opacity:.5}
+.vdrop .vic{font-size:26px;line-height:1}.vdrop .mut{font-size:12.5px}
+.vrow{display:flex;align-items:center;gap:8px;font-size:13px}
+.vprev{position:relative;width:100%;max-width:640px;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden}
+.vprev iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 /* ===== Хэсгийг сайт дээр урьдчилан харах ===== */
 .pvbtn{margin-left:auto;align-self:center;height:36px;font-size:13px;white-space:nowrap;flex:none}
 .pvwrap{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px}
@@ -2613,16 +2636,28 @@ async function fitLessons(my){
   if (!progs.some(p => p.id === FIT_PROG)) FIT_PROG = progs[0].id;
   const list = must(await sb.from("fit_lessons").select("*").eq("program_id", FIT_PROG).order("n"));
   if (my !== VIEW) return;
-  $("fbody").innerHTML = `<div class="bar">${fsel("fl-prog", "", FIT_PROG, progs.map(p => [p.id, p.title]))}<button class="btn dark" id="flnew" style="margin-left:auto">+ Шинэ хичээл</button></div>
-    <div class="tbl"><table><thead><tr><th>#</th><th>Нэр</th><th>Мин</th><th>Нээлттэй</th><th>Дасгал / бараа</th><th></th></tr></thead><tbody>
-    ${list.map(l => `<tr><td>${l.n}</td><td><b>${esc(l.title)}</b>${l.active ? "" : ' <span class="tag no">нуусан</span>'}</td><td>${l.minutes}</td><td>${l.free ? "Үнэгүй" : "Гишүүд"}</td>
-      <td>${(l.exercises || []).length} / ${(l.products || []).length}</td><td><button class="btn" data-fle="${l.id}">Засах</button></td></tr>`).join("") || '<tr><td colspan="6">Хичээл алга.</td></tr>'}</tbody></table></div>`;
+  // Видео төлөв: Bunny (хамгаалалттай) / YouTube / байхгүй
+  const vtag = l => l.bunny_id ? '<span class="vt ok">🎬 Видеотой</span>' : l.video_url ? '<span class="vt yt">▶ YouTube</span>' : '<span class="vt no">Видеогүй</span>';
+  const noV = list.filter(l => !l.bunny_id && !l.video_url).length;
+  $("fbody").innerHTML = `<div class="bar"><label class="mut flprog">Хөтөлбөр ${fsel("fl-prog", "", FIT_PROG, progs.map(p => [p.id, p.title]))}</label><button class="btn dark" id="flnew" style="margin-left:auto">+ Шинэ хичээл</button></div>
+    <!-- Товч заавар ба тоо -->
+    <p class="flhint">${list.length ? `<b>${list.length}</b> хичээл · <b>${list.length - noV}</b> видеотой${noV ? ` · <b class="red">${noV}</b> видеогүй` : ""} · ` : ""}Видео оруулах: хичээлийн <b>«🎬 Видео оруулах»</b> товч → видеогоо чирж оруулах эсвэл сонгох.</p>
+    <div class="flist">${list.map(l => `<div class="flrow ${l.active ? "" : "off"}" data-fle="${l.id}">
+      <span class="fln">${l.n}</span>
+      <span class="flt"><b>${esc(l.title)}</b>${l.active ? "" : ' <span class="tag no">нуусан</span>'}<small>${l.minutes} мин · ${l.free ? "Үнэгүй" : "Гишүүдэд"} · ${(l.exercises || []).length} дасгал · ${(l.products || []).length} бараа</small></span>
+      ${vtag(l)}
+      <span class="flb"><button class="btn ${l.bunny_id ? "" : "dark"}" type="button" data-flv="${l.id}">🎬 ${l.bunny_id ? "Видео солих" : "Видео оруулах"}</button><button class="btn" type="button" data-fle2="${l.id}">Засах</button></span>
+    </div>`).join("") || `<p class="msg">Энэ хөтөлбөрт хичээл алга. <b>«+ Шинэ хичээл»</b> дарж эхний хичээлээ нэмнэ үү.</p>`}</div>`;
   $("fl-prog").onchange = e => { FIT_PROG = e.target.value; showFit("less"); };
   $("flnew").onclick = () => fitLessonForm(null, list);
-  $("fbody").querySelectorAll("[data-fle]").forEach(b => b.onclick = () => fitLessonForm(list.find(x => x.id === Number(b.dataset.fle)), list));
+  // Мөр эсвэл "Засах" дарахад засах цонх; "🎬" дарахад шууд видео хэсэг рүү
+  $("fbody").querySelectorAll("[data-fle]").forEach(r => r.onclick = e => {
+    const l = list.find(x => x.id === Number(r.dataset.fle));
+    fitLessonForm(l, list, !!e.target.closest("[data-flv]"));
+  });
 }
-async function fitLessonForm(l, list){
-  const isNew = !l;
+async function fitLessonForm(l, list, toVideo){
+  let isNew = !l;
   l = l || { n: (list.length ? Math.max(...list.map(x => x.n)) + 1 : 1), title: "", minutes: 20, free: list.length < 3, body: "", exercises: [], products: [], video_url: "", active: true };
   // Дэлгүүрийн бараанууд (хичээлд холбохоор)
   const prods = must(await sb.from("products").select("id,name").eq("active", true).order("sort", { ascending: false }));
@@ -2631,12 +2666,20 @@ async function fitLessonForm(l, list){
     ${ff("fl-n", "Дугаар", l.n, "number", 'min="1" max="500" required')}
     ${ff("fl-title", "Нэр *", l.title, "text", 'required maxlength="120"')}
     ${ff("fl-min", "Үргэлжлэх (мин)", l.minutes, "number", 'min="1" max="300"')}
-    <div class="full" style="border:1px solid var(--line);padding:12px;display:flex;flex-direction:column;gap:8px">
-      <b style="font-size:13.5px">🎬 Хичээлийн видео (Bunny Stream — хамгаалалттай)</b>
-      <span class="mut" id="fl-vst" style="font-size:12.5px">${l.bunny_id ? "Видео орсон ✓ · ID " + esc(l.bunny_id.slice(0, 8)) + "…" : "Видео ороогүй"}</span>
+    <!-- 🎬 Хичээлийн видео: чирж оруулах эсвэл дарж сонгох (Bunny Stream, хамгаалалттай) -->
+    <div class="full vbox" id="fl-vbox">
+      <div class="vhead"><b>🎬 Хичээлийн видео</b><span class="mut">Bunny Stream · зөвхөн эрхтэй хүн үзнэ</span></div>
+      <!-- Оруулсан видеог шууд үзэх -->
+      <div class="vprev" id="fl-vprev" hidden></div>
+      <label class="vdrop" id="fl-vdrop">
+        <input type="file" id="fl-vfile" accept="video/*" hidden>
+        <span class="vic">⬆</span>
+        <b>${l.bunny_id ? "Шинэ видеогоор солих" : "Видеогоо энд чирж оруулах"}</b>
+        <span class="mut">эсвэл <u>дарж сонгох</u> · MP4 (утсаар бичсэн ч болно), 720p–1080p зөвлөнө</span>
+      </label>
       <div class="upbar" id="fl-vbar" hidden><b></b></div>
-      <div class="row" style="gap:8px;flex-wrap:wrap"><label class="btn" style="cursor:pointer">${l.bunny_id ? "Видео солих" : "Видео оруулах"}<input type="file" id="fl-vfile" accept="video/*" hidden></label>
-        ${l.bunny_id ? '<button class="btn red" type="button" id="fl-vdel">Видео хасах</button>' : ""}</div>
+      <div class="vrow"><span class="mut" id="fl-vst">${l.bunny_id ? "Видео орсон ✓" : "Видео ороогүй"}</span>
+        ${l.bunny_id ? '<button class="btn red" type="button" id="fl-vdel" style="margin-left:auto">Видео хасах</button>' : ""}</div>
     </div>
     ${ff("fl-video", "Эсвэл YouTube холбоос (Unlisted — хамгаалалт сул)", l.video_url || "", "url", 'placeholder="https://youtu.be/…"')}
     ${ff("fl-body", "Тайлбар (халаалт, техник, анхаарах зүйл)", l.body, "textarea")}
@@ -2652,35 +2695,85 @@ async function fitLessonForm(l, list){
   let bunnyId = l.bunny_id || null;
   // tus (тасарвал үргэлжлүүлэн оруулдаг) санг хэрэгтэй үед ачаална
   const tusLib = () => window.tus ? Promise.resolve(window.tus) : new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = "https://cdn.jsdelivr.net/npm/tus-js-client@4.1.0/dist/tus.min.js"; sc.onload = () => ok(window.tus); sc.onerror = () => no(new Error("оруулагч ачаалсангүй")); document.head.appendChild(sc); });
+  // Оруулсан видеог админ хэсэгт шууд үзүүлнэ (хадгалсан, идэвхтэй хичээлд)
+  const preview = async () => {
+    const box = $("fl-vprev"); if (!box || isNew || !bunnyId) return;
+    try {
+      const { data } = await sb.auth.getSession(); const tk = data && data.session ? data.session.access_token : "";
+      const r = await (await fetch(`/api/fit-video?id=${l.id}`, { headers: tk ? { Authorization: "Bearer " + tk } : {} })).json();
+      if (r.ok && r.url && $("fl-vprev")) { box.hidden = false; box.innerHTML = `<iframe src="${esc(r.url)}" allow="encrypted-media;picture-in-picture;fullscreen" allowfullscreen loading="lazy"></iframe>`; }
+    } catch (e) {}
+  };
   // Видео боловсруулалт дуустал (Bunny хөрвүүлэх) 5 секунд тутам шалгана
   const watch = async id => {
     for (let i = 0; i < 240 && $("fl-vst"); i++) {
-      try { const r = await api({ action: "status", id }, "/api/fit-upload"); if (r.status === 4) { $("fl-vst").textContent = "Видео бэлэн боллоо ✓ (" + Math.round(r.length / 60) + " мин)"; return; }
+      try { const r = await api({ action: "status", id }, "/api/fit-upload");
+        if (r.status === 4) {
+          const mins = Math.max(1, Math.round(r.length / 60));
+          $("fl-vst").textContent = "Видео бэлэн боллоо ✓ (" + mins + " мин)";
+          // Үргэлжлэх хугацааг видеоны уртаар автоматаар бөглөнө
+          if ($("fl-min") && (!l.minutes || l.minutes === 20)) $("fl-min").value = mins;
+          preview(); return; }
         if (r.status === 5 || r.status === 6) { $("fl-vst").textContent = "Bunny видеог боловсруулж чадсангүй — өөр файл оролдоно уу"; return; }
-        $("fl-vst").textContent = `Bunny боловсруулж байна… ${r.progress || 0}% (хаасан ч үргэлжилнэ)`; } catch (e) {}
+        $("fl-vst").textContent = `Bunny боловсруулж байна… ${r.progress || 0}% (хаасан ч үргэлжилнэ, хэдэн минут)`; } catch (e) {}
       await new Promise(z => setTimeout(z, 5000));
     }
   };
-  $("fl-vfile").onchange = async e => {
-    const f = e.target.files[0]; if (!f) return;
-    if (!confirm(`«${f.name}» (${(f.size / 1048576).toFixed(0)} МБ) видеог оруулах уу?\n\nОруулж дуустал энэ цонхыг бүү хаагаарай.`)) return;
-    const bar = $("fl-vbar"), old = bunnyId; bar.hidden = false; bar.firstElementChild.style.width = "0%";
+  // Хичээлийн мөрийг талбаруудаас бэлдэнэ (хадгалах, видео оруулахаас өмнө автоматаар хадгалахад)
+  const rowFromForm = () => {
+    const ex = $("fl-ex").value.split("\n").map(s => s.trim()).filter(Boolean).slice(0, 40).map(s => { const [n, ...r] = s.split("|"); return { name: n.trim().slice(0, 80), sets: r.join("|").trim().slice(0, 80) }; });
+    const vu = fv("fl-video");
+    return { program_id: FIT_PROG, n: Number(fv("fl-n")), title: fv("fl-title"), minutes: Number(fv("fl-min")) || 20, body: $("fl-body").value.trim(),
+      exercises: ex, products: [...document.querySelectorAll("[data-flp]:checked")].map(x => x.value), video_url: vu && /^https:\/\//.test(vu) ? vu : null, free: $("fl-free").checked, active: $("fl-act").checked };
+  };
+  let uploading = false;
+  // Оруулж байх үед хуудсыг хаахаас сэрэмжлүүлнэ
+  const guard = e => { if (uploading) { e.preventDefault(); e.returnValue = ""; } };
+  addEventListener("beforeunload", guard);
+  const upload = async f => {
+    if (!f || uploading) return;
+    if (!/^video\//.test(f.type) && !/\.(mp4|mov|m4v|webm|mkv|avi)$/i.test(f.name)) return toast("Видео файл сонгоно уу");
+    if (!fv("fl-title")) { $("fl-title").focus(); return toast("Эхлээд хичээлийн нэрээ бичнэ үү"); }
+    const mb = f.size / 1048576;
+    if (!confirm(`«${f.name}» (${mb >= 1024 ? (mb / 1024).toFixed(1) + " GB" : mb.toFixed(0) + " MB"}) видеог оруулах уу?\n\nОруулж дуустал энэ хуудсыг бүү хаагаарай.`)) return;
+    // Шинэ хичээл бол эхлээд хадгална (видео хичээлтэйгээ шууд холбогдоно, алдагдахгүй)
+    if (isNew) {
+      const row0 = rowFromForm();
+      const r = await sb.from("fit_lessons").insert(row0).select("*");
+      // Хариуд мөр ирээгүй бол хөтөлбөр + дугаараар нь дахин уншина
+      if (!r.error && !(r.data && r.data[0])) { const q = await sb.from("fit_lessons").select("*").eq("program_id", FIT_PROG).eq("n", row0.n); r.data = q.data; if (!(r.data && r.data[0])) r.error = { message: "хадгалагдсангүй" }; }
+      if (r.error) return toast("Хичээл хадгалагдсангүй: " + (/duplicate/.test(r.error.message) ? "энэ дугаартай хичээл байна" : r.error.message));
+      l = r.data[0]; isNew = false; toast("Хичээл хадгалагдлаа — видео оруулж байна…");
+    }
+    const bar = $("fl-vbar"), old = bunnyId, t0 = Date.now(); bar.hidden = false; bar.firstElementChild.style.width = "0%";
+    uploading = true; $("fl-vdrop").classList.add("busy");
     try {
       const [T, c] = await Promise.all([tusLib(), api({ action: "create", title: fv("fl-title") || f.name }, "/api/fit-upload")]);
       await new Promise((ok, no) => new T.Upload(f, {
-        endpoint: "https://video.bunnycdn.com/tusupload", retryDelays: [0, 3000, 10000, 30000],
+        endpoint: "https://video.bunnycdn.com/tusupload", retryDelays: [0, 3000, 10000, 30000, 60000],
         headers: { AuthorizationSignature: c.signature, AuthorizationExpire: String(c.expire), LibraryId: c.libraryId, VideoId: c.videoId },
         metadata: { filetype: f.type || "video/mp4", title: fv("fl-title") || f.name },
-        onProgress: (a, t) => { bar.firstElementChild.style.width = Math.round(a / t * 100) + "%"; $("fl-vst").textContent = `Оруулж байна… ${Math.round(a / t * 100)}%`; },
+        // Явц, хурд, үлдсэн хугацаа
+        onProgress: (a, t) => { const pc = Math.round(a / t * 100), sec = (Date.now() - t0) / 1000, sp = a / Math.max(sec, 1), left = (t - a) / Math.max(sp, 1);
+          bar.firstElementChild.style.width = pc + "%";
+          $("fl-vst").textContent = `Оруулж байна… ${pc}% · ${(sp / 1048576).toFixed(1)} MB/с · ${left > 90 ? Math.round(left / 60) + " мин" : Math.round(left) + " сек"} үлдсэн`; },
         onSuccess: ok, onError: no
       }).start());
       bunnyId = c.videoId;
-      // Хуучин хичээл бол шууд хадгална, хуучин видеог Bunny-ээс устгана
-      if (!isNew) { must(await sb.from("fit_lessons").update({ bunny_id: bunnyId }).eq("id", l.id)); if (old) api({ action: "delete", id: old }, "/api/fit-upload").catch(() => {}); toast("Видео орлоо ✓"); }
-      else toast("Видео орлоо — одоо «Хадгалах» дарна уу");
+      // Хичээлд холбоод хуучин видеог Bunny-ээс устгана
+      must(await sb.from("fit_lessons").update({ bunny_id: bunnyId }).eq("id", l.id));
+      if (old && old !== bunnyId) api({ action: "delete", id: old }, "/api/fit-upload").catch(() => {});
+      toast("Видео орлоо ✓ — Bunny боловсруулж байна");
       bar.hidden = true; watch(bunnyId);
     } catch (err) { bar.hidden = true; $("fl-vst").textContent = "Алдаа: " + (err.message === "not_configured" ? "Bunny тохиргоо (BUNNY_…) дутуу" : err.message || err); }
+    finally { uploading = false; if ($("fl-vdrop")) $("fl-vdrop").classList.remove("busy"); }
   };
+  $("fl-vfile").onchange = e => { upload(e.target.files[0]); e.target.value = ""; };
+  // Чирж оруулах
+  const dz = $("fl-vdrop");
+  ["dragenter", "dragover"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add("over"); }));
+  ["dragleave", "drop"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove("over"); }));
+  dz.addEventListener("drop", e => upload(e.dataTransfer.files[0]));
   if ($("fl-vdel")) $("fl-vdel").onclick = async () => {
     if (!confirm("Энэ хичээлийн видеог хасах уу? Bunny-ээс бүр устгана.")) return;
     try { must(await sb.from("fit_lessons").update({ bunny_id: null }).eq("id", l.id)); await api({ action: "delete", id: bunnyId }, "/api/fit-upload").catch(() => {}); bunnyId = null; toast("Видео хаслаа"); showFit("less"); }
@@ -2689,18 +2782,17 @@ async function fitLessonForm(l, list){
   if (bunnyId) watch(bunnyId);
   $("flf").onsubmit = async e => {
     e.preventDefault();
-    const ex = $("fl-ex").value.split("\n").map(s => s.trim()).filter(Boolean).slice(0, 40).map(s => { const [n, ...r] = s.split("|"); return { name: n.trim().slice(0, 80), sets: r.join("|").trim().slice(0, 80) }; });
+    if (uploading) return toast("Видео оруулж дуустал хүлээнэ үү");
     const vu = fv("fl-video");
     if (vu && !/^https:\/\//.test(vu)) return toast("Видео холбоос https://-ээр эхэлнэ");
-    const row = { program_id: FIT_PROG, n: Number(fv("fl-n")), title: fv("fl-title"), minutes: Number(fv("fl-min")) || 20, body: $("fl-body").value.trim(),
-      exercises: ex, products: [...document.querySelectorAll("[data-flp]:checked")].map(x => x.value), video_url: vu || null, free: $("fl-free").checked, active: $("fl-act").checked };
+    const row = rowFromForm();
     // Bunny видео (шинэ хичээлд оруулсан бол)
     if (bunnyId) row.bunny_id = bunnyId;
     const b = $("flsave"); fbusy(b, true);
     const r = isNew ? await sb.from("fit_lessons").insert(row) : await sb.from("fit_lessons").update(row).eq("id", l.id);
     fbusy(b, false);
     if (r.error) return toast("Алдаа: " + (/duplicate/.test(r.error.message) ? "энэ дугаартай хичээл байна" : r.error.message));
-    toast("Хадгаллаа"); $("fform").innerHTML = ""; showFit("less");
+    toast("Хадгаллаа"); removeEventListener("beforeunload", guard); $("fform").innerHTML = ""; showFit("less");
   };
   if ($("fldel")) $("fldel").onclick = async () => {
     if (!confirm(`«${l.title}» хичээлийг устгах уу?`)) return;
@@ -2709,7 +2801,9 @@ async function fitLessonForm(l, list){
     if (l.bunny_id) api({ action: "delete", id: l.bunny_id }, "/api/fit-upload").catch(() => {});
     toast("Устгалаа"); $("fform").innerHTML = ""; showFit("less");
   };
-  $("fform").scrollIntoView({ behavior: "smooth" });
+  // "🎬 Видео оруулах" дарж ирсэн бол видео хэсэг рүү, үгүй бол формын эхэнд
+  (toVideo ? $("fl-vbox") : $("fform")).scrollIntoView({ behavior: "smooth", block: toVideo ? "center" : "start" });
+  if (toVideo) { $("fl-vbox").classList.add("pulse"); setTimeout(() => $("fl-vbox") && $("fl-vbox").classList.remove("pulse"), 2000); }
 }
 
 // ----- 3) ҮНЭ ба ГИШҮҮНИЙ ХӨНГӨЛӨЛТ -----

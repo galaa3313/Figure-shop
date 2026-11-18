@@ -994,6 +994,8 @@ footer .logo{justify-content:flex-start!important;justify-self:start!important}
 .modal .opt span{font-size:13px;color:var(--muted)}
 .modal .chips button{border-radius:0;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:9px 16px;min-width:52px}
 .modal .chips button[aria-pressed="true"]{border:2px solid var(--ink);background:var(--bg);color:var(--ink);font-weight:600}
+/* Сонгосон өнгөнд байхгүй хэмжээ: бүдэг, зураастай, дарагдахгүй */
+.modal .chips button:disabled{opacity:.35;text-decoration:line-through;cursor:not-allowed}
 .modal .add{border-radius:0}
 .modal .go{border-radius:0}
 /* Тайлбар, сэтгэгдэл, төстэй бараа: доод бүтэн өргөн хэсэг */
@@ -2235,12 +2237,34 @@ function openModal(id){
       const el = car.children[i];
       if (el) car.scrollTo({ left: el.offsetLeft - car.offsetLeft, behavior: "smooth" });
     };
-    $("modal").querySelectorAll(".chips button").forEach(b => b.onclick = () => {
-      const oi = +b.dataset.o; sel[oi] = b.textContent;
-      b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
-      showVariant(b.textContent);
+    // Өнгө, хэмжээний сонголтын дугаар (өнгө бүрт тусгай хэмжээ тохируулсан бол ашиглана)
+    const ci = p.options.findIndex(o => /өнгө|color|colour/i.test(o.label)), si = p.options.findIndex((o, i) => i !== ci && /хэмжээ|size|размер/i.test(o.label));
+    const CS = p.colorSizes || {};
+    // Товчны төлөвийг шинэчилнэ (дарагдсан, идэвхгүй)
+    const paint = () => {
+      $("modal").querySelectorAll(".chips button").forEach(x => x.setAttribute("aria-pressed", sel[+x.dataset.o] === x.textContent));
       const ok = sel.every(Boolean); ab.disabled = !ok; ab.style.opacity = ok ? 1 : .55;
       ab.textContent = ok ? `Сагсанд нэмэх · ${sel.join(" / ")}` : "Сонголтоо хийнэ үү";
+    };
+    // Сонгосон өнгөнд байгаа хэмжээг л идэвхтэй үлдээнэ
+    const avail = () => {
+      if (ci < 0 || si < 0) return;
+      const allow = sel[ci] && CS[sel[ci]] ? CS[sel[ci]] : null;
+      const sb = [...$("modal").querySelectorAll(`.chips button[data-o="${si}"]`)];
+      sb.forEach(x => { x.disabled = !!allow && !allow.includes(x.textContent); x.title = x.disabled ? "Энэ өнгөнд байхгүй" : ""; });
+      // Өмнө сонгосон хэмжээ энэ өнгөнд байхгүй бол сонголтыг арилгана
+      if (sel[si] && allow && !allow.includes(sel[si])) sel[si] = null;
+      // Ганцхан хэмжээ байгаа бол автоматаар сонгоно
+      const on = sb.filter(x => !x.disabled);
+      if (allow && on.length === 1) sel[si] = on[0].textContent;
+    };
+    $("modal").querySelectorAll(".chips button").forEach(b => b.onclick = () => {
+      if (b.disabled) return;
+      const oi = +b.dataset.o; sel[oi] = b.textContent;
+      showVariant(b.textContent);
+      // Өнгө солигдвол хэмжээний боломжийг шинэчилнэ
+      if (oi === ci) avail();
+      paint();
     });
     // Ганц утгатай сонголтыг (жишээ нь "Хэмжээ: Free") автоматаар сонгоно
     p.options.forEach((o, oi) => { if (o.values.length === 1) { const b = $("modal").querySelector(`.chips button[data-o="${oi}"]`); if (b) b.click(); } });
@@ -3449,6 +3473,9 @@ async function loadDbProducts(){
     // Зураг → өнгө ({ холбоос: "Улаан" }) — зөвхөн аюулгүй холбоос, богино нэр
     x.imgColor = Object.fromEntries(Object.entries(x.imgColor && typeof x.imgColor === "object" ? x.imgColor : {})
       .map(([u, c]) => [safeImg(u), String(c).slice(0, 40)]).filter(([u, c]) => u && c));
+    // Өнгө бүрт байгаа хэмжээ ({ "Цагаан": ["M"] }) — зөвхөн богино бичвэрүүд
+    x.colorSizes = Object.fromEntries(Object.entries(x.colorSizes && typeof x.colorSizes === "object" ? x.colorSizes : {})
+      .filter(([c, l]) => Array.isArray(l) && l.length).map(([c, l]) => [String(c).slice(0, 40), l.map(z => String(z).slice(0, 20))]));
     // labels-ийг бараанд хуулахгүй
     delete x.labels;
     return { ...x, id: d.id, cat: d.cat, series: d.series || "", name: d.name, line: d.line || "", price: d.price, was: d.was || null,

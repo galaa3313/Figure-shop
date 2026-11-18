@@ -294,6 +294,11 @@ nav{flex-wrap:wrap}
 .szc{height:36px;min-width:46px;padding:0 10px;border:1px solid var(--line);background:#fff;font-size:13px;color:var(--ink)}
 .szc[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
 .szg{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.szg>span{width:58px;font-size:12px;color:var(--muted)}
+/* Өнгө бүрийн хэмжээ: байхгүй хэмжээ саарал, зураастай */
+.csbox{margin-top:12px;padding:10px;border:1px dashed var(--line);background:#fafafa}.csbox>p{margin:0 0 8px;font-size:12.5px}
+.csrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}.csrow>b{width:96px;font-size:13px;display:flex;align-items:center;gap:6px;font-weight:600}
+.szc.off{background:#f1f1f1;color:#aaa;text-decoration:line-through;border-style:dashed;font-weight:400}
+.pvo button.na{opacity:.35;text-decoration:line-through}
 .pfmore summary{cursor:pointer;font-size:12.5px;color:var(--muted);padding:4px 0}
 /* ⑤ Сайтад ингэж харагдана */
 .pvsec{background:#f6f6f4}
@@ -1570,6 +1575,10 @@ function productForm(p, isNew){
   // Хуучин сонголтын дараалал (захиалгын "Улаан / M" дараалал өөрчлөгдөхгүй)
   const optOrder = opts0.map(o => o.label);
   const colorVals = () => colors;
+  // Өнгө бүрт байгаа хэмжээ: { "Цагаан": ["M"] } — бичигдээгүй өнгө бол бүх хэмжээ байгаа гэсэн үг
+  const colorSizes = { ...((p.extra && p.extra.colorSizes) || {}) };
+  // Тухайн өнгөнд тухайн хэмжээ байгаа эсэх
+  const hasSize = (c, z) => !colorSizes[c] || colorSizes[c].includes(z);
   // Зургийг солиход (тайрах/буцаах) өнгөний холбоосыг шинэ зураг руу шилжүүлнэ
   const moveColor = (from, to) => { if (imgColor[from]) { imgColor[to] = imgColor[from]; delete imgColor[from]; } };
   // Бэлэн өнгө, хэмжээнүүд (нэг дарж сонгоно)
@@ -1606,6 +1615,8 @@ function productForm(p, isNew){
     <!-- ③ ХЭМЖЭЭ: товч дарж сонгоно -->
     <div class="full pfsec"><div class="pfh"><i>3</i><div><b>Хэмжээ</b><span>Байгаа хэмжээгээ дарж сонгоно. Хэмжээгүй бараа бол алгасна.</span></div></div>
       <div id="szbox"></div>
+      <!-- Өнгө бүрт аль хэмжээ байгааг тохируулна (өнгө, хэмжээ хоёулаа байвал гарна) -->
+      <div id="csbox"></div>
       <div class="row" style="margin-top:6px"><input id="szadd" placeholder="Өөр хэмжээ (жишээ: 90, 95, 100)" style="flex:1"><button type="button" class="btn" id="szaddb">Нэмэх</button></div>
       <details class="pfmore"><summary>Бусад сонголт (ховор: загвар, багц г.м.)</summary>
         <textarea id="p-opts" rows="2" style="margin-top:6px;width:100%" placeholder="Загвар: Богино, Урт">${esc(optsText(otherOpts))}</textarea></details>
@@ -1685,7 +1696,7 @@ function productForm(p, isNew){
           ${images.length > 1 ? `<div class="pvthumbs">${images.map(u => `<img src="${esc(u)}" class="${u === shown ? "on" : ""}" data-pvi="${esc(u)}" alt="">`).join("")}</div>` : ""}
           <div class="pvb"><span class="ser">${esc(ser)}</span><h3>${esc(nm || "Барааны нэр")}</h3><div class="pr">${price}</div>
             ${colors.length ? `<div class="pvo"><small>Өнгө</small><div>${colors.map(c => `<button type="button" data-pvc="${esc(c)}" aria-pressed="${c === pvColor}">${esc(c)}</button>`).join("")}</div></div>` : ""}
-            ${sizes.length ? `<div class="pvo"><small>Хэмжээ</small><div>${sizes.map(z => `<button type="button" disabled>${esc(z)}</button>`).join("")}</div></div>` : ""}
+            ${sizes.length ? `<div class="pvo"><small>Хэмжээ</small><div>${sizes.map(z => `<button type="button" disabled class="${pvColor && !hasSize(pvColor, z) ? "na" : ""}">${esc(z)}</button>`).join("")}</div></div>` : ""}
             <div class="pvbtn">${colors.length || sizes.length ? "Сонголтоо хийнэ үү" : pre ? "Захиалах" : "Сагсанд хийх"}</div>
             <ul class="pvm"><li>${pre ? "Захиалгаар · Солонгосоос ирнэ" : "Бэлэн бараа · 1–2 хоногт"}</li></ul></div>
           ${det.length || ds ? `<div class="pvd"><h4>Барааны дэлгэрэнгүй</h4>${det.map(u => `<img src="${esc(u)}" alt="">`).join("")}${ds ? `<div class="rd-txt">${richDesc(ds)}</div>` : ""}</div>` : ""}
@@ -1705,11 +1716,33 @@ function productForm(p, isNew){
         if (n && !confirm(`«${c}» өнгийг хасах уу?\nТүүний ${n} зураг «Зургууд» карт руу шилжинэ.`)) return;
         colors = colors.filter(x => x !== c); images.forEach(u => { if (imgColor[u] === c) delete imgColor[u]; });
       } else colors.push(c);
-      drawColors(); drawThumbs();
+      drawColors(); drawThumbs(); drawCS();
     });
   };
-  const addNew = () => { const v = $("colnew").value.trim().slice(0, 30); if (!v) return; if (!colors.includes(v)) colors.push(v); $("colnew").value = ""; drawColors(); drawThumbs(); };
+  const addNew = () => { const v = $("colnew").value.trim().slice(0, 30); if (!v) return; if (!colors.includes(v)) colors.push(v); $("colnew").value = ""; drawColors(); drawThumbs(); drawCS(); };
   $("colnewb").onclick = addNew; $("colnew").onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); addNew(); } };
+  // ----- Өнгө бүрийн хэмжээ: жишээ нь Цагаан өнгө зөвхөн M -----
+  const drawCS = () => {
+    const box = $("csbox"); if (!box) return;
+    // Өнгө эсвэл хэмжээ байхгүй бол энэ хэсэг хэрэггүй
+    if (!colors.length || !sizes.length) { box.className = ""; box.innerHTML = ""; return; }
+    box.className = "csbox";
+    box.innerHTML = `<p><b>Өнгө бүрт байгаа хэмжээ</b> <span class="mut">— бүх өнгөнд бүх хэмжээ байгаа бол хөндөх хэрэггүй. Байхгүй хэмжээг дарж <s>зураастай</s> болгоно.</span></p>`
+      + colors.map(c => `<div class="csrow"><b>${dot(c)}${esc(c)}</b>${sizes.map(z => `<button type="button" class="szc ${hasSize(c, z) ? "" : "off"}" aria-pressed="${hasSize(c, z)}" data-cc="${esc(c)}" data-cz="${esc(z)}">${esc(z)}</button>`).join("")}</div>`).join("");
+    box.querySelectorAll("[data-cc]").forEach(b => b.onclick = () => {
+      const c = b.dataset.cc, z = b.dataset.cz;
+      // Одоогийн жагсаалт (бичигдээгүй бол бүх хэмжээ)
+      let list = colorSizes[c] ? colorSizes[c].filter(x => sizes.includes(x)) : [...sizes];
+      if (list.includes(z)) {
+        // Ядаж нэг хэмжээ үлдээнэ (өнгө бүхэлдээ дууссан бол өнгийг нь хасна)
+        if (list.length === 1) return toast(`«${c}» өнгөнд ядаж нэг хэмжээ үлдээнэ. Огт байхгүй бол өнгийг нь хасна уу.`);
+        list = list.filter(x => x !== z);
+      } else list.push(z);
+      // Бүх хэмжээ байгаа бол тусгай тохиргоо хэрэггүй — устгана
+      if (sizes.every(x => list.includes(x))) delete colorSizes[c]; else colorSizes[c] = sizes.filter(x => list.includes(x));
+      drawCS(); pvLater();
+    });
+  };
   // ----- Хэмжээ: бэлэн багцаас дарж сонгоно -----
   const drawSizes = () => {
     const all = Object.values(SZ).flat(), extra = sizes.filter(s => !all.includes(s));
@@ -1722,6 +1755,7 @@ function productForm(p, isNew){
       else { sizes.push(s); sizes.sort((a, b) => (all.indexOf(a) < 0 ? 999 : all.indexOf(a)) - (all.indexOf(b) < 0 ? 999 : all.indexOf(b))); }
       drawSizes(); summary();
     });
+    drawCS();
   };
   const addSize = () => { $("szadd").value.split(/[,，、]/).map(s => s.trim().slice(0, 20)).filter(Boolean).forEach(s => { if (!sizes.includes(s)) sizes.push(s); }); $("szadd").value = ""; drawSizes(); summary(); };
   $("szaddb").onclick = addSize; $("szadd").onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); addSize(); } };
@@ -1921,6 +1955,10 @@ function productForm(p, isNew){
     const cvNow = colorVals(), ic = {};
     images.forEach(u => { if (imgColor[u] && cvNow.includes(imgColor[u])) ic[u] = imgColor[u]; });
     if (Object.keys(ic).length) extra.imgColor = ic; else delete extra.imgColor;
+    // Өнгө бүрийн хэмжээ: зөвхөн одоо байгаа өнгө, хэмжээгээр, хязгаартай нь л хадгална
+    const cs = {};
+    if (sizes.length) cvNow.forEach(c => { const l = (colorSizes[c] || []).filter(z => sizes.includes(z)); if (l.length && l.length < sizes.length) cs[c] = l; });
+    if (Object.keys(cs).length) extra.colorSizes = cs; else delete extra.colorSizes;
     // Дэлгэрэнгүйн урт зургууд
     if (detail.length) extra.detail = detail; else delete extra.detail;
     if (!$("p-id").value) $("p-id").value = makeId();

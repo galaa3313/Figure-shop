@@ -113,10 +113,11 @@ nav{flex-wrap:wrap}
 .vprev{position:relative;width:100%;max-width:640px;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden}
 .vprev iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 /* ===== Хэсгийг сайт дээр урьдчилан харах ===== */
-.pvbtn{margin-left:auto;align-self:center;height:36px;font-size:13px;white-space:nowrap;flex:none}
-.pvwrap{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px}
-.pvwrap[hidden]{display:none}
-.pvbox{background:#fff;width:min(1100px,100%);height:min(92vh,980px);display:flex;flex-direction:column;border-radius:14px;overflow:hidden}
+/* Анхаар: .spv* нэрс — барааны маягтын .pvwrap/.pvbtn-тэй давхцахгүй (давхцаад саарал давхарга бүх хуудсыг хааж байсан) */
+.spvbtn{margin-left:auto;align-self:center;height:36px;font-size:13px;white-space:nowrap;flex:none}
+.spvwrap{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px}
+.spvwrap[hidden]{display:none}
+.spvbox{background:#fff;width:min(1100px,100%);height:min(92vh,980px);display:flex;flex-direction:column;border-radius:14px;overflow:hidden}
 .pvhead{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .pvhead b{margin-right:auto;font-size:15px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
@@ -124,7 +125,7 @@ nav{flex-wrap:wrap}
 .pvstage{flex:1;overflow:hidden;background:#e9e9e6;display:flex;justify-content:center;position:relative}
 .pvstage iframe{border:0;background:#fff;transform-origin:top center;flex:none;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
 .pvnote{margin:0;padding:8px 12px;font-size:12px}
-@media (max-width:760px){ .pvwrap{padding:0} .pvbox{border-radius:0;height:100%} .pvbtn{height:32px;padding:0 10px;font-size:12px}
+@media (max-width:760px){ .spvwrap{padding:0} .spvbox{border-radius:0;height:100%} .spvbtn{height:32px;padding:0 10px;font-size:12px}
   /* Утсан дээр толгой нэг мөрөнд багтана */
   .pvhead{flex-wrap:nowrap;padding:8px} .pvhead b{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0} .pvhead .btn{height:34px;width:34px;padding:0;justify-content:center} .seg button{padding:6px 9px;font-size:12px} }
 /* ===== Гүйдэг тууз (тохиргоо) ===== */
@@ -2090,7 +2091,7 @@ async function showSettings(){
     </div>
     </div>
     <!-- Хэсгийг сайт дээр урьдчилан харах цонх -->
-    <div class="pvwrap" id="pvw" hidden><div class="pvbox">
+    <div class="spvwrap" id="spvw" hidden><div class="spvbox">
       <div class="pvhead"><b>👁 <span id="pvTitle"></span></b>
         <span class="seg"><button type="button" data-pvw="390">📱 Утас</button><button type="button" data-pvw="1280">🖥 Компьютер</button></span>
         <button type="button" class="btn" id="pvRe" title="Дахин ачаалах">↻</button><button type="button" class="btn" id="pvX" aria-label="Хаах">✕</button></div>
@@ -2325,7 +2326,7 @@ async function showSettings(){
   // Хэсэг бүрийн толгойд "👁 Сайт дээр харах" товч нэмнэ
   $("sf").querySelectorAll("section.scard").forEach(sec => {
     const h = sec.querySelector(".shead"); if (!h) return;
-    h.insertAdjacentHTML("beforeend", `<button type="button" class="btn pvbtn" data-pv="${sec.id.replace(/^s-/, "")}">👁 Сайт дээр харах</button>`);
+    h.insertAdjacentHTML("beforeend", `<button type="button" class="btn spvbtn" data-pv="${sec.id.replace(/^s-/, "")}">👁 Сайт дээр харах</button>`);
   });
   let PV_KEY = "", PV_W = innerWidth < 760 ? 390 : 1280, pvT = 0;
   // Урьдчилан харах цонхонд одоогийн (хадгалаагүй ч) тохиргоог илгээнэ
@@ -2333,23 +2334,23 @@ async function showSettings(){
   // Iframe-ийг хайрцагт багтаана (компьютерийн өргөнийг жижигрүүлж)
   const pvFit = () => { const st = $("pvStage"), f = $("pvFrame"); if (!st || !f) return;
     const sc = Math.min(1, st.clientWidth / PV_W); f.style.width = PV_W + "px"; f.style.height = (st.clientHeight / sc) + "px"; f.style.transform = `scale(${sc})`;
-    $("pvw").querySelectorAll("[data-pvw]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.pvw === PV_W)); };
+    $("spvw").querySelectorAll("[data-pvw]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.pvw === PV_W)); };
   const openPv = key => {
     PV_KEY = key; const sec = $("s-" + key);
     $("pvTitle").textContent = sec ? sec.querySelector("h3").textContent : "Сайт";
-    $("pvw").hidden = false; document.body.style.overflow = "hidden"; pvFit();
+    $("spvw").hidden = false; document.body.style.overflow = "hidden"; pvFit();
     // Анх удаа ачаална; дараа нь зөвхөн тохиргоог дахин илгээнэ
     const f = $("pvFrame");
     if (!f.getAttribute("src")) { f.onload = () => [300, 1200, 2500].forEach(t => setTimeout(pvSend, t)); f.src = "/?preview=1"; } else pvSend();
   };
   $("sf").addEventListener("click", e => { const b = e.target.closest("[data-pv]"); if (b) { e.preventDefault(); e.stopPropagation(); openPv(b.dataset.pv); } }, true);
   // Засах бүрт нээлттэй урьдчилан харахыг шинэчилнэ
-  const pvLive = () => { if ($("pvw").hidden) return; clearTimeout(pvT); pvT = setTimeout(pvSend, 600); };
+  const pvLive = () => { if ($("spvw").hidden) return; clearTimeout(pvT); pvT = setTimeout(pvSend, 600); };
   $("sf").addEventListener("input", pvLive); $("sf").addEventListener("change", pvLive);
-  $("pvw").querySelectorAll("[data-pvw]").forEach(b => b.onclick = () => { PV_W = +b.dataset.pvw; pvFit(); setTimeout(pvSend, 200); });
+  $("spvw").querySelectorAll("[data-pvw]").forEach(b => b.onclick = () => { PV_W = +b.dataset.pvw; pvFit(); setTimeout(pvSend, 200); });
   $("pvRe").onclick = pvSend;
-  $("pvX").onclick = () => { $("pvw").hidden = true; document.body.style.overflow = ""; };
-  onresize = () => { if ($("pvw") && !$("pvw").hidden) pvFit(); };
+  $("pvX").onclick = () => { $("spvw").hidden = true; document.body.style.overflow = ""; };
+  onresize = () => { if ($("spvw") && !$("spvw").hidden) pvFit(); };
   $("ssave").onclick = async () => {
     const out = collect();
     if (!out.cats.length) return toast("Дор хаяж нэг ангилал байх ёстой");

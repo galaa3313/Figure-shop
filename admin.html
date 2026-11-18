@@ -300,7 +300,12 @@ nav{flex-wrap:wrap}
 .csrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}.csrow>b{width:110px;font-size:13px;display:flex;align-items:center;gap:7px;font-weight:600}
 .csrow .sw{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
 .cssz{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:0}.csn{font-size:12px;color:var(--muted);min-width:44px}.csrow.empty .csn{color:#e5172f;font-weight:600}
-.csact{display:flex;gap:4px}.csact button{height:30px;padding:0 10px;border:1px solid var(--line);background:#fff;font-size:12px}
+.cschip{display:inline-flex;align-items:center;height:34px;padding:0 2px 0 11px;background:var(--ink);color:#fff;font-weight:700;font-size:13px}
+.cschip button{border:0;background:none;color:#fff;opacity:.6;width:26px;height:30px;font-size:16px;line-height:1;cursor:pointer}.cschip button:hover{opacity:1}
+.csadd{height:34px;padding:0 12px;border:1px dashed var(--ink);background:#fff;font-size:12.5px;font-weight:600}
+.cspick{flex-basis:100%;margin:4px 0 0 118px;padding:10px;background:#fff;border:1px solid var(--line);display:grid;gap:6px}
+@media (max-width:560px){.cspick{margin-left:0}.csrow>b{width:100%}}
+.szc.part{background:#8a8a8a;border-color:#8a8a8a;color:#fff}
 .szc.off{background:#f1f1f1;color:#aaa;text-decoration:line-through;border-style:dashed;font-weight:400}
 .pvo button.na{opacity:.35;text-decoration:line-through}
 .pfmore summary{cursor:pointer;font-size:12.5px;color:var(--muted);padding:4px 0}
@@ -1581,8 +1586,10 @@ function productForm(p, isNew){
   const colorVals = () => colors;
   // Өнгө бүрт байгаа хэмжээ: { "Цагаан": ["M"] } — бичигдээгүй өнгө бол бүх хэмжээ байгаа гэсэн үг
   const colorSizes = { ...((p.extra && p.extra.colorSizes) || {}) };
+  // Өнгө бүрт өөрийн жагсаалт өгнө (хадгалагдаагүй өнгө = дээрх бүх хэмжээ)
+  colors.forEach(c => { colorSizes[c] = colorSizes[c] ? colorSizes[c].filter(z => sizes.includes(z)) : [...sizes]; });
   // Тухайн өнгөнд тухайн хэмжээ байгаа эсэх
-  const hasSize = (c, z) => !colorSizes[c] || colorSizes[c].includes(z);
+  const hasSize = (c, z) => (colorSizes[c] || sizes).includes(z);
   // Зургийг солиход (тайрах/буцаах) өнгөний холбоосыг шинэ зураг руу шилжүүлнэ
   const moveColor = (from, to) => { if (imgColor[from]) { imgColor[to] = imgColor[from]; delete imgColor[from]; } };
   // Бэлэн өнгө, хэмжээнүүд (нэг дарж сонгоно)
@@ -1617,7 +1624,7 @@ function productForm(p, isNew){
       <label>Эрэмбэ (их нь эхэнд)<input id="p-sort" type="number" value="${esc(p.sort || 0)}"></label></div></details>
 
     <!-- ③ ХЭМЖЭЭ: товч дарж сонгоно -->
-    <div class="full pfsec"><div class="pfh"><i>3</i><div><b>Хэмжээ</b><span>Байгаа хэмжээгээ дарж сонгоно. Хэмжээгүй бараа бол алгасна.</span></div></div>
+    <div class="full pfsec"><div class="pfh"><i>3</i><div><b>Хэмжээ</b><span>Байгаа хэмжээгээ дарж сонгоно. Өнгөтэй бол энд дарахад бүх өнгөнд нэмэгдэнэ (хар = бүх өнгөнд, саарал = зарим өнгөнд). Хэмжээгүй бараа бол алгасна.</span></div></div>
       <div id="szbox"></div>
       <!-- Өнгө бүрт аль хэмжээ байгааг тохируулна (өнгө, хэмжээ хоёулаа байвал гарна) -->
       <div id="csbox"></div>
@@ -1719,55 +1726,76 @@ function productForm(p, isNew){
         const n = images.filter(u => imgColor[u] === c).length;
         if (n && !confirm(`«${c}» өнгийг хасах уу?\nТүүний ${n} зураг «Зургууд» карт руу шилжинэ.`)) return;
         colors = colors.filter(x => x !== c); images.forEach(u => { if (imgColor[u] === c) delete imgColor[u]; });
-      } else colors.push(c);
-      drawColors(); drawThumbs(); drawCS();
+        delete colorSizes[c]; syncSizes();
+      } else { colors.push(c); colorSizes[c] = [...sizes]; } // шинэ өнгө одоогийн бүх хэмжээтэй эхэлнэ
+      drawColors(); drawThumbs(); drawSizes();
     });
   };
-  const addNew = () => { const v = $("colnew").value.trim().slice(0, 30); if (!v) return; if (!colors.includes(v)) colors.push(v); $("colnew").value = ""; drawColors(); drawThumbs(); drawCS(); };
+  const addNew = () => { const v = $("colnew").value.trim().slice(0, 30); if (!v) return; if (!colors.includes(v)) { colors.push(v); colorSizes[v] = [...sizes]; } $("colnew").value = ""; drawColors(); drawThumbs(); drawSizes(); };
   $("colnewb").onclick = addNew; $("colnew").onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); addNew(); } };
-  // ----- Өнгө бүрийн хэмжээ: дээр сонгосон өнгө бүр нэг мөр, тухайн өнгөнд байгаа хэмжээг дарж сонгоно -----
-  // Тухайн өнгөний одоогийн жагсаалт (бичигдээгүй бол бүх хэмжээ)
-  const csList = c => colorSizes[c] ? colorSizes[c].filter(x => sizes.includes(x)) : [...sizes];
-  // Жагсаалтыг хадгална: бүх хэмжээ бол тусгай тохиргоо хэрэггүй (устгана), хоосон ч байж болно
-  const csSet = (c, list) => { if (sizes.every(x => list.includes(x))) delete colorSizes[c]; else colorSizes[c] = sizes.filter(x => list.includes(x)); };
+  // ----- Хэмжээний дараалал: бэлэн багцын дарааллаар (XS, S, M… 35, 36…), бусад нь ард -----
+  const ALLSZ = Object.values(SZ).flat();
+  const szPos = z => { const i = ALLSZ.indexOf(z); return i < 0 ? 999 : i; };
+  const sortSz = l => [...new Set(l)].sort((a, b) => szPos(a) - szPos(b));
+  // Өнгөтэй бол дээрх хэмжээ = бүх өнгөний хэмжээний нийлбэр (бүгд хоосон бол өмнөхийг санаж үлдээнэ)
+  const syncSizes = () => {
+    if (!colors.length) return;
+    const u = sortSz(colors.flatMap(c => colorSizes[c] || []));
+    if (u.length) sizes = sortSz([...u, ...sizes.filter(z => u.includes(z))]);
+  };
+  // ----- Өнгө бүрийн хэмжээ: өнгө бүр тусдаа — × дарж хасна, «+ Хэмжээ» дарж өөрөө сонгож нэмнэ -----
+  let csOpen = ""; // аль өнгөний сонгох самбар нээлттэй байгаа
   const drawCS = () => {
     const box = $("csbox"); if (!box) return;
-    // Өнгө эсвэл хэмжээ байхгүй бол энэ хэсэг хэрэггүй
-    if (!colors.length || !sizes.length) { box.className = ""; box.innerHTML = ""; return; }
+    // Өнгө байхгүй бол энэ хэсэг хэрэггүй (дээрх хэмжээ бүх бараанд)
+    if (!colors.length) { box.className = ""; box.innerHTML = ""; return; }
     box.className = "csbox";
-    box.innerHTML = `<div class="cshead"><div><b>Өнгө бүрт байгаа хэмжээ</b><small class="mut">Хэмжээн дээр дарж сонгоно, дахин дарвал болино. Хар = байгаа, <s>зураастай</s> = байхгүй.</small></div>
-        <span class="row" style="gap:6px"><button type="button" class="btn" data-csall="1">✓ Бүгдийг сонгох</button><button type="button" class="btn" data-csall="0">✕ Бүгдийг болих</button></span></div>`
-      + colors.map(c => { const l = csList(c);
+    // Сонгох самбарт гарах хэмжээнүүд: бэлэн багц + нэмж бичсэн бусад
+    const extra = sortSz(colors.flatMap(c => colorSizes[c] || []).concat(sizes)).filter(z => !ALLSZ.includes(z));
+    const groups = Object.entries(SZ).concat(extra.length ? [["Өөр", extra]] : []);
+    box.innerHTML = `<div class="cshead"><div><b>Өнгө бүрийн хэмжээ</b><small class="mut">Өнгө бүр тусдаа: × дарж хасна, «+ Хэмжээ» дарж тухайн өнгөнд нэмнэ.</small></div>
+        <span class="row" style="gap:6px"><button type="button" class="btn" data-csall="1" title="Бүх өнгөнд дээрх бүх хэмжээг өгнө">✓ Бүгдэд ижил</button><button type="button" class="btn" data-csall="0" title="Бүх өнгөний хэмжээг цэвэрлэнэ">✕ Бүгдийг болих</button></span></div>`
+      + colors.map(c => { const l = sortSz(colorSizes[c] || []);
         return `<div class="csrow ${l.length ? "" : "empty"}"><b><i class="sw" style="${SW[c] ? `background:${SW[c]}` : "background:conic-gradient(#e33,#fc0,#3c6,#39f,#c3f,#e33)"}"></i>${esc(c)}</b>
-          <div class="cssz">${sizes.map(z => `<button type="button" class="szc ${l.includes(z) ? "" : "off"}" aria-pressed="${l.includes(z)}" data-cc="${esc(c)}" data-cz="${esc(z)}">${esc(z)}</button>`).join("")}</div>
-          <span class="csn">${l.length ? `${l.length}/${sizes.length}` : "⚠ сонгоогүй"}</span>
-          <span class="csact"><button type="button" data-crow="${esc(c)}" data-cv="1">Бүгд</button><button type="button" data-crow="${esc(c)}" data-cv="0">Болих</button></span></div>`; }).join("");
-    // Нэг хэмжээ: дарвал сонгоно, дахин дарвал болино
-    box.querySelectorAll("[data-cc]").forEach(b => b.onclick = () => {
-      const c = b.dataset.cc, z = b.dataset.cz; let list = csList(c);
-      list = list.includes(z) ? list.filter(x => x !== z) : [...list, z];
-      csSet(c, list); drawCS(); pvLater();
-    });
-    // Мөрийн товч: тухайн өнгөнд бүгдийг сонгох / бүгдийг болих
-    box.querySelectorAll("[data-crow]").forEach(b => b.onclick = () => { csSet(b.dataset.crow, b.dataset.cv === "1" ? [...sizes] : []); drawCS(); pvLater(); });
-    // Дээд товч: бүх өнгөнд бүгдийг сонгох / бүх сонголтыг болих
-    box.querySelectorAll("[data-csall]").forEach(b => b.onclick = () => { colors.forEach(c => csSet(c, b.dataset.csall === "1" ? [...sizes] : [])); drawCS(); pvLater(); });
+          <div class="cssz">${l.map(z => `<span class="cschip">${esc(z)}<button type="button" data-cx="${esc(c)}" data-cz="${esc(z)}" title="${esc(z)} хэмжээг хасах" aria-label="${esc(z)} хасах">×</button></span>`).join("")}
+            ${l.length ? "" : '<span class="csn">⚠ хэмжээ сонгоогүй</span>'}
+            <button type="button" class="csadd" data-co="${esc(c)}" aria-expanded="${csOpen === c}">${csOpen === c ? "▴ Хаах" : "+ Хэмжээ"}</button></div>
+          ${csOpen === c ? `<div class="cspick">${groups.map(([g, list]) => `<div class="szg"><span>${esc(g)}</span>${list.map(z => `<button type="button" class="szc" aria-pressed="${l.includes(z)}" data-cp="${esc(c)}" data-cz="${esc(z)}">${esc(z)}</button>`).join("")}</div>`).join("")}
+            <div class="row" style="margin-top:6px"><input class="csnew" placeholder="Өөр хэмжээ (жишээ: 90, 95)" style="flex:1"><button type="button" class="btn csnewb">Нэмэх</button><button type="button" class="btn dark" data-co="${esc(c)}">Болсон</button></div></div>` : ""}</div>`; }).join("");
+    // Тухайн өнгөний жагсаалтыг өөрчлөөд бүгдийг дахин зурна
+    const setC = (c, l) => { colorSizes[c] = sortSz(l); syncSizes(); drawSizes(); summary(); };
+    // × : тухайн өнгөнөөс хасна
+    box.querySelectorAll("[data-cx]").forEach(b => b.onclick = () => setC(b.dataset.cx, colorSizes[b.dataset.cx].filter(z => z !== b.dataset.cz)));
+    // «+ Хэмжээ» / «Болсон»: сонгох самбарыг нээж хаана
+    box.querySelectorAll("[data-co]").forEach(b => b.onclick = () => { csOpen = csOpen === b.dataset.co ? "" : b.dataset.co; drawCS(); });
+    // Самбарт: дарвал нэмнэ, дахин дарвал хасна
+    box.querySelectorAll("[data-cp]").forEach(b => b.onclick = () => { const c = b.dataset.cp, z = b.dataset.cz, l = colorSizes[c] || [];
+      setC(c, l.includes(z) ? l.filter(x => x !== z) : [...l, z]); });
+    // Самбарт өөр хэмжээ бичиж нэмнэ (зөвхөн энэ өнгөнд)
+    const ni = box.querySelector(".csnew");
+    if (ni) { const add = () => { const v = ni.value.split(/[,，、]/).map(x => x.trim().slice(0, 20)).filter(Boolean); if (v.length) setC(csOpen, [...(colorSizes[csOpen] || []), ...v]); };
+      box.querySelector(".csnewb").onclick = add; ni.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); add(); } }; }
+    // Дээд товч: бүх өнгөнд дээрх бүх хэмжээ / бүх өнгийг цэвэрлэх
+    box.querySelectorAll("[data-csall]").forEach(b => b.onclick = () => { colors.forEach(c => { colorSizes[c] = b.dataset.csall === "1" ? [...sizes] : []; }); syncSizes(); drawSizes(); summary(); });
   };
-  // ----- Хэмжээ: бэлэн багцаас дарж сонгоно -----
+  // ----- Хэмжээ: бэлэн багцаас дарж сонгоно (өнгөтэй бол бүх өнгөнд нэг дор нэмж/хасна) -----
   const drawSizes = () => {
-    const all = Object.values(SZ).flat(), extra = sizes.filter(s => !all.includes(s));
-    $("szbox").innerHTML = Object.entries(SZ).map(([g, list]) => `<div class="szg"><span>${g}</span>${list.map(s => `<button type="button" class="szc" aria-pressed="${sizes.includes(s)}" data-sz="${esc(s)}">${esc(s)}</button>`).join("")}</div>`).join("")
-      + (extra.length ? `<div class="szg"><span class="mut">Өөр</span>${extra.map(s => `<button type="button" class="szc" aria-pressed="true" data-sz="${esc(s)}">${esc(s)} ×</button>`).join("")}</div>` : "");
+    const extra = sizes.filter(s => !ALLSZ.includes(s));
+    // Зарим өнгөнд л байгаа хэмжээ: саарал (дарвал бүх өнгөнд нэмнэ)
+    const part = z => colors.length && sizes.includes(z) && !colors.every(c => (colorSizes[c] || []).includes(z));
+    $("szbox").innerHTML = Object.entries(SZ).map(([g, list]) => `<div class="szg"><span>${g}</span>${list.map(s => `<button type="button" class="szc ${part(s) ? "part" : ""}" aria-pressed="${sizes.includes(s)}" data-sz="${esc(s)}" ${part(s) ? 'title="Зарим өнгөнд л байгаа — дарвал бүх өнгөнд нэмнэ"' : ""}>${esc(s)}</button>`).join("")}</div>`).join("")
+      + (extra.length ? `<div class="szg"><span class="mut">Өөр</span>${extra.map(s => `<button type="button" class="szc ${part(s) ? "part" : ""}" aria-pressed="true" data-sz="${esc(s)}">${esc(s)} ×</button>`).join("")}</div>` : "");
     $("szbox").querySelectorAll("[data-sz]").forEach(b => b.onclick = () => {
-      const s = b.dataset.sz;
-      if (sizes.includes(s)) sizes = sizes.filter(x => x !== s);
-      // Бэлэн багцын дарааллаар эрэмбэлнэ (S, M, L…)
-      else { sizes.push(s); sizes.sort((a, b) => (all.indexOf(a) < 0 ? 999 : all.indexOf(a)) - (all.indexOf(b) < 0 ? 999 : all.indexOf(b))); }
+      const s = b.dataset.sz, on = sizes.includes(s) && !part(s);
+      if (on) { sizes = sizes.filter(x => x !== s); colors.forEach(c => { colorSizes[c] = (colorSizes[c] || []).filter(x => x !== s); }); }
+      else { sizes = sortSz([...sizes, s]); colors.forEach(c => { colorSizes[c] = sortSz([...(colorSizes[c] || []), s]); }); }
       drawSizes(); summary();
     });
     drawCS();
   };
-  const addSize = () => { $("szadd").value.split(/[,，、]/).map(s => s.trim().slice(0, 20)).filter(Boolean).forEach(s => { if (!sizes.includes(s)) sizes.push(s); }); $("szadd").value = ""; drawSizes(); summary(); };
+  // Дээрх «Өөр хэмжээ»: бүх өнгөнд нэмнэ
+  const addSize = () => { const v = $("szadd").value.split(/[,，、]/).map(s => s.trim().slice(0, 20)).filter(Boolean);
+    sizes = sortSz([...sizes, ...v]); colors.forEach(c => { colorSizes[c] = sortSz([...(colorSizes[c] || []), ...v]); }); $("szadd").value = ""; drawSizes(); summary(); };
   $("szaddb").onclick = addSize; $("szadd").onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); addSize(); } };
   // ----- Зургууд: өнгө бүр нэг карт (+ «Зургууд» ерөнхий карт) -----
   const pend = c => pending.filter(x => x.c === c).map(x => `<div class="tn up ${x.s === "bad" ? "bad" : ""}">${x.s === "bad" ? "⚠" : "<i></i>"}</div>`).join("");
@@ -1959,7 +1987,7 @@ function productForm(p, isNew){
     if (!images.length && !confirm("Зураггүй хадгалах уу? (Дараа нь Засах дарж зураг нэмж болно)")) return;
     if (colors.length && colors.some(c => !images.some(u => imgColor[u] === c)) && !confirm("Зарим өнгөнд зураг ороогүй байна. Тэр өнгийг сонгоход гол зураг харагдана. Үргэлжлүүлэх үү?")) return;
     // Өнгө бүрийн хэмжээ: аль нэг өнгөнд хэмжээ сонгоогүй бол асууна (хоосон = бүх хэмжээтэй гэж хадгална)
-    const emp = sizes.length ? colors.filter(c => colorSizes[c] && !colorSizes[c].some(z => sizes.includes(z))) : [];
+    const emp = sizes.length ? colors.filter(c => !(colorSizes[c] || []).some(z => sizes.includes(z))) : [];
     if (emp.length && !confirm(`${emp.join(", ")} өнгөнд хэмжээ сонгоогүй байна. Бүх хэмжээтэй гэж хадгалах уу?\n(Болих дарж хэмжээгээ сонгоно уу)`)) return;
     $("psave").disabled = true;
     // Зураг өөрчлөгдсөн бол галерейн хуучин нэрсийг (labels) хасна

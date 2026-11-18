@@ -295,8 +295,12 @@ nav{flex-wrap:wrap}
 .szc[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
 .szg{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.szg>span{width:58px;font-size:12px;color:var(--muted)}
 /* Өнгө бүрийн хэмжээ: байхгүй хэмжээ саарал, зураастай */
-.csbox{margin-top:12px;padding:10px;border:1px dashed var(--line);background:#fafafa}.csbox>p{margin:0 0 8px;font-size:12.5px}
-.csrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}.csrow>b{width:96px;font-size:13px;display:flex;align-items:center;gap:6px;font-weight:600}
+.csbox{margin-top:12px;padding:10px;border:1px dashed var(--line);background:#fafafa}
+.cshead{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;margin-bottom:4px}.cshead small{display:block;font-size:12px;margin-top:2px}.cshead .btn{height:32px;font-size:12.5px}
+.csrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}.csrow>b{width:110px;font-size:13px;display:flex;align-items:center;gap:7px;font-weight:600}
+.csrow .sw{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+.cssz{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:0}.csn{font-size:12px;color:var(--muted);min-width:44px}.csrow.empty .csn{color:#e5172f;font-weight:600}
+.csact{display:flex;gap:4px}.csact button{height:30px;padding:0 10px;border:1px solid var(--line);background:#fff;font-size:12px}
 .szc.off{background:#f1f1f1;color:#aaa;text-decoration:line-through;border-style:dashed;font-weight:400}
 .pvo button.na{opacity:.35;text-decoration:line-through}
 .pfmore summary{cursor:pointer;font-size:12.5px;color:var(--muted);padding:4px 0}
@@ -1721,27 +1725,33 @@ function productForm(p, isNew){
   };
   const addNew = () => { const v = $("colnew").value.trim().slice(0, 30); if (!v) return; if (!colors.includes(v)) colors.push(v); $("colnew").value = ""; drawColors(); drawThumbs(); drawCS(); };
   $("colnewb").onclick = addNew; $("colnew").onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); addNew(); } };
-  // ----- Өнгө бүрийн хэмжээ: жишээ нь Цагаан өнгө зөвхөн M -----
+  // ----- Өнгө бүрийн хэмжээ: дээр сонгосон өнгө бүр нэг мөр, тухайн өнгөнд байгаа хэмжээг дарж сонгоно -----
+  // Тухайн өнгөний одоогийн жагсаалт (бичигдээгүй бол бүх хэмжээ)
+  const csList = c => colorSizes[c] ? colorSizes[c].filter(x => sizes.includes(x)) : [...sizes];
+  // Жагсаалтыг хадгална: бүх хэмжээ бол тусгай тохиргоо хэрэггүй (устгана), хоосон ч байж болно
+  const csSet = (c, list) => { if (sizes.every(x => list.includes(x))) delete colorSizes[c]; else colorSizes[c] = sizes.filter(x => list.includes(x)); };
   const drawCS = () => {
     const box = $("csbox"); if (!box) return;
     // Өнгө эсвэл хэмжээ байхгүй бол энэ хэсэг хэрэггүй
     if (!colors.length || !sizes.length) { box.className = ""; box.innerHTML = ""; return; }
     box.className = "csbox";
-    box.innerHTML = `<p><b>Өнгө бүрт байгаа хэмжээ</b> <span class="mut">— бүх өнгөнд бүх хэмжээ байгаа бол хөндөх хэрэггүй. Байхгүй хэмжээг дарж <s>зураастай</s> болгоно.</span></p>`
-      + colors.map(c => `<div class="csrow"><b>${dot(c)}${esc(c)}</b>${sizes.map(z => `<button type="button" class="szc ${hasSize(c, z) ? "" : "off"}" aria-pressed="${hasSize(c, z)}" data-cc="${esc(c)}" data-cz="${esc(z)}">${esc(z)}</button>`).join("")}</div>`).join("");
+    box.innerHTML = `<div class="cshead"><div><b>Өнгө бүрт байгаа хэмжээ</b><small class="mut">Хэмжээн дээр дарж сонгоно, дахин дарвал болино. Хар = байгаа, <s>зураастай</s> = байхгүй.</small></div>
+        <span class="row" style="gap:6px"><button type="button" class="btn" data-csall="1">✓ Бүгдийг сонгох</button><button type="button" class="btn" data-csall="0">✕ Бүгдийг болих</button></span></div>`
+      + colors.map(c => { const l = csList(c);
+        return `<div class="csrow ${l.length ? "" : "empty"}"><b><i class="sw" style="${SW[c] ? `background:${SW[c]}` : "background:conic-gradient(#e33,#fc0,#3c6,#39f,#c3f,#e33)"}"></i>${esc(c)}</b>
+          <div class="cssz">${sizes.map(z => `<button type="button" class="szc ${l.includes(z) ? "" : "off"}" aria-pressed="${l.includes(z)}" data-cc="${esc(c)}" data-cz="${esc(z)}">${esc(z)}</button>`).join("")}</div>
+          <span class="csn">${l.length ? `${l.length}/${sizes.length}` : "⚠ сонгоогүй"}</span>
+          <span class="csact"><button type="button" data-crow="${esc(c)}" data-cv="1">Бүгд</button><button type="button" data-crow="${esc(c)}" data-cv="0">Болих</button></span></div>`; }).join("");
+    // Нэг хэмжээ: дарвал сонгоно, дахин дарвал болино
     box.querySelectorAll("[data-cc]").forEach(b => b.onclick = () => {
-      const c = b.dataset.cc, z = b.dataset.cz;
-      // Одоогийн жагсаалт (бичигдээгүй бол бүх хэмжээ)
-      let list = colorSizes[c] ? colorSizes[c].filter(x => sizes.includes(x)) : [...sizes];
-      if (list.includes(z)) {
-        // Ядаж нэг хэмжээ үлдээнэ (өнгө бүхэлдээ дууссан бол өнгийг нь хасна)
-        if (list.length === 1) return toast(`«${c}» өнгөнд ядаж нэг хэмжээ үлдээнэ. Огт байхгүй бол өнгийг нь хасна уу.`);
-        list = list.filter(x => x !== z);
-      } else list.push(z);
-      // Бүх хэмжээ байгаа бол тусгай тохиргоо хэрэггүй — устгана
-      if (sizes.every(x => list.includes(x))) delete colorSizes[c]; else colorSizes[c] = sizes.filter(x => list.includes(x));
-      drawCS(); pvLater();
+      const c = b.dataset.cc, z = b.dataset.cz; let list = csList(c);
+      list = list.includes(z) ? list.filter(x => x !== z) : [...list, z];
+      csSet(c, list); drawCS(); pvLater();
     });
+    // Мөрийн товч: тухайн өнгөнд бүгдийг сонгох / бүгдийг болих
+    box.querySelectorAll("[data-crow]").forEach(b => b.onclick = () => { csSet(b.dataset.crow, b.dataset.cv === "1" ? [...sizes] : []); drawCS(); pvLater(); });
+    // Дээд товч: бүх өнгөнд бүгдийг сонгох / бүх сонголтыг болих
+    box.querySelectorAll("[data-csall]").forEach(b => b.onclick = () => { colors.forEach(c => csSet(c, b.dataset.csall === "1" ? [...sizes] : [])); drawCS(); pvLater(); });
   };
   // ----- Хэмжээ: бэлэн багцаас дарж сонгоно -----
   const drawSizes = () => {
@@ -1948,6 +1958,9 @@ function productForm(p, isNew){
     if (!(Number($("p-price").value) > 0)) return toast("Үнээ бичнэ үү");
     if (!images.length && !confirm("Зураггүй хадгалах уу? (Дараа нь Засах дарж зураг нэмж болно)")) return;
     if (colors.length && colors.some(c => !images.some(u => imgColor[u] === c)) && !confirm("Зарим өнгөнд зураг ороогүй байна. Тэр өнгийг сонгоход гол зураг харагдана. Үргэлжлүүлэх үү?")) return;
+    // Өнгө бүрийн хэмжээ: аль нэг өнгөнд хэмжээ сонгоогүй бол асууна (хоосон = бүх хэмжээтэй гэж хадгална)
+    const emp = sizes.length ? colors.filter(c => colorSizes[c] && !colorSizes[c].some(z => sizes.includes(z))) : [];
+    if (emp.length && !confirm(`${emp.join(", ")} өнгөнд хэмжээ сонгоогүй байна. Бүх хэмжээтэй гэж хадгалах уу?\n(Болих дарж хэмжээгээ сонгоно уу)`)) return;
     $("psave").disabled = true;
     // Зураг өөрчлөгдсөн бол галерейн хуучин нэрсийг (labels) хасна
     const extra = { ...(p.extra || {}) }; if (JSON.stringify(images) !== origImages) delete extra.labels;
